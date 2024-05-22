@@ -4,6 +4,7 @@ go 1.22.2
 
 require (
 	github.com/go-chi/jwtauth v1.2.0
+	github.com/google/uuid v1.4.0
 	github.com/spf13/viper v1.18.2
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.10
