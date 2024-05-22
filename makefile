@@ -1,7 +1,7 @@
 .PHONY: default run build test docs clean
 
 # variables
-APP_NAME = "gestock-api"
+APP_NAME = "gestok-api"
 
 # tasks
 default: run-with-docs
