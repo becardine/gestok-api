@@ -25,3 +25,6 @@ docs:
 clean:
 	@echo "Cleaning up..."
 	@rm -rf $(APP_NAME) ./docs
+tidy:
+	@echo "Tidying up..."
+	@go mod tidy
