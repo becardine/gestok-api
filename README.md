@@ -1,7 +1,8 @@
 ## 🎉 Sistema de Gestão de Estoque - API RESTful 🎉
 
 ```
- ⚠️ Esse projeto é apenas um exemplo e não deve ser utilizado em produção sem as devidas modificações e testes.
+ ⚠️ Esse projeto é apenas um exemplo e não deve ser utilizado em produção
+     sem as devidas modificações e testes.
 ```
 
 Este repositório contém o código fonte para uma API RESTful que está sendo desenvolvida em Go para gerenciar o estoque de uma loja online. 🚀
