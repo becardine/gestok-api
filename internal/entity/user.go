@@ -9,11 +9,11 @@ import (
 )
 
 type User struct {
-	gorm.Model
 	ID       common.ID `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
 	Name     string    `json:"name" gorm:"not null"`
 	Email    string    `json:"email" gorm:"uniqueIndex;not null"`
 	Password string    `json:"-" gorm:"not null"`
+	gorm.Model
 }
 
 type UserResponse struct {
