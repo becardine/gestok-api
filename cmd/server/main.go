@@ -35,5 +35,5 @@ func main() {
 	}
 
 	// initialize router
-	router.Init()
+	router.InitializeRouter()
 }

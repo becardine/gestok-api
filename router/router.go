@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-func Init() {
+func InitializeRouter() {
 	r := chi.NewRouter()
 	initializeRoutes(r)
 
