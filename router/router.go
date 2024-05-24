@@ -17,6 +17,8 @@ func InitializeRouter() {
 		webServerPort = "8080"
 	}
 
+	config.GetLogger("router").Infof("web server running on port %s", webServerPort)
+
 	addr := fmt.Sprintf("0.0.0.0:%s", webServerPort)
 	http.ListenAndServe(addr, r)
 }
