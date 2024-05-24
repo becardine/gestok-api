@@ -8,6 +8,9 @@ import (
 	"github.com/becardine/gestock-api/internal/repository"
 	"github.com/becardine/gestock-api/internal/service"
 	"github.com/go-chi/chi/v5"
+
+	_ "github.com/becardine/gestock-api/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func initializeRoutes(router *chi.Mux) {
@@ -36,5 +39,10 @@ func initializeRoutes(router *chi.Mux) {
 	router.Route(usersPath, func(r chi.Router) {
 		r.Post("/", handler.CreateUser)
 	})
+
+	// Swagger routes
+	router.Get("/docs/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/docs/doc.json"),
+	))
 
 }

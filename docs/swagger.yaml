@@ -1,0 +1,16 @@
+basePath: /api/v1
+host: localhost:8080
+info:
+  contact:
+    email: becardiine@gmail.com
+  description: This is a simple API for managing stock
+  termsOfService: http://swagger.io/terms/
+  title: Gestock API
+  version: "1.0"
+paths: {}
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
