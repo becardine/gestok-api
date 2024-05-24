@@ -3,7 +3,6 @@ package config
 import (
 	"fmt"
 
-	"github.com/becardine/gestock-api/internal/entity"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -29,13 +28,15 @@ func InitializePostgreSQL() (*gorm.DB, error) {
 
 	logger.Info("database connection established")
 
-	err = db.AutoMigrate(&entity.User{})
-	if err != nil {
-		logger.Errorf("failed to migrate database: %v", err)
-		return nil, err
-	}
+	// removido para evitar ficar criando as tabelas a cada reinicialização
+	// todo: criar um arquivo de migração para criar as tabelas
+	// err = db.AutoMigrate(&entity.User{})
+	// if err != nil {
+	// 	logger.Errorf("failed to migrate database: %v", err)
+	// 	return nil, err
+	// }
 
-	logger.Info("database migrated")
+	// logger.Info("database migrated")
 
 	return db, nil
 }
