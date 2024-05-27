@@ -9,7 +9,7 @@ var (
 	logger *config.Logger
 )
 
-// @title Gestock API
+// @title Gestok API
 // @version 1.0
 // @description This is a simple API for managing stock
 // @termsOfService http://swagger.io/terms/

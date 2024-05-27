@@ -1,13 +1,80 @@
 basePath: /api/v1
+definitions:
+  common.ID:
+    type: object
+  entity.User:
+    type: object
+  errors.ErrorHandler:
+    properties:
+      message:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
     email: becardiine@gmail.com
   description: This is a simple API for managing stock
   termsOfService: http://swagger.io/terms/
-  title: Gestock API
+  title: Gestok API
   version: "1.0"
-paths: {}
+paths:
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user with the input payload
+      parameters:
+      - description: Create User Input
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entity.User'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.ErrorHandler'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorHandler'
+      summary: Create a new user
+      tags:
+      - users
+  /users/{email}:
+    get:
+      consumes:
+      - application/json
+      description: Get user by email
+      parameters:
+      - description: User Email
+        in: path
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/errors.ErrorHandler'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.ErrorHandler'
+      summary: Get user by email
+      tags:
+      - users
 securityDefinitions:
   ApiKeyAuth:
     in: header

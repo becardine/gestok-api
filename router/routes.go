@@ -38,6 +38,7 @@ func initializeRoutes(router *chi.Mux) {
 	// user routes
 	router.Route(usersPath, func(r chi.Router) {
 		r.Post("/", handler.CreateUser)
+		r.Get("/{email}", handler.GetUserByEmail)
 	})
 
 	// Swagger routes
