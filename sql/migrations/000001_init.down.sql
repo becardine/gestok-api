@@ -1,4 +1,4 @@
--- Remove as tabelas
+-- Remove  all tables
 DROP TABLE IF EXISTS order_products;
 DROP TABLE IF EXISTS feedbacks;
 DROP TABLE IF EXISTS coupons;
