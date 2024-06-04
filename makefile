@@ -1,4 +1,4 @@
-.PHONY: default run build test docs clean
+.PHONY: default run build test docs clean tidy create-migration migrate-up migrate-down
 
 # variables
 APP_NAME = "gestok-api"
@@ -28,3 +28,15 @@ clean:
 tidy:
 	@echo "Tidying up..."
 	@go mod tidy
+create-migration:
+	@echo "Creating migration..."
+	migrate create -ext=sql -dir=sql/migrations -seq -name $(name)
+migrate-up:
+	@echo "Applying migrations..."
+	migrate -database=$(database) -path=sql/migrations up
+migrate-down:
+	@echo "Rolling back migrations..."
+	migrate -database=$(database) -path=sql/migrations down
+sqlc:
+	@echo "Generating SQLC..."
+	sqlc generate
