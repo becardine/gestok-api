@@ -1,0 +1,123 @@
+-- Limpa o banco de dados (se necessário)
+-- DROP TABLE IF EXISTS order_products;
+-- DROP TABLE IF EXISTS feedbacks;
+-- DROP TABLE IF EXISTS coupons;
+-- DROP TABLE IF EXISTS deliveries;
+-- DROP TABLE IF EXISTS payments;
+-- DROP TABLE IF EXISTS brands;
+-- DROP TABLE IF EXISTS categories;
+-- DROP TABLE IF EXISTS customers;
+-- DROP TABLE IF EXISTS orders;
+-- DROP TABLE IF EXISTS stocks;
+-- DROP TABLE IF EXISTS products;
+
+-- Cria as tabelas
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price DECIMAL(10,2) NOT NULL,
+    quantity_in_stock INT NOT NULL,
+    image_url VARCHAR(255),
+    category_id INT REFERENCES categories(id),
+    brand_id INT REFERENCES brands(id),
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE stocks (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    location VARCHAR(255),
+    capacity INT NOT NULL,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE orders (
+    id SERIAL PRIMARY KEY,
+    customer_id INT REFERENCES customers(id),
+    order_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    order_status VARCHAR(255) NOT NULL,
+    total_value DECIMAL(10,2) NOT NULL,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    address VARCHAR(255),
+    phone VARCHAR(20),
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE categories (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE brands (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE payments (
+    id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(id),
+    customer_id INT REFERENCES customers(id),
+    payment_type VARCHAR(255) NOT NULL,
+    payment_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    payment_value DECIMAL(10,2) NOT NULL,
+    payment_status VARCHAR(255) NOT NULL,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE deliveries (
+    id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(id),
+    customer_id INT REFERENCES customers(id),
+    delivery_type VARCHAR(255) NOT NULL,
+    delivery_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    delivery_status VARCHAR(255) NOT NULL,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE coupons (
+    id SERIAL PRIMARY KEY,
+    code VARCHAR(255) UNIQUE NOT NULL,
+    discount DECIMAL(10,2) NOT NULL,
+    expiration_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    status VARCHAR(255) NOT NULL,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE feedbacks (
+    id SERIAL PRIMARY KEY,
+    customer_id INT REFERENCES customers(id),
+    order_id INT REFERENCES orders(id),
+    rating INT,
+    comment TEXT,
+    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE order_products (
+    id SERIAL PRIMARY KEY,
+    order_id INT REFERENCES orders(id),
+    product_id INT REFERENCES products(id),
+    quantity INT NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL
+);
