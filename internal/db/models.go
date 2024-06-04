@@ -7,114 +7,138 @@ package db
 import (
 	"database/sql"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Brand struct {
-	ID          int32
+	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
+	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
 
 type Category struct {
-	ID          int32
+	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
+	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
 
 type Coupon struct {
-	ID             int32
+	ID             uuid.UUID
 	Code           string
 	Discount       string
 	ExpirationDate time.Time
 	Status         string
+	DeletedAt      sql.NullTime
 	CreatedDate    sql.NullTime
 	UpdatedDate    sql.NullTime
 }
 
 type Customer struct {
-	ID          int32
+	ID          uuid.UUID
 	Name        string
 	Email       string
 	Password    string
 	Address     sql.NullString
 	Phone       sql.NullString
+	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
 
 type Delivery struct {
-	ID             int32
-	OrderID        sql.NullInt32
-	CustomerID     sql.NullInt32
+	ID             uuid.UUID
+	OrderID        uuid.NullUUID
+	CustomerID     uuid.NullUUID
 	DeliveryType   string
 	DeliveryDate   sql.NullTime
 	DeliveryStatus string
+	DeletedAt      sql.NullTime
 	CreatedDate    sql.NullTime
 	UpdatedDate    sql.NullTime
 }
 
 type Feedback struct {
-	ID          int32
-	CustomerID  sql.NullInt32
-	OrderID     sql.NullInt32
+	ID          uuid.UUID
+	CustomerID  uuid.NullUUID
+	OrderID     uuid.NullUUID
 	Rating      sql.NullInt32
 	Comment     sql.NullString
+	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
 
 type Order struct {
-	ID          int32
-	CustomerID  sql.NullInt32
+	ID          uuid.UUID
+	CustomerID  uuid.NullUUID
 	OrderDate   sql.NullTime
 	OrderStatus string
 	TotalValue  string
+	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
 
 type OrderProduct struct {
-	ID        int32
-	OrderID   sql.NullInt32
-	ProductID sql.NullInt32
-	Quantity  int32
-	UnitPrice string
+	ID          uuid.UUID
+	OrderID     uuid.NullUUID
+	ProductID   uuid.NullUUID
+	Quantity    int32
+	UnitPrice   string
+	DeletedAt   sql.NullTime
+	CreatedDate sql.NullTime
+	UpdatedDate sql.NullTime
 }
 
 type Payment struct {
-	ID            int32
-	OrderID       sql.NullInt32
-	CustomerID    sql.NullInt32
+	ID            uuid.UUID
+	OrderID       uuid.NullUUID
+	CustomerID    uuid.NullUUID
 	PaymentType   string
 	PaymentDate   sql.NullTime
 	PaymentValue  string
 	PaymentStatus string
+	DeletedAt     sql.NullTime
 	CreatedDate   sql.NullTime
 	UpdatedDate   sql.NullTime
 }
 
 type Product struct {
-	ID              int32
+	ID              uuid.UUID
 	Name            string
 	Description     sql.NullString
 	Price           string
 	QuantityInStock int32
 	ImageUrl        sql.NullString
-	CategoryID      sql.NullInt32
-	BrandID         sql.NullInt32
+	CategoryID      uuid.NullUUID
+	BrandID         uuid.NullUUID
+	DeletedAt       sql.NullTime
 	CreatedDate     sql.NullTime
 	UpdatedDate     sql.NullTime
 }
 
+type ProductStock struct {
+	ID          uuid.UUID
+	StockID     uuid.UUID
+	ProductID   uuid.UUID
+	DeletedAt   sql.NullTime
+	CreatedDate sql.NullTime
+	UpdatedDate sql.NullTime
+}
+
 type Stock struct {
-	ID          int32
+	ID          uuid.UUID
 	Name        string
 	Location    sql.NullString
 	Capacity    int32
+	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
