@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/google/uuid"
+	common "github.com/becardine/gestock-api/internal/entity/common"
 )
 
 const createCategory = `-- name: CreateCategory :exec
@@ -18,7 +18,7 @@ VALUES ($1, $2, $3, $4, $5)
 `
 
 type CreateCategoryParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Description sql.NullString
 	CreatedDate sql.NullTime
@@ -42,7 +42,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCategory(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteCategory(ctx context.Context, id common.ID) error {
 	_, err := q.db.ExecContext(ctx, deleteCategory, id)
 	return err
 }
@@ -51,7 +51,7 @@ const getCategory = `-- name: GetCategory :one
 SELECT id, name, description, deleted_at, created_date, updated_date FROM categories WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCategory(ctx context.Context, id uuid.UUID) (Category, error) {
+func (q *Queries) GetCategory(ctx context.Context, id common.ID) (Category, error) {
 	row := q.db.QueryRowContext(ctx, getCategory, id)
 	var i Category
 	err := row.Scan(
@@ -73,7 +73,7 @@ WHERE c.id = $1 AND c.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetCategoryProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
+func (q *Queries) GetCategoryProducts(ctx context.Context, id common.ID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getCategoryProducts, id)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateCategoryParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Description sql.NullString
 	UpdatedDate sql.NullTime

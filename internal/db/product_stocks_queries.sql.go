@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 
-	"github.com/google/uuid"
+	common "github.com/becardine/gestock-api/internal/entity/common"
 )
 
 const createProductStock = `-- name: CreateProductStock :exec
@@ -17,8 +17,8 @@ VALUES ($1, $2)
 `
 
 type CreateProductStockParams struct {
-	StockID   uuid.UUID
-	ProductID uuid.UUID
+	StockID   common.ID
+	ProductID common.ID
 }
 
 func (q *Queries) CreateProductStock(ctx context.Context, arg CreateProductStockParams) error {
@@ -31,8 +31,8 @@ DELETE FROM product_stocks WHERE stock_id = $1 AND product_id = $2
 `
 
 type DeleteProductStockParams struct {
-	StockID   uuid.UUID
-	ProductID uuid.UUID
+	StockID   common.ID
+	ProductID common.ID
 }
 
 func (q *Queries) DeleteProductStock(ctx context.Context, arg DeleteProductStockParams) error {
@@ -45,8 +45,8 @@ SELECT id, stock_id, product_id, deleted_at, created_date, updated_date FROM pro
 `
 
 type GetProductStockParams struct {
-	StockID   uuid.UUID
-	ProductID uuid.UUID
+	StockID   common.ID
+	ProductID common.ID
 }
 
 func (q *Queries) GetProductStock(ctx context.Context, arg GetProductStockParams) (ProductStock, error) {
@@ -67,7 +67,7 @@ const getProductStocks = `-- name: GetProductStocks :many
 SELECT id, stock_id, product_id, deleted_at, created_date, updated_date FROM product_stocks WHERE stock_id = $1
 `
 
-func (q *Queries) GetProductStocks(ctx context.Context, stockID uuid.UUID) ([]ProductStock, error) {
+func (q *Queries) GetProductStocks(ctx context.Context, stockID common.ID) ([]ProductStock, error) {
 	rows, err := q.db.QueryContext(ctx, getProductStocks, stockID)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ const getProductStocksByProductId = `-- name: GetProductStocksByProductId :many
 SELECT id, stock_id, product_id, deleted_at, created_date, updated_date FROM product_stocks WHERE product_id = $1
 `
 
-func (q *Queries) GetProductStocksByProductId(ctx context.Context, productID uuid.UUID) ([]ProductStock, error) {
+func (q *Queries) GetProductStocksByProductId(ctx context.Context, productID common.ID) ([]ProductStock, error) {
 	rows, err := q.db.QueryContext(ctx, getProductStocksByProductId, productID)
 	if err != nil {
 		return nil, err

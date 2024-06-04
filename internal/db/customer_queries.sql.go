@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/google/uuid"
+	common "github.com/becardine/gestock-api/internal/entity/common"
 )
 
 const createCustomer = `-- name: CreateCustomer :exec
@@ -18,7 +18,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 type CreateCustomerParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Email       string
 	Password    string
@@ -48,7 +48,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCustomer(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteCustomer(ctx context.Context, id common.ID) error {
 	_, err := q.db.ExecContext(ctx, deleteCustomer, id)
 	return err
 }
@@ -57,7 +57,7 @@ const getCustomer = `-- name: GetCustomer :one
 SELECT id, name, email, password, address, phone, deleted_at, created_date, updated_date FROM customers WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCustomer(ctx context.Context, id uuid.UUID) (Customer, error) {
+func (q *Queries) GetCustomer(ctx context.Context, id common.ID) (Customer, error) {
 	row := q.db.QueryRowContext(ctx, getCustomer, id)
 	var i Customer
 	err := row.Scan(
@@ -82,7 +82,7 @@ WHERE c.id = $1 AND c.deleted_at IS NULL
 ORDER BY d.delivery_date DESC
 `
 
-func (q *Queries) GetCustomerDeliveries(ctx context.Context, id uuid.UUID) ([]Delivery, error) {
+func (q *Queries) GetCustomerDeliveries(ctx context.Context, id common.ID) ([]Delivery, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerDeliveries, id)
 	if err != nil {
 		return nil, err
@@ -123,7 +123,7 @@ WHERE c.id = $1 AND c.deleted_at IS NULL
 ORDER BY f.created_date DESC
 `
 
-func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id uuid.UUID) ([]Feedback, error) {
+func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id common.ID) ([]Feedback, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerFeedbacks, id)
 	if err != nil {
 		return nil, err
@@ -163,7 +163,7 @@ WHERE c.id = $1 AND c.deleted_at IS NULL
 ORDER BY o.order_date DESC
 `
 
-func (q *Queries) GetCustomerOrders(ctx context.Context, id uuid.UUID) ([]Order, error) {
+func (q *Queries) GetCustomerOrders(ctx context.Context, id common.ID) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerOrders, id)
 	if err != nil {
 		return nil, err
@@ -203,7 +203,7 @@ WHERE c.id = $1 AND c.deleted_at IS NULL
 ORDER BY p.payment_date DESC
 `
 
-func (q *Queries) GetCustomerPayments(ctx context.Context, id uuid.UUID) ([]Payment, error) {
+func (q *Queries) GetCustomerPayments(ctx context.Context, id common.ID) ([]Payment, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerPayments, id)
 	if err != nil {
 		return nil, err
@@ -281,7 +281,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateCustomerParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Email       string
 	Password    string

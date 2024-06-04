@@ -9,6 +9,7 @@ import (
 	"context"
 	"database/sql"
 
+	common "github.com/becardine/gestock-api/internal/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -18,7 +19,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateFeedbackParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	CustomerID  uuid.NullUUID
 	OrderID     uuid.NullUUID
 	Rating      sql.NullInt32
@@ -46,7 +47,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteFeedback(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteFeedback(ctx context.Context, id common.ID) error {
 	_, err := q.db.ExecContext(ctx, deleteFeedback, id)
 	return err
 }
@@ -55,7 +56,7 @@ const getFeedback = `-- name: GetFeedback :one
 SELECT id, customer_id, order_id, rating, comment, deleted_at, created_date, updated_date FROM feedbacks WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetFeedback(ctx context.Context, id uuid.UUID) (Feedback, error) {
+func (q *Queries) GetFeedback(ctx context.Context, id common.ID) (Feedback, error) {
 	row := q.db.QueryRowContext(ctx, getFeedback, id)
 	var i Feedback
 	err := row.Scan(
@@ -192,7 +193,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateFeedbackParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	CustomerID  uuid.NullUUID
 	OrderID     uuid.NullUUID
 	Rating      sql.NullInt32

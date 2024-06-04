@@ -8,3 +8,9 @@ sql:
     go:
       package: "db"
       out: "internal/db"
+      overrides:
+      - db_type: "uuid"
+        go_type:
+          import: "github.com/becardine/gestock-api/internal/entity/common"
+          package: "common"
+          type: "ID"

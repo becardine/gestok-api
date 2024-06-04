@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/google/uuid"
+	common "github.com/becardine/gestock-api/internal/entity/common"
 )
 
 const addStockProduct = `-- name: AddStockProduct :exec
@@ -18,8 +18,8 @@ VALUES ($1, $2)
 `
 
 type AddStockProductParams struct {
-	StockID   uuid.UUID
-	ProductID uuid.UUID
+	StockID   common.ID
+	ProductID common.ID
 }
 
 func (q *Queries) AddStockProduct(ctx context.Context, arg AddStockProductParams) error {
@@ -33,7 +33,7 @@ VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 type CreateStockParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Location    sql.NullString
 	Capacity    int32
@@ -59,7 +59,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteStock(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteStock(ctx context.Context, id common.ID) error {
 	_, err := q.db.ExecContext(ctx, deleteStock, id)
 	return err
 }
@@ -68,7 +68,7 @@ const getStock = `-- name: GetStock :one
 SELECT id, name, location, capacity, deleted_at, created_date, updated_date FROM stocks WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetStock(ctx context.Context, id uuid.UUID) (Stock, error) {
+func (q *Queries) GetStock(ctx context.Context, id common.ID) (Stock, error) {
 	row := q.db.QueryRowContext(ctx, getStock, id)
 	var i Stock
 	err := row.Scan(
@@ -91,7 +91,7 @@ JOIN products p ON ps.product_id = p.id
 WHERE s.id = $1 AND s.deleted_at IS NULL
 `
 
-func (q *Queries) GetStockProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
+func (q *Queries) GetStockProducts(ctx context.Context, id common.ID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getStockProducts, id)
 	if err != nil {
 		return nil, err
@@ -166,8 +166,8 @@ DELETE FROM product_stocks WHERE stock_id = $1 AND product_id = $2
 `
 
 type RemoveStockProductParams struct {
-	StockID   uuid.UUID
-	ProductID uuid.UUID
+	StockID   common.ID
+	ProductID common.ID
 }
 
 func (q *Queries) RemoveStockProduct(ctx context.Context, arg RemoveStockProductParams) error {
@@ -182,7 +182,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateStockParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Location    sql.NullString
 	Capacity    int32

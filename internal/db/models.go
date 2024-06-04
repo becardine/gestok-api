@@ -8,11 +8,12 @@ import (
 	"database/sql"
 	"time"
 
+	common "github.com/becardine/gestock-api/internal/entity/common"
 	"github.com/google/uuid"
 )
 
 type Brand struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Description sql.NullString
 	DeletedAt   sql.NullTime
@@ -21,7 +22,7 @@ type Brand struct {
 }
 
 type Category struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Description sql.NullString
 	DeletedAt   sql.NullTime
@@ -30,7 +31,7 @@ type Category struct {
 }
 
 type Coupon struct {
-	ID             uuid.UUID
+	ID             common.ID
 	Code           string
 	Discount       string
 	ExpirationDate time.Time
@@ -41,7 +42,7 @@ type Coupon struct {
 }
 
 type Customer struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Email       string
 	Password    string
@@ -53,7 +54,7 @@ type Customer struct {
 }
 
 type Delivery struct {
-	ID             uuid.UUID
+	ID             common.ID
 	OrderID        uuid.NullUUID
 	CustomerID     uuid.NullUUID
 	DeliveryType   string
@@ -65,7 +66,7 @@ type Delivery struct {
 }
 
 type Feedback struct {
-	ID          uuid.UUID
+	ID          common.ID
 	CustomerID  uuid.NullUUID
 	OrderID     uuid.NullUUID
 	Rating      sql.NullInt32
@@ -76,7 +77,7 @@ type Feedback struct {
 }
 
 type Order struct {
-	ID          uuid.UUID
+	ID          common.ID
 	CustomerID  uuid.NullUUID
 	OrderDate   sql.NullTime
 	OrderStatus string
@@ -87,7 +88,7 @@ type Order struct {
 }
 
 type OrderProduct struct {
-	ID          uuid.UUID
+	ID          common.ID
 	OrderID     uuid.NullUUID
 	ProductID   uuid.NullUUID
 	Quantity    int32
@@ -98,7 +99,7 @@ type OrderProduct struct {
 }
 
 type Payment struct {
-	ID            uuid.UUID
+	ID            common.ID
 	OrderID       uuid.NullUUID
 	CustomerID    uuid.NullUUID
 	PaymentType   string
@@ -111,7 +112,7 @@ type Payment struct {
 }
 
 type Product struct {
-	ID              uuid.UUID
+	ID              common.ID
 	Name            string
 	Description     sql.NullString
 	Price           string
@@ -125,16 +126,16 @@ type Product struct {
 }
 
 type ProductStock struct {
-	ID          uuid.UUID
-	StockID     uuid.UUID
-	ProductID   uuid.UUID
+	ID          common.ID
+	StockID     common.ID
+	ProductID   common.ID
 	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
 }
 
 type Stock struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Location    sql.NullString
 	Capacity    int32

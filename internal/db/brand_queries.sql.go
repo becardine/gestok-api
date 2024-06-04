@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/google/uuid"
+	common "github.com/becardine/gestock-api/internal/entity/common"
 )
 
 const createBrand = `-- name: CreateBrand :exec
@@ -18,7 +18,7 @@ VALUES ($1, $2, $3, $4, $5)
 `
 
 type CreateBrandParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Description sql.NullString
 	CreatedDate sql.NullTime
@@ -42,7 +42,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteBrand(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteBrand(ctx context.Context, id common.ID) error {
 	_, err := q.db.ExecContext(ctx, deleteBrand, id)
 	return err
 }
@@ -51,7 +51,7 @@ const getBrand = `-- name: GetBrand :one
 SELECT id, name, description, deleted_at, created_date, updated_date FROM brands WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetBrand(ctx context.Context, id uuid.UUID) (Brand, error) {
+func (q *Queries) GetBrand(ctx context.Context, id common.ID) (Brand, error) {
 	row := q.db.QueryRowContext(ctx, getBrand, id)
 	var i Brand
 	err := row.Scan(
@@ -73,7 +73,7 @@ WHERE b.id = $1 AND b.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetBrandProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
+func (q *Queries) GetBrandProducts(ctx context.Context, id common.ID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getBrandProducts, id)
 	if err != nil {
 		return nil, err
@@ -149,7 +149,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateBrandParams struct {
-	ID          uuid.UUID
+	ID          common.ID
 	Name        string
 	Description sql.NullString
 	UpdatedDate sql.NullTime
