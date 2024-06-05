@@ -1,16 +1,16 @@
 version: "2"
 
 sql:
-- schema: "sql/migrations"
-  queries: "sql/queries"
+- schema: "internal/infra/migrations"
+  queries: "internal/infra/queries"
   engine: "postgresql"
   gen:
     go:
       package: "db"
-      out: "internal/db"
+      out: "internal/infra/sqlc"
       overrides:
       - db_type: "uuid"
         go_type:
-          import: "github.com/becardine/gestock-api/internal/entity/common"
+          import: "github.com/becardine/gestock-api/internal/domain/entity/common"
           package: "common"
           type: "ID"

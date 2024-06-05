@@ -10,6 +10,8 @@ import (
 
 func InitializeRouter() {
 	r := chi.NewRouter()
+
+	// initialize routes api
 	initializeRoutes(r)
 
 	webServerPort := config.GetEnv().WebServerPort
