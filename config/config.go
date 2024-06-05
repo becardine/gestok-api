@@ -1,13 +1,12 @@
 package config
 
 import (
+	"database/sql"
 	"fmt"
-
-	"gorm.io/gorm"
 )
 
 var (
-	db     *gorm.DB
+	db     *sql.DB
 	logger *Logger
 	cfg    *conf
 )
@@ -39,6 +38,6 @@ func GetEnv() *conf {
 	return cfg
 }
 
-func GetDB() *gorm.DB {
+func GetDB() *sql.DB {
 	return db
 }
