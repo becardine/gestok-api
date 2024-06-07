@@ -30,6 +30,10 @@ func (i ID) String() string {
 	return i.value.String()
 }
 
+func NewIDFromUUID(uuid uuid.UUID) ID {
+	return ID{value: uuid}
+}
+
 func (i ID) Value() uuid.UUID {
 	return i.value
 }
