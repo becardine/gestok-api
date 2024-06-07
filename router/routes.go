@@ -5,7 +5,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
+	"github.com/becardine/gestock-api/config"
 	_ "github.com/becardine/gestock-api/docs"
+	"github.com/becardine/gestock-api/wire"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -20,7 +22,7 @@ func initializeRoutes(router *chi.Mux) {
 
 	usersPath := fmt.Sprintf("%s/users", basePath)
 
-	// db := config.GetDB()
+	db := config.GetDB()
 
 	// repository
 	// userRepository := repository.NewUserRepository(db)
@@ -35,6 +37,12 @@ func initializeRoutes(router *chi.Mux) {
 	router.Route(usersPath, func(r chi.Router) {
 		// r.Post("/", handler.CreateUser)
 		// r.Get("/{email}", handler.GetUserByEmail)
+	})
+
+	// product routes
+	productHandler := wire.InitializeProductHandler(db)
+	router.Route("/products", func(r chi.Router) {
+		r.Mount("/", productHandler.Routes())
 	})
 
 	// Swagger routes
