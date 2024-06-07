@@ -14,6 +14,10 @@ func NewID() ID {
 }
 
 func NewIDFromString(s string) (ID, error) {
+	if s == "" {
+		return ID{}, errors.NewErrInvalidID("ID cannot be empty")
+	}
+
 	id, err := uuid.Parse(s)
 	if err != nil {
 		return ID{}, err
@@ -36,7 +40,15 @@ func (i *ID) Scan(value interface{}) error {
 		return errors.NewErrInvalidIDType("invalid ID type")
 	}
 
+	if id == uuid.Nil {
+		return errors.NewErrInvalidID("invalid ID")
+	}
+
 	i.value = id
 
 	return nil
+}
+
+func (i ID) IsEmpty() bool {
+	return i.value == uuid.Nil
 }
