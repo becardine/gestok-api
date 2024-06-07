@@ -3,9 +3,9 @@ package repository
 import "fmt"
 
 type ErrProductNotFound struct {
-	ProductID int
+	ProductID string
 }
 
 func (e *ErrProductNotFound) Error() string {
-	return fmt.Sprintf("product with ID %d not found", e.ProductID)
+	return fmt.Sprintf("product with ID %s not found", e.ProductID)
 }
