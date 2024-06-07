@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 
-	common "github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/becardine/gestock-api/internal/domain/entity/common"
 )
 
 const createCustomer = `-- name: CreateCustomer :exec

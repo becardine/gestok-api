@@ -9,13 +9,13 @@ import (
 	"context"
 	"database/sql"
 
-	common "github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
 const addProductStock = `-- name: AddProductStock :exec
 INSERT INTO product_stocks (stock_id, product_id)
-VALUES ($1, $2)
+VALUES (/* sqlc.arg:uuid */ $1, /* sqlc.arg:uuid */ $2)
 `
 
 type AddProductStockParams struct {
@@ -30,7 +30,7 @@ func (q *Queries) AddProductStock(ctx context.Context, arg AddProductStockParams
 
 const createProduct = `-- name: CreateProduct :exec
 INSERT INTO products (id, name, description, price, quantity_in_stock, image_url, category_id, brand_id, created_date, updated_date)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+VALUES (/* sqlc.arg:uuid */ $1, $2, $3, /* sqlc.arg:decimal */ $4, $5, $6, /* sqlc.arg:uuid */ $7, /* sqlc.arg:uuid */ $8, $9, $10)
 `
 
 type CreateProductParams struct {
@@ -65,7 +65,7 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) er
 const deleteProduct = `-- name: DeleteProduct :exec
 UPDATE products
 SET deleted_at = NOW()
-WHERE id = $1
+WHERE id = /* sqlc.arg:uuid */ $1
 `
 
 func (q *Queries) DeleteProduct(ctx context.Context, id common.ID) error {
@@ -74,7 +74,7 @@ func (q *Queries) DeleteProduct(ctx context.Context, id common.ID) error {
 }
 
 const getProduct = `-- name: GetProduct :one
-SELECT id, name, description, price, quantity_in_stock, image_url, category_id, brand_id, deleted_at, created_date, updated_date FROM products WHERE id = $1 AND deleted_at IS NULL
+SELECT id, name, description, price, quantity_in_stock, image_url, category_id, brand_id, deleted_at, created_date, updated_date FROM products WHERE id = /* sqlc.arg:uuid */ $1 AND deleted_at IS NULL
 `
 
 func (q *Queries) GetProduct(ctx context.Context, id common.ID) (Product, error) {
@@ -101,7 +101,7 @@ SELECT p.id, p.name, p.location, p.capacity, p.deleted_at, p.created_date, p.upd
 FROM products s
 JOIN product_stocks ps ON s.id = ps.product_id
 JOIN stocks p ON ps.stock_id = p.id
-WHERE s.id = $1 AND s.deleted_at IS NULL
+WHERE s.id = /* sqlc.arg:uuid */ $1 AND s.deleted_at IS NULL
 `
 
 func (q *Queries) GetProductProducts(ctx context.Context, id common.ID) ([]Stock, error) {
@@ -175,7 +175,7 @@ func (q *Queries) ListProducts(ctx context.Context) ([]Product, error) {
 }
 
 const removeProductStock = `-- name: RemoveProductStock :exec
-DELETE FROM product_stocks WHERE stock_id = $1 AND product_id = $2
+DELETE FROM product_stocks WHERE stock_id = /* sqlc.arg:uuid */ $1 AND product_id = /* sqlc.arg:uuid */ $2
 `
 
 type RemoveProductStockParams struct {
@@ -190,8 +190,8 @@ func (q *Queries) RemoveProductStock(ctx context.Context, arg RemoveProductStock
 
 const updateProduct = `-- name: UpdateProduct :exec
 UPDATE products
-SET name = $2, description = $3, price = $4, quantity_in_stock = $5, image_url = $6, category_id = $7, brand_id = $8, updated_date = $9
-WHERE id = $1 AND deleted_at IS NULL
+SET name = $2, description = $3, price = /* sqlc.arg:decimal */ $4, quantity_in_stock = $5, image_url = $6, category_id = /* sqlc.arg:uuid */ $7, brand_id = /* sqlc.arg:uuid */ $8, updated_date = $9
+WHERE id = /* sqlc.arg:uuid */ $1 AND deleted_at IS NULL
 `
 
 type UpdateProductParams struct {

@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	"time"
 
-	common "github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 

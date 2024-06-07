@@ -28,8 +28,8 @@ func (pr *ProductRepository) CreateProduct(ctx context.Context, product *entity.
 	// 	ImageURL:        product.ImageURL,
 	// 	CategoryID:      product.CategoryID.Value(),
 	// 	BrandID:         product.BrandID.Value(),
-	// 	CreatedDate:     product.CreatedAt,
-	// 	UpdatedDate:     product.UpdatedAt,
+	// 	CreatedDate:     sql.NullTime{Time: product.CreatedAt, Valid: true},
+	// 	UpdatedDate:     sql.NullTime{Time: product.UpdatedAt, Valid: true},
 	// })
 	// if err != nil {
 	// 	return fmt.Errorf("erro ao criar produto: %w", err)

@@ -8,14 +8,14 @@ import (
 )
 
 type Product struct {
-	ID              common.ID `json:"id" gorm:"primaryKey;type:uuid;default:gen_random_uuid()"`
-	Name            string    `json:"name" gorm:"not null"`
+	ID              common.ID `json:"id"`
+	Name            string    `json:"name"`
 	Description     string    `json:"description"`
-	Price           float64   `json:"price" gorm:"not null"`
-	QuantityInStock int       `json:"quantity_in_stock" gorm:"not null"`
+	Price           float64   `json:"price"`
+	QuantityInStock int       `json:"quantity_in_stock"`
 	ImageURL        string    `json:"image_url"`
-	CategoryID      common.ID `json:"category_id" gorm:"not null;type:uuid"`
-	BrandID         common.ID `json:"brand_id" gorm:"not null;type:uuid"`
+	CategoryID      common.ID `json:"category_id"`
+	BrandID         common.ID `json:"brand_id"`
 }
 
 func NewProduct(name string, description string, price float64, quantityInStock int, imageURL string, categoryID, brandID common.ID) (*Product, error) {

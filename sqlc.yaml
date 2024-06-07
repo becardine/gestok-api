@@ -12,5 +12,6 @@ sql:
       - db_type: "uuid"
         go_type:
           import: "github.com/becardine/gestock-api/internal/domain/entity/common"
-          package: "common"
           type: "ID"
+      - db_type: "decimal"
+        go_type: numeric

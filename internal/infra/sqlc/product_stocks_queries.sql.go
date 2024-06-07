@@ -8,7 +8,7 @@ package db
 import (
 	"context"
 
-	common "github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/becardine/gestock-api/internal/domain/entity/common"
 )
 
 const createProductStock = `-- name: CreateProductStock :exec

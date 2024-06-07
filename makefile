@@ -1,7 +1,8 @@
-.PHONY: default run build test docs clean tidy create-migration migrate-up migrate-down
+.PHONY: default run build test docs clean tidy create-migration migrate-up migrate-down sqlc
 
 # variables
 APP_NAME = "gestok-api"
+DATABASE_URL = "postgres://gestock_user:7gRHuOY6cK832hul30gUy7Z1yle2g3Yf@dpg-cp6mbimv3ddc73fmnqd0-a.oregon-postgres.render.com:5432/gestock?sslmode=require"
 
 # tasks
 default: run-with-docs
@@ -33,7 +34,7 @@ create-migration:
 	migrate create -ext=sql -dir=sql/migrations -seq -name $(name)
 migrate-up:
 	@echo "Applying migrations..."
-	migrate -database=$(database) -path=sql/migrations up
+	migrate -database=$(DATABASE_URL) -path=internal/infra/migrations up
 migrate-down:
 	@echo "Rolling back migrations..."
 	migrate -database=$(database) -path=sql/migrations down
