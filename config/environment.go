@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/go-chi/jwtauth"
 	"github.com/spf13/viper"
 )
@@ -19,20 +21,19 @@ type conf struct {
 }
 
 func LoadConfig(path string) (*conf, error) {
-	cfg := &conf{}
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
 	viper.SetConfigFile(".env")
 	viper.AutomaticEnv()
-	err := viper.ReadInConfig()
-	if err != nil {
-		panic(err)
+
+	if err := viper.ReadInConfig(); err != nil {
+		return nil, fmt.Errorf("erro ao ler o arquivo de configuração: %w", err)
 	}
 
-	err = viper.Unmarshal(&cfg)
-	if err != nil {
-		panic(err)
+	cfg := &conf{}
+	if err := viper.Unmarshal(&cfg); err != nil {
+		return nil, fmt.Errorf("erro ao carregar as configurações: %w", err)
 	}
 
 	cfg.TokenAuth = jwtauth.New("HS256", []byte(cfg.JWTSecret), nil)
