@@ -15,3 +15,17 @@ func NewErrInvalidIDType(message string) *ErrInvalidIDType {
 		Message: message,
 	}
 }
+
+type ErrInvalidID struct {
+	Message string
+}
+
+func (e *ErrInvalidID) Error() string {
+	return fmt.Sprintf("invalid ID: %s", e.Message)
+}
+
+func NewErrInvalidID(message string) *ErrInvalidID {
+	return &ErrInvalidID{
+		Message: message,
+	}
+}
