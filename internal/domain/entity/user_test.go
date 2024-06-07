@@ -1,13 +1,14 @@
-package entity
+package entity_test
 
 import (
 	"testing"
 
+	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/stretchr/testify/assert"
 )
 
-func createNewUser() (*User, error) {
-	user, err := NewUser("John Doe", "john@email.com", "password")
+func createNewUser() (*entity.User, error) {
+	user, err := entity.NewUser("John Doe", "john@email.com", "password")
 	return user, err
 }
 
