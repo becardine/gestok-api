@@ -10,13 +10,18 @@ import (
 	"github.com/google/wire"
 )
 
-func InitializeProductHandler(db *sql.DB) *handler.ProductHandler {
+var setRepositoryDependency = wire.NewSet(
+	repository.NewProductRepository,
+)
+
+func InitializeProductHandler() (*handler.ProductHandler, error) {
 	wire.Build(
-		repository.NewProductRepository,
+		DBProvider,
+		setRepositoryDependency,
 		service.NewProductService,
 		handler.NewProductHandler,
 	)
-	return &handler.ProductHandler{}
+	return &handler.ProductHandler{}, nil
 }
 
 func DBProvider() (*sql.DB, error) {
