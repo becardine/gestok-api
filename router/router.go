@@ -11,6 +11,10 @@ import (
 func InitializeRouter() {
 	r := chi.NewRouter()
 
+	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("pong"))
+	})
+
 	// initialize routes api
 	initializeRoutes(r)
 

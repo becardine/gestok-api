@@ -7,31 +7,17 @@ import (
 
 	"github.com/becardine/gestock-api/config"
 	_ "github.com/becardine/gestock-api/docs"
+	"github.com/becardine/gestock-api/internal/application/handler"
 	"github.com/becardine/gestock-api/wire"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 func initializeRoutes(router *chi.Mux) {
-	// initializa handler
-	// err := handler.Initialize()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	config.GetLogger("router").Info("initializing routes")
 
 	basePath := "/api/v1"
 
 	usersPath := fmt.Sprintf("%s/users", basePath)
-
-	db := config.GetDB()
-
-	// repository
-	// userRepository := repository.NewUserRepository(db)
-
-	// service
-	// userService := service.NewUserService(userRepository)
-
-	// handler
-	// handler := handler.NewUserHandler(userService)
 
 	// user routes
 	router.Route(usersPath, func(r chi.Router) {
@@ -39,10 +25,17 @@ func initializeRoutes(router *chi.Mux) {
 		// r.Get("/{email}", handler.GetUserByEmail)
 	})
 
-	// product routes
-	productHandler := wire.InitializeProductHandler(db)
-	router.Route("/products", func(r chi.Router) {
-		r.Mount("/", productHandler.Routes())
+	router.Route(basePath, func(r chi.Router) {
+		// product routes
+		productHandler, err := wire.InitializeProductHandler()
+		if err != nil {
+			config.GetLogger("router").Errorf("error while initializing product handler: %v", err)
+		}
+		r.Route("/products", productHandler.Routes)
+
+		// test routes
+		testHandler := handler.NewTestHandler()
+		r.Route("/test", testHandler.Routes)
 	})
 
 	// Swagger routes
