@@ -2,14 +2,13 @@
 
 # variables
 APP_NAME = "gestok-api"
-DATABASE_URL = "postgres://gestock_user:7gRHuOY6cK832hul30gUy7Z1yle2g3Yf@dpg-cp6mbimv3ddc73fmnqd0-a.oregon-postgres.render.com:5432/gestock?sslmode=require"
 
 # tasks
 default: run-with-docs
 
 run:
 	@echo "Running application..."
-	@go run cmd/server/main.go
+	@go generate ./... && go run cmd/server/main.go
 run-with-docs:
 	@echo "Running application with docs..."
 	@swag init -g cmd/server/main.go
