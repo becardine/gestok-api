@@ -8,6 +8,7 @@ import (
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	database "github.com/becardine/gestock-api/internal/infra/sqlc"
 	"github.com/google/uuid"
 )
@@ -16,7 +17,27 @@ type ProductRepository struct {
 	queries *database.Queries
 }
 
-func NewProductRepository(db *sql.DB) *ProductRepository {
+// DeleteProduct implements repository.ProductRepository.
+func (pr *ProductRepository) DeleteProduct(ctx context.Context, id common.ID) error {
+	panic("unimplemented")
+}
+
+// GetProduct implements repository.ProductRepository.
+func (pr *ProductRepository) GetProduct(ctx context.Context, id common.ID) (*entity.Product, error) {
+	panic("unimplemented")
+}
+
+// ListProducts implements repository.ProductRepository.
+func (pr *ProductRepository) ListProducts(ctx context.Context) ([]*entity.Product, error) {
+	panic("unimplemented")
+}
+
+// UpdateProduct implements repository.ProductRepository.
+func (pr *ProductRepository) UpdateProduct(ctx context.Context, product *entity.Product) error {
+	panic("unimplemented")
+}
+
+func NewProductRepository(db *sql.DB) domain.ProductRepository {
 	return &ProductRepository{
 		queries: database.New(db),
 	}

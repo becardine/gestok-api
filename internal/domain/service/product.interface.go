@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
@@ -33,4 +34,21 @@ type UpdateProductInput struct {
 	ImageURL        string    `json:"image_url"`
 	CategoryID      common.ID `json:"category_id"`
 	BrandID         common.ID `json:"brand_id"`
+}
+
+func (input *CreateProductInput) FromJSON(data []byte) error {
+	return json.Unmarshal(data, input)
+}
+
+func (input *CreateProductInput) ToEntity() *entity.Product {
+	return &entity.Product{
+		ID:              common.NewID(),
+		Name:            input.Name,
+		Description:     input.Description,
+		Price:           input.Price,
+		QuantityInStock: input.QuantityInStock,
+		ImageURL:        input.ImageURL,
+		CategoryID:      input.CategoryID,
+		BrandID:         input.BrandID,
+	}
 }
