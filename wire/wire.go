@@ -5,25 +5,27 @@ import (
 
 	"github.com/becardine/gestock-api/config"
 	"github.com/becardine/gestock-api/internal/application/handler"
+	"github.com/becardine/gestock-api/internal/domain/repository"
 	"github.com/becardine/gestock-api/internal/domain/service"
-	"github.com/becardine/gestock-api/internal/infra/repository"
-	"github.com/google/wire"
-)
-
-var setRepositoryDependency = wire.NewSet(
-	repository.NewProductRepository,
+	infra "github.com/becardine/gestock-api/internal/infra/repository"
+	"github.com/becardine/gestock-api/internal/mocks"
 )
 
 func InitializeProductHandler() (*handler.ProductHandler, error) {
-	wire.Build(
-		DBProvider,
-		setRepositoryDependency,
-		service.NewProductService,
-		handler.NewProductHandler,
-	)
-	return &handler.ProductHandler{}, nil
+	db := DBProvider()
+
+	var productRepository repository.ProductRepository
+	productRepository = infra.NewProductRepository(db)
+	productService := service.NewProductService(productRepository)
+	productHandler := handler.NewProductHandler(productService)
+
+	return productHandler, nil
 }
 
-func DBProvider() (*sql.DB, error) {
-	return config.InitializePostgreSQL()
+func DBProvider() *sql.DB {
+	return config.GetDB()
+}
+
+func MockProductService() service.ProductService {
+	return new(mocks.ProductServiceMock)
 }
