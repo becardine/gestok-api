@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type conf struct {
+type Conf struct {
 	DBDriver      string `mapstructure:"DB_DRIVER"`
 	DBHost        string `mapstructure:"DB_HOST"`
 	DBPort        string `mapstructure:"DB_PORT"`
@@ -20,7 +20,7 @@ type conf struct {
 	TokenAuth     *jwtauth.JWTAuth
 }
 
-func LoadConfig(path string) (*conf, error) {
+func LoadConfig(path string) (*Conf, error) {
 	viper.SetConfigName("app_config")
 	viper.SetConfigType("env")
 	viper.AddConfigPath(path)
@@ -31,7 +31,7 @@ func LoadConfig(path string) (*conf, error) {
 		return nil, fmt.Errorf("erro ao ler o arquivo de configuração: %w", err)
 	}
 
-	cfg := &conf{}
+	cfg := &Conf{}
 	if err := viper.Unmarshal(&cfg); err != nil {
 		return nil, fmt.Errorf("erro ao carregar as configurações: %w", err)
 	}
