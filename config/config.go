@@ -8,7 +8,7 @@ import (
 var (
 	db     *sql.DB
 	logger *Logger
-	cfg    *conf
+	cfg    *Conf
 )
 
 func Init() error {
@@ -34,7 +34,7 @@ func GetLogger(p string) *Logger {
 	return logger
 }
 
-func GetEnv() *conf {
+func GetEnv() *Conf {
 	return cfg
 }
 
