@@ -37,7 +37,11 @@ type UpdateProductInput struct {
 }
 
 func (input *CreateProductInput) FromJSON(data []byte) error {
-	return json.Unmarshal(data, input)
+	if err := json.Unmarshal(data, input); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (input *CreateProductInput) ToEntity() *entity.Product {

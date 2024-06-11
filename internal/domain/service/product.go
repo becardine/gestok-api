@@ -7,14 +7,14 @@ import (
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/becardine/gestock-api/internal/domain/repository"
+	domain "github.com/becardine/gestock-api/internal/domain/repository"
 )
 
 type productService struct {
-	productRepository repository.ProductRepository
+	productRepository domain.ProductRepository
 }
 
-func NewProductService(productRepository repository.ProductRepository) ProductService {
+func NewProductService(productRepository domain.ProductRepository) ProductService {
 	return &productService{
 		productRepository: productRepository,
 	}
@@ -96,8 +96,8 @@ func (ps *productService) ListProducts(ctx context.Context) ([]*entity.Product, 
 }
 
 func (ps *productService) handleProductNotFoundError(err error, id common.ID) error {
-	if errors.Is(err, &repository.ErrProductNotFound{}) {
-		return &repository.ErrProductNotFound{ProductID: id.String()}
+	if errors.Is(err, &domain.ErrProductNotFound{}) {
+		return &domain.ErrProductNotFound{ProductID: id.String()}
 	}
 	return fmt.Errorf("error while fetching product from repository: %w", err)
 }

@@ -1,6 +1,7 @@
 package common
 
 import (
+	"fmt"
 	"github.com/becardine/gestock-api/internal/errors"
 	"github.com/google/uuid"
 )
@@ -24,6 +25,10 @@ func NewIDFromString(s string) (ID, error) {
 	}
 
 	return ID{value: id}, nil
+}
+
+func (i ID) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`"%s"`, i.value.String())), nil
 }
 
 func (i ID) String() string {
