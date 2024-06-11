@@ -2,13 +2,13 @@ package router
 
 import (
 	"fmt"
+	"github.com/becardine/gestock-api/wire"
 
 	"github.com/go-chi/chi/v5"
 
 	"github.com/becardine/gestock-api/config"
 	_ "github.com/becardine/gestock-api/docs"
 	"github.com/becardine/gestock-api/internal/application/handler"
-	"github.com/becardine/gestock-api/wire"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -31,7 +31,7 @@ func initializeRoutes(router *chi.Mux) {
 		if err != nil {
 			config.GetLogger("router").Errorf("error while initializing product handler: %v", err)
 		}
-		r.Route("/products", productHandler.Routes)
+		r.Route("/products", productHandler.Routes) // /api/v1/products
 
 		// test routes
 		testHandler := handler.NewTestHandler()

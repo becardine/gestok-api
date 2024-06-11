@@ -11,10 +11,6 @@ import (
 func InitializeRouter() {
 	r := chi.NewRouter()
 
-	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong"))
-	})
-
 	// initialize routes api
 	initializeRoutes(r)
 
@@ -26,5 +22,8 @@ func InitializeRouter() {
 	config.GetLogger("router").Infof("web server running on port %s", webServerPort)
 
 	addr := fmt.Sprintf("0.0.0.0:%s", webServerPort)
-	http.ListenAndServe(addr, r)
+	err := http.ListenAndServe(addr, r)
+	if err != nil {
+		return
+	}
 }
