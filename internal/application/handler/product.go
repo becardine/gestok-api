@@ -36,7 +36,7 @@ func (h *ProductHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	config.GetLogger("handler").Infof("Dados recebidos: %+v", input)
+	config.GetLogger("handler").Infof("Input: %+v", input)
 
 	newProduct, err := h.productService.CreateProduct(r.Context(), &input)
 	if err != nil {
@@ -45,10 +45,12 @@ func (h *ProductHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(newProduct)
+	err = json.NewEncoder(w).Encode(newProduct)
+	if err != nil {
+		return
+	}
 }
 
 func (h *ProductHandler) Routes(router chi.Router) {
-	config.GetLogger("handler").Info("Entrou no handler Routes")
 	router.Post("/", h.createProduct)
 }
