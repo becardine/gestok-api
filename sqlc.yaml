@@ -14,4 +14,4 @@ sql:
           import: "github.com/becardine/gestock-api/internal/domain/entity/common"
           type: "ID"
       - db_type: "decimal"
-        go_type: numeric
+        go_type: "float64"
