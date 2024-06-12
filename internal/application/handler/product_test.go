@@ -3,6 +3,7 @@ package handler_test
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/becardine/gestock-api/config"
 	"github.com/becardine/gestock-api/wire"
 	"net/http"
 	"net/http/httptest"
@@ -21,12 +22,15 @@ import (
 func TestProductHandler_createProduct(t *testing.T) {
 	t.Run("success when creating product", func(t *testing.T) {
 		// Arrange
-		mockService := new(mocks.ProductServiceMock)
-		productHandler, err := wire.InitializeProductHandler()
-
+		err := config.Init()
 		require.NoError(t, err)
+
 		router := chi.NewRouter()
-		productHandler.Routes(router)
+		mockService := mocks.NewProductServiceMock()
+		productHandler, err := wire.InitializeProductHandler()
+		require.NoError(t, err)
+
+		router.Route("/products", productHandler.Routes)
 
 		expectedInput := &service.CreateProductInput{
 			Name:            "Product Test",
@@ -54,7 +58,8 @@ func TestProductHandler_createProduct(t *testing.T) {
 		productJSON, err := json.Marshal(expectedInput)
 		require.NoError(t, err)
 
-		req, err := http.NewRequest(http.MethodPost, "/api/v1/products", bytes.NewBuffer(productJSON))
+		req, err := http.NewRequest(http.MethodPost, "/products", bytes.NewBuffer(productJSON))
+
 		require.NoError(t, err)
 
 		rr := httptest.NewRecorder()

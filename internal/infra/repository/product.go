@@ -44,10 +44,9 @@ func (pr *ProductRepository) UpdateProduct(ctx context.Context, product *entity.
 }
 
 func (pr *ProductRepository) CreateProduct(ctx context.Context, product *entity.Product) error {
-	productID := common.NewID()
 
 	err := pr.queries.CreateProduct(ctx, database.CreateProductParams{
-		ID:              productID,
+		ID:              product.ID,
 		Name:            product.Name,
 		Description:     sql.NullString{String: product.Description, Valid: true},
 		Price:           fmt.Sprintf("%.2f", product.Price),

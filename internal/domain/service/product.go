@@ -21,24 +21,14 @@ func NewProductService(productRepository domain.ProductRepository) ProductServic
 }
 
 func (ps *productService) CreateProduct(ctx context.Context, input *CreateProductInput) (*entity.Product, error) {
-	product, err := entity.NewProduct(
-		input.Name,
-		input.Description,
-		input.Price,
-		input.QuantityInStock,
-		input.ImageURL,
-		input.CategoryID,
-		input.BrandID,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("error while creating product entity: %w", err)
-	}
+
+	product := input.ToEntity()
 
 	if err := product.Validate(); err != nil {
 		return nil, fmt.Errorf("error while validating product entity: %w", err)
 	}
 
-	err = ps.productRepository.CreateProduct(ctx, product)
+	err := ps.productRepository.CreateProduct(ctx, product)
 	if err != nil {
 		return nil, fmt.Errorf("error while creating product in repository: %w", err)
 	}
