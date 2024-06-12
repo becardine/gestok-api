@@ -2,6 +2,7 @@ package mocks
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
@@ -11,6 +12,17 @@ import (
 
 type ProductServiceMock struct {
 	mock.Mock
+	db *sql.DB
+}
+
+func NewProductServiceMock() *ProductServiceMock {
+	return new(ProductServiceMock)
+}
+
+func NewProductServiceMockWithDB(db *sql.DB) *ProductServiceMock {
+	return &ProductServiceMock{
+		db: db,
+	}
 }
 
 func (m *ProductServiceMock) CreateProduct(ctx context.Context, input *service.CreateProductInput) (*entity.Product, error) {
