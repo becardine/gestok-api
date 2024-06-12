@@ -2,6 +2,7 @@
 
 # variables
 APP_NAME = "gestok-api"
+name= "create_products_stocks_table"
 
 # tasks
 default: run-with-docs
@@ -30,7 +31,7 @@ tidy:
 	@go mod tidy
 create-migration:
 	@echo "Creating migration..."
-	migrate create -ext=sql -dir=sql/migrations -seq -name $(name)
+	migrate create -ext=sql -dir=internal/infra/migrations -seq $(name)
 migrate-up:
 	@echo "Applying migrations..."
 	migrate -database=$(DATABASE_URL) -path=internal/infra/migrations up
