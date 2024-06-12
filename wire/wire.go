@@ -22,6 +22,10 @@ func InitializeProductHandler() (*handler.ProductHandler, error) {
 	return productHandler, nil
 }
 
+func InitializeConfig() error {
+	return config.Init()
+}
+
 func DBProvider() *sql.DB {
 	return config.GetDB()
 }

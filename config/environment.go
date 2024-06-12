@@ -28,12 +28,12 @@ func LoadConfig(path string) (*Conf, error) {
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("erro ao ler o arquivo de configuração: %w", err)
+		return nil, fmt.Errorf("error while reading the config file: %w", err)
 	}
 
 	cfg := &Conf{}
 	if err := viper.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("erro ao carregar as configurações: %w", err)
+		return nil, fmt.Errorf("error while unmarshalling the config: %w", err)
 	}
 
 	cfg.TokenAuth = jwtauth.New("HS256", []byte(cfg.JWTSecret), nil)

@@ -20,6 +20,7 @@ func InitializePostgreSQL() (*sql.DB, error) {
 		env.DBName,
 		env.DBPort,
 	)
+	logger.Infof("connecting to database: %s", dns)
 	db, err := sql.Open("postgres", dns)
 	if err != nil {
 		logger.Errorf("failed to connect database: %v", err)

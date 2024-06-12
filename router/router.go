@@ -24,6 +24,6 @@ func InitializeRouter() {
 	addr := fmt.Sprintf("0.0.0.0:%s", webServerPort)
 	err := http.ListenAndServe(addr, r)
 	if err != nil {
-		return
+		config.GetLogger("router").Errorf("error starting web server: %v", err)
 	}
 }
