@@ -1,6 +1,7 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/becardine/gestock-api/internal/errors"
 	"github.com/google/uuid"
@@ -29,6 +30,25 @@ func NewIDFromString(s string) (ID, error) {
 
 func (i ID) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf(`"%s"`, i.value.String())), nil
+}
+
+func (id *ID) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+
+	if s == "" {
+		return errors.NewErrInvalidID("ID cannot be empty")
+	}
+
+	idParsed, err := uuid.Parse(s)
+	if err != nil {
+		return err
+	}
+
+	*id = ID{value: idParsed}
+	return nil
 }
 
 func (i ID) String() string {
