@@ -19,8 +19,8 @@ VALUES (/* sqlc.arg:uuid */ $1, /* sqlc.arg:uuid */ $2)
 `
 
 type AddProductStockParams struct {
-	StockID   common.ID
-	ProductID common.ID
+	StockID   uuid.NullUUID
+	ProductID uuid.NullUUID
 }
 
 func (q *Queries) AddProductStock(ctx context.Context, arg AddProductStockParams) error {
@@ -179,8 +179,8 @@ DELETE FROM product_stocks WHERE stock_id = /* sqlc.arg:uuid */ $1 AND product_i
 `
 
 type RemoveProductStockParams struct {
-	StockID   common.ID
-	ProductID common.ID
+	StockID   uuid.NullUUID
+	ProductID uuid.NullUUID
 }
 
 func (q *Queries) RemoveProductStock(ctx context.Context, arg RemoveProductStockParams) error {

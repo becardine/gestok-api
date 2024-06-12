@@ -10,6 +10,7 @@ import (
 	"database/sql"
 
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 const addStockProduct = `-- name: AddStockProduct :exec
@@ -18,8 +19,8 @@ VALUES ($1, $2)
 `
 
 type AddStockProductParams struct {
-	StockID   common.ID
-	ProductID common.ID
+	StockID   uuid.NullUUID
+	ProductID uuid.NullUUID
 }
 
 func (q *Queries) AddStockProduct(ctx context.Context, arg AddStockProductParams) error {
@@ -166,8 +167,8 @@ DELETE FROM product_stocks WHERE stock_id = $1 AND product_id = $2
 `
 
 type RemoveStockProductParams struct {
-	StockID   common.ID
-	ProductID common.ID
+	StockID   uuid.NullUUID
+	ProductID uuid.NullUUID
 }
 
 func (q *Queries) RemoveStockProduct(ctx context.Context, arg RemoveStockProductParams) error {

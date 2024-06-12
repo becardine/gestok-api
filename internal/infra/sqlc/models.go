@@ -127,8 +127,8 @@ type Product struct {
 
 type ProductStock struct {
 	ID          common.ID
-	StockID     common.ID
-	ProductID   common.ID
+	StockID     uuid.NullUUID
+	ProductID   uuid.NullUUID
 	DeletedAt   sql.NullTime
 	CreatedDate sql.NullTime
 	UpdatedDate sql.NullTime
