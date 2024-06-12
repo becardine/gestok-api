@@ -73,11 +73,13 @@ func (q *Queries) GetCoupon(ctx context.Context, id common.ID) (Coupon, error) {
 }
 
 const getCouponByCode = `-- name: GetCouponByCode :one
-SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date FROM coupons WHERE code = $1 AND deleted_at IS NULL
+SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date 
+FROM coupons 
+WHERE LOWER(code) = LOWER($1) AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCouponByCode(ctx context.Context, code string) (Coupon, error) {
-	row := q.db.QueryRowContext(ctx, getCouponByCode, code)
+func (q *Queries) GetCouponByCode(ctx context.Context, lower string) (Coupon, error) {
+	row := q.db.QueryRowContext(ctx, getCouponByCode, lower)
 	var i Coupon
 	err := row.Scan(
 		&i.ID,
@@ -93,11 +95,20 @@ func (q *Queries) GetCouponByCode(ctx context.Context, code string) (Coupon, err
 }
 
 const listCoupons = `-- name: ListCoupons :many
-SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date FROM coupons WHERE deleted_at IS NULL ORDER BY created_date DESC
+SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date 
+FROM coupons 
+WHERE deleted_at IS NULL 
+ORDER BY created_date DESC
+LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListCoupons(ctx context.Context) ([]Coupon, error) {
-	rows, err := q.db.QueryContext(ctx, listCoupons)
+type ListCouponsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListCoupons(ctx context.Context, arg ListCouponsParams) ([]Coupon, error) {
+	rows, err := q.db.QueryContext(ctx, listCoupons, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

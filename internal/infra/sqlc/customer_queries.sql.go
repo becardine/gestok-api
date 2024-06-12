@@ -78,7 +78,7 @@ const getCustomerDeliveries = `-- name: GetCustomerDeliveries :many
 SELECT d.id, d.order_id, d.customer_id, d.delivery_type, d.delivery_date, d.delivery_status, d.deleted_at, d.created_date, d.updated_date
 FROM customers c
 JOIN deliveries d ON c.id = d.customer_id
-WHERE c.id = $1 AND c.deleted_at IS NULL
+WHERE c.id = $1 AND c.deleted_at IS NULL AND d.deleted_at IS NULL 
 ORDER BY d.delivery_date DESC
 `
 
@@ -119,7 +119,7 @@ const getCustomerFeedbacks = `-- name: GetCustomerFeedbacks :many
 SELECT f.id, f.customer_id, f.order_id, f.rating, f.comment, f.deleted_at, f.created_date, f.updated_date
 FROM customers c
 JOIN feedbacks f ON c.id = f.customer_id
-WHERE c.id = $1 AND c.deleted_at IS NULL
+WHERE c.id = $1 AND c.deleted_at IS NULL AND f.deleted_at IS NULL 
 ORDER BY f.created_date DESC
 `
 
@@ -156,13 +156,15 @@ func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id common.ID) ([]Fee
 }
 
 const getCustomerOrders = `-- name: GetCustomerOrders :many
+
 SELECT o.id, o.customer_id, o.order_date, o.order_status, o.total_value, o.deleted_at, o.created_date, o.updated_date
 FROM customers c
 JOIN orders o ON c.id = o.customer_id
-WHERE c.id = $1 AND c.deleted_at IS NULL
+WHERE c.id = $1 AND c.deleted_at IS NULL AND o.deleted_at IS NULL
 ORDER BY o.order_date DESC
 `
 
+// Paginação
 func (q *Queries) GetCustomerOrders(ctx context.Context, id common.ID) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerOrders, id)
 	if err != nil {
@@ -199,7 +201,7 @@ const getCustomerPayments = `-- name: GetCustomerPayments :many
 SELECT p.id, p.order_id, p.customer_id, p.payment_type, p.payment_date, p.payment_value, p.payment_status, p.deleted_at, p.created_date, p.updated_date
 FROM customers c
 JOIN payments p ON c.id = p.customer_id
-WHERE c.id = $1 AND c.deleted_at IS NULL
+WHERE c.id = $1 AND c.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.payment_date DESC
 `
 
@@ -238,11 +240,20 @@ func (q *Queries) GetCustomerPayments(ctx context.Context, id common.ID) ([]Paym
 }
 
 const listCustomers = `-- name: ListCustomers :many
-SELECT id, name, email, password, address, phone, deleted_at, created_date, updated_date FROM customers WHERE deleted_at IS NULL ORDER BY name
+SELECT id, name, email, password, address, phone, deleted_at, created_date, updated_date 
+FROM customers 
+WHERE deleted_at IS NULL 
+ORDER BY name
+LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListCustomers(ctx context.Context) ([]Customer, error) {
-	rows, err := q.db.QueryContext(ctx, listCustomers)
+type ListCustomersParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListCustomers(ctx context.Context, arg ListCustomersParams) ([]Customer, error) {
+	rows, err := q.db.QueryContext(ctx, listCustomers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -276,7 +287,7 @@ func (q *Queries) ListCustomers(ctx context.Context) ([]Customer, error) {
 
 const updateCustomer = `-- name: UpdateCustomer :exec
 UPDATE customers
-SET name = $2, email = $3, password = $4, address = $5, phone = $6, updated_date = $7
+SET name = $2, email = $3, address = $4, phone = $5, updated_date = $6 -- Remova a atualização de senha 
 WHERE id = $1 AND deleted_at IS NULL
 `
 
@@ -284,7 +295,6 @@ type UpdateCustomerParams struct {
 	ID          common.ID
 	Name        string
 	Email       string
-	Password    string
 	Address     sql.NullString
 	Phone       sql.NullString
 	UpdatedDate sql.NullTime
@@ -295,7 +305,6 @@ func (q *Queries) UpdateCustomer(ctx context.Context, arg UpdateCustomerParams) 
 		arg.ID,
 		arg.Name,
 		arg.Email,
-		arg.Password,
 		arg.Address,
 		arg.Phone,
 		arg.UpdatedDate,

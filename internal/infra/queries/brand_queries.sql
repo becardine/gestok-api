@@ -16,11 +16,15 @@ SET deleted_at = NOW()
 WHERE id = $1;
 
 -- name: ListBrands :many
-SELECT * FROM brands WHERE deleted_at IS NULL ORDER BY name;
+SELECT *
+FROM brands
+WHERE deleted_at IS NULL
+ORDER BY name
+LIMIT $1 OFFSET $2;
 
 -- name: GetBrandProducts :many
 SELECT p.*
 FROM brands b
 JOIN products p ON b.id = p.brand_id
-WHERE b.id = $1 AND b.deleted_at IS NULL
-ORDER BY p.name;
+WHERE b.id = $1 AND b.deleted_at IS NULL AND p.deleted_at IS NULL
+ORDER BY p.name; 

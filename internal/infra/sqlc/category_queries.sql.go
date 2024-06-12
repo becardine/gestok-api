@@ -69,7 +69,7 @@ const getCategoryProducts = `-- name: GetCategoryProducts :many
 SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date
 FROM categories c
 JOIN products p ON c.id = p.category_id
-WHERE c.id = $1 AND c.deleted_at IS NULL
+WHERE c.id = $1 AND c.deleted_at IS NULL AND p.deleted_at IS NULL 
 ORDER BY p.name
 `
 
@@ -109,11 +109,20 @@ func (q *Queries) GetCategoryProducts(ctx context.Context, id common.ID) ([]Prod
 }
 
 const listCategories = `-- name: ListCategories :many
-SELECT id, name, description, deleted_at, created_date, updated_date FROM categories WHERE deleted_at IS NULL ORDER BY name
+SELECT id, name, description, deleted_at, created_date, updated_date 
+FROM categories 
+WHERE deleted_at IS NULL 
+ORDER BY name
+LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListCategories(ctx context.Context) ([]Category, error) {
-	rows, err := q.db.QueryContext(ctx, listCategories)
+type ListCategoriesParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error) {
+	rows, err := q.db.QueryContext(ctx, listCategories, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
