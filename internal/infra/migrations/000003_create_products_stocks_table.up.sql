@@ -1,5 +1,5 @@
-CREATE TABLE product_stock (
-    id UUID PRIMARY KEY,
+CREATE TABLE product_stocks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID REFERENCES products(id),
     stock_id UUID REFERENCES stocks(id),
     quantity INTEGER NOT NULL,

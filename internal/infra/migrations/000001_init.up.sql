@@ -53,15 +53,6 @@ CREATE TABLE stocks (
     updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE product_stocks (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    stock_id UUID REFERENCES stocks(id),
-    product_id UUID REFERENCES products(id),
-    deleted_at TIMESTAMP WITHOUT TIME ZONE,
-    created_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_date TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE customers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255) NOT NULL,
