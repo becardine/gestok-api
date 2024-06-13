@@ -7,68 +7,109 @@ package db
 
 import (
 	"context"
+	"time"
 
+	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
-const createProductStock = `-- name: CreateProductStock :exec
-INSERT INTO product_stocks (stock_id, product_id)
-VALUES ($1, $2)
+const createProductStock = `-- name: CreateProductStock :one
+INSERT INTO product_stocks (
+  id, product_id, stock_id, quantity, created_at, updated_at
+)
+VALUES ($1, $2, $3, $4, $5, $6)
+RETURNING id, product_id, stock_id, quantity, created_at, updated_at, deleted_at
 `
 
 type CreateProductStockParams struct {
-	StockID   uuid.NullUUID
+	ID        common.ID
 	ProductID uuid.NullUUID
-}
-
-func (q *Queries) CreateProductStock(ctx context.Context, arg CreateProductStockParams) error {
-	_, err := q.db.ExecContext(ctx, createProductStock, arg.StockID, arg.ProductID)
-	return err
-}
-
-const deleteProductStock = `-- name: DeleteProductStock :exec
-DELETE FROM product_stocks WHERE stock_id = $1 AND product_id = $2
-`
-
-type DeleteProductStockParams struct {
 	StockID   uuid.NullUUID
-	ProductID uuid.NullUUID
+	Quantity  int32
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-func (q *Queries) DeleteProductStock(ctx context.Context, arg DeleteProductStockParams) error {
-	_, err := q.db.ExecContext(ctx, deleteProductStock, arg.StockID, arg.ProductID)
-	return err
-}
-
-const getProductStock = `-- name: GetProductStock :one
-SELECT id, stock_id, product_id, deleted_at, created_date, updated_date FROM product_stocks WHERE stock_id = $1 AND product_id = $2
-`
-
-type GetProductStockParams struct {
-	StockID   uuid.NullUUID
-	ProductID uuid.NullUUID
-}
-
-func (q *Queries) GetProductStock(ctx context.Context, arg GetProductStockParams) (ProductStock, error) {
-	row := q.db.QueryRowContext(ctx, getProductStock, arg.StockID, arg.ProductID)
+func (q *Queries) CreateProductStock(ctx context.Context, arg CreateProductStockParams) (ProductStock, error) {
+	row := q.db.QueryRowContext(ctx, createProductStock,
+		arg.ID,
+		arg.ProductID,
+		arg.StockID,
+		arg.Quantity,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
 	var i ProductStock
 	err := row.Scan(
 		&i.ID,
-		&i.StockID,
 		&i.ProductID,
+		&i.StockID,
+		&i.Quantity,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.DeletedAt,
-		&i.CreatedDate,
-		&i.UpdatedDate,
 	)
 	return i, err
 }
 
-const getProductStocks = `-- name: GetProductStocks :many
-SELECT id, stock_id, product_id, deleted_at, created_date, updated_date FROM product_stocks WHERE stock_id = $1
+const deleteProductStock = `-- name: DeleteProductStock :exec
+UPDATE product_stocks
+SET deleted_at = NOW()
+WHERE product_id = $1 AND stock_id = $2
 `
 
-func (q *Queries) GetProductStocks(ctx context.Context, stockID uuid.NullUUID) ([]ProductStock, error) {
-	rows, err := q.db.QueryContext(ctx, getProductStocks, stockID)
+type DeleteProductStockParams struct {
+	ProductID uuid.NullUUID
+	StockID   uuid.NullUUID
+}
+
+func (q *Queries) DeleteProductStock(ctx context.Context, arg DeleteProductStockParams) error {
+	_, err := q.db.ExecContext(ctx, deleteProductStock, arg.ProductID, arg.StockID)
+	return err
+}
+
+const getProductStock = `-- name: GetProductStock :one
+SELECT id, product_id, stock_id, quantity, created_at, updated_at, deleted_at 
+FROM product_stocks
+WHERE product_id = $1 AND stock_id = $2 AND deleted_at IS NULL
+`
+
+type GetProductStockParams struct {
+	ProductID uuid.NullUUID
+	StockID   uuid.NullUUID
+}
+
+func (q *Queries) GetProductStock(ctx context.Context, arg GetProductStockParams) (ProductStock, error) {
+	row := q.db.QueryRowContext(ctx, getProductStock, arg.ProductID, arg.StockID)
+	var i ProductStock
+	err := row.Scan(
+		&i.ID,
+		&i.ProductID,
+		&i.StockID,
+		&i.Quantity,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const listProductStocks = `-- name: ListProductStocks :many
+SELECT id, product_id, stock_id, quantity, created_at, updated_at, deleted_at 
+FROM product_stocks
+WHERE product_id = $1 AND deleted_at IS NULL 
+ORDER BY created_at
+LIMIT $2 OFFSET $3
+`
+
+type ListProductStocksParams struct {
+	ProductID uuid.NullUUID
+	Limit     int32
+	Offset    int32
+}
+
+func (q *Queries) ListProductStocks(ctx context.Context, arg ListProductStocksParams) ([]ProductStock, error) {
+	rows, err := q.db.QueryContext(ctx, listProductStocks, arg.ProductID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -78,8 +119,59 @@ func (q *Queries) GetProductStocks(ctx context.Context, stockID uuid.NullUUID) (
 		var i ProductStock
 		if err := rows.Scan(
 			&i.ID,
-			&i.StockID,
 			&i.ProductID,
+			&i.StockID,
+			&i.Quantity,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listProductsInStock = `-- name: ListProductsInStock :many
+SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date
+FROM products p
+JOIN product_stocks ps ON p.id = ps.product_id
+WHERE ps.stock_id = $1 AND ps.deleted_at IS NULL AND p.deleted_at IS NULL
+ORDER BY p.name
+LIMIT $2 OFFSET $3
+`
+
+type ListProductsInStockParams struct {
+	StockID uuid.NullUUID
+	Limit   int32
+	Offset  int32
+}
+
+func (q *Queries) ListProductsInStock(ctx context.Context, arg ListProductsInStockParams) ([]Product, error) {
+	rows, err := q.db.QueryContext(ctx, listProductsInStock, arg.StockID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Product
+	for rows.Next() {
+		var i Product
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Price,
+			&i.QuantityInStock,
+			&i.ImageUrl,
+			&i.CategoryID,
+			&i.BrandID,
 			&i.DeletedAt,
 			&i.CreatedDate,
 			&i.UpdatedDate,
@@ -97,36 +189,25 @@ func (q *Queries) GetProductStocks(ctx context.Context, stockID uuid.NullUUID) (
 	return items, nil
 }
 
-const getProductStocksByProductId = `-- name: GetProductStocksByProductId :many
-SELECT id, stock_id, product_id, deleted_at, created_date, updated_date FROM product_stocks WHERE product_id = $1
+const updateProductStock = `-- name: UpdateProductStock :exec
+UPDATE product_stocks
+SET quantity = $3, updated_at = $4
+WHERE product_id = $1 AND stock_id = $2 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetProductStocksByProductId(ctx context.Context, productID uuid.NullUUID) ([]ProductStock, error) {
-	rows, err := q.db.QueryContext(ctx, getProductStocksByProductId, productID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []ProductStock
-	for rows.Next() {
-		var i ProductStock
-		if err := rows.Scan(
-			&i.ID,
-			&i.StockID,
-			&i.ProductID,
-			&i.DeletedAt,
-			&i.CreatedDate,
-			&i.UpdatedDate,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type UpdateProductStockParams struct {
+	ProductID uuid.NullUUID
+	StockID   uuid.NullUUID
+	Quantity  int32
+	UpdatedAt time.Time
+}
+
+func (q *Queries) UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) error {
+	_, err := q.db.ExecContext(ctx, updateProductStock,
+		arg.ProductID,
+		arg.StockID,
+		arg.Quantity,
+		arg.UpdatedAt,
+	)
+	return err
 }

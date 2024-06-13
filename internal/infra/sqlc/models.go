@@ -87,6 +87,17 @@ type Order struct {
 	UpdatedDate sql.NullTime
 }
 
+type OrderItem struct {
+	ID        common.ID
+	OrderID   uuid.NullUUID
+	ProductID uuid.NullUUID
+	Quantity  int32
+	UnitPrice string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt sql.NullTime
+}
+
 type OrderProduct struct {
 	ID          common.ID
 	OrderID     uuid.NullUUID
@@ -126,12 +137,13 @@ type Product struct {
 }
 
 type ProductStock struct {
-	ID          common.ID
-	StockID     uuid.NullUUID
-	ProductID   uuid.NullUUID
-	DeletedAt   sql.NullTime
-	CreatedDate sql.NullTime
-	UpdatedDate sql.NullTime
+	ID        common.ID
+	ProductID uuid.NullUUID
+	StockID   uuid.NullUUID
+	Quantity  int32
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt sql.NullTime
 }
 
 type Stock struct {
