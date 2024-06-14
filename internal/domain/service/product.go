@@ -86,8 +86,8 @@ func (ps *productService) ListProducts(ctx context.Context) ([]*entity.Product, 
 }
 
 func (ps *productService) handleProductNotFoundError(err error, id common.ID) error {
-	if errors.Is(err, &domain.ErrProductNotFound{}) {
-		return &domain.ErrProductNotFound{ProductID: id.String()}
+	if errors.Is(err, &ErrNotFound{}) {
+		return &ErrNotFound{Entity: "Product", ID: id}
 	}
 	return fmt.Errorf("error while fetching product from repository: %w", err)
 }
