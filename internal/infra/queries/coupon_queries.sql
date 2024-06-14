@@ -16,13 +16,13 @@ SET deleted_at = NOW()
 WHERE id = $1;
 
 -- name: ListCoupons :many
-SELECT * 
-FROM coupons 
-WHERE deleted_at IS NULL 
+SELECT *
+FROM coupons
+WHERE deleted_at IS NULL
 ORDER BY created_date DESC
-LIMIT $1 OFFSET $2; 
+    LIMIT $1 OFFSET $2;
 
 -- name: GetCouponByCode :one
-SELECT * 
-FROM coupons 
+SELECT *
+FROM coupons
 WHERE LOWER(code) = LOWER($1) AND deleted_at IS NULL;

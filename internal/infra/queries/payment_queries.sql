@@ -7,7 +7,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 
 -- name: UpdatePayment :exec
 UPDATE payments
-SET order_id = $2, customer_id = $3, payment_type = $4, payment_date = $5, payment_value = $6, payment_status = $7, updated_date = $8
+SET payment_type = $2, payment_date = $3, payment_value = $4, payment_status = $5, updated_date = $6
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: DeletePayment :exec
@@ -16,16 +16,22 @@ SET deleted_at = NOW()
 WHERE id = $1;
 
 -- name: ListPayments :many
-SELECT * FROM payments WHERE deleted_at IS NULL ORDER BY payment_date DESC;
+SELECT *
+FROM payments
+WHERE deleted_at IS NULL
+ORDER BY payment_date DESC
+    LIMIT $1 OFFSET $2;
 
 -- name: GetPaymentsByOrderId :many
 SELECT *
 FROM payments
 WHERE order_id = $1 AND deleted_at IS NULL
-ORDER BY payment_date DESC;
+ORDER BY payment_date DESC
+    LIMIT $2 OFFSET $3;
 
 -- name: GetPaymentsByCustomerId :many
 SELECT *
 FROM payments
 WHERE customer_id = $1 AND deleted_at IS NULL
-ORDER BY payment_date DESC;
+ORDER BY payment_date DESC
+    LIMIT $2 OFFSET $3;

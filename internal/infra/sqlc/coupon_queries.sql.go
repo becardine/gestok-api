@@ -73,8 +73,8 @@ func (q *Queries) GetCoupon(ctx context.Context, id common.ID) (Coupon, error) {
 }
 
 const getCouponByCode = `-- name: GetCouponByCode :one
-SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date 
-FROM coupons 
+SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date
+FROM coupons
 WHERE LOWER(code) = LOWER($1) AND deleted_at IS NULL
 `
 
@@ -95,11 +95,11 @@ func (q *Queries) GetCouponByCode(ctx context.Context, lower string) (Coupon, er
 }
 
 const listCoupons = `-- name: ListCoupons :many
-SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date 
-FROM coupons 
-WHERE deleted_at IS NULL 
+SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date
+FROM coupons
+WHERE deleted_at IS NULL
 ORDER BY created_date DESC
-LIMIT $1 OFFSET $2
+    LIMIT $1 OFFSET $2
 `
 
 type ListCouponsParams struct {

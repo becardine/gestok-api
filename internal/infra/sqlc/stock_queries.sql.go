@@ -16,6 +16,7 @@ import (
 const addStockProduct = `-- name: AddStockProduct :exec
 INSERT INTO product_stocks (stock_id, product_id)
 VALUES ($1, $2)
+ON CONFLICT (stock_id, product_id) DO NOTHING
 `
 
 type AddStockProductParams struct {
@@ -85,13 +86,16 @@ func (q *Queries) GetStock(ctx context.Context, id common.ID) (Stock, error) {
 }
 
 const getStockProducts = `-- name: GetStockProducts :many
+
 SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date
 FROM stocks s
-JOIN product_stocks ps ON s.id = ps.stock_id
-JOIN products p ON ps.product_id = p.id
-WHERE s.id = $1 AND s.deleted_at IS NULL
+         JOIN product_stocks ps ON s.id = ps.stock_id
+         JOIN products p ON ps.product_id = p.id
+WHERE s.id = $1 AND s.deleted_at IS NULL AND p.deleted_at IS NULL
+ORDER BY p.name
 `
 
+// Paginação
 func (q *Queries) GetStockProducts(ctx context.Context, id common.ID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getStockProducts, id)
 	if err != nil {
@@ -128,11 +132,20 @@ func (q *Queries) GetStockProducts(ctx context.Context, id common.ID) ([]Product
 }
 
 const listStocks = `-- name: ListStocks :many
-SELECT id, name, location, capacity, deleted_at, created_date, updated_date FROM stocks WHERE deleted_at IS NULL ORDER BY name
+SELECT id, name, location, capacity, deleted_at, created_date, updated_date
+FROM stocks
+WHERE deleted_at IS NULL
+ORDER BY name
+LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListStocks(ctx context.Context) ([]Stock, error) {
-	rows, err := q.db.QueryContext(ctx, listStocks)
+type ListStocksParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListStocks(ctx context.Context, arg ListStocksParams) ([]Stock, error) {
+	rows, err := q.db.QueryContext(ctx, listStocks, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -162,8 +175,10 @@ func (q *Queries) ListStocks(ctx context.Context) ([]Stock, error) {
 	return items, nil
 }
 
-const removeStockProduct = `-- name: RemoveStockProduct :exec
-DELETE FROM product_stocks WHERE stock_id = $1 AND product_id = $2
+const removeStockProduct = `-- name: RemoveStockProduct :execresult
+DELETE FROM product_stocks
+WHERE stock_id = $1 AND product_id = $2
+RETURNING id, product_id, stock_id, quantity, created_at, updated_at, deleted_at
 `
 
 type RemoveStockProductParams struct {
@@ -171,9 +186,8 @@ type RemoveStockProductParams struct {
 	ProductID uuid.NullUUID
 }
 
-func (q *Queries) RemoveStockProduct(ctx context.Context, arg RemoveStockProductParams) error {
-	_, err := q.db.ExecContext(ctx, removeStockProduct, arg.StockID, arg.ProductID)
-	return err
+func (q *Queries) RemoveStockProduct(ctx context.Context, arg RemoveStockProductParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, removeStockProduct, arg.StockID, arg.ProductID)
 }
 
 const updateStock = `-- name: UpdateStock :exec

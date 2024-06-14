@@ -83,10 +83,17 @@ SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, pay
 FROM payments
 WHERE customer_id = $1 AND deleted_at IS NULL
 ORDER BY payment_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, customerID uuid.NullUUID) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, getPaymentsByCustomerId, customerID)
+type GetPaymentsByCustomerIdParams struct {
+	CustomerID uuid.NullUUID
+	Limit      int32
+	Offset     int32
+}
+
+func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, arg GetPaymentsByCustomerIdParams) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, getPaymentsByCustomerId, arg.CustomerID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -124,10 +131,17 @@ SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, pay
 FROM payments
 WHERE order_id = $1 AND deleted_at IS NULL
 ORDER BY payment_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetPaymentsByOrderId(ctx context.Context, orderID uuid.NullUUID) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, getPaymentsByOrderId, orderID)
+type GetPaymentsByOrderIdParams struct {
+	OrderID uuid.NullUUID
+	Limit   int32
+	Offset  int32
+}
+
+func (q *Queries) GetPaymentsByOrderId(ctx context.Context, arg GetPaymentsByOrderIdParams) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, getPaymentsByOrderId, arg.OrderID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -161,11 +175,20 @@ func (q *Queries) GetPaymentsByOrderId(ctx context.Context, orderID uuid.NullUUI
 }
 
 const listPayments = `-- name: ListPayments :many
-SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date FROM payments WHERE deleted_at IS NULL ORDER BY payment_date DESC
+SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date
+FROM payments
+WHERE deleted_at IS NULL
+ORDER BY payment_date DESC
+    LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListPayments(ctx context.Context) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, listPayments)
+type ListPaymentsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListPayments(ctx context.Context, arg ListPaymentsParams) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, listPayments, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -200,14 +223,12 @@ func (q *Queries) ListPayments(ctx context.Context) ([]Payment, error) {
 
 const updatePayment = `-- name: UpdatePayment :exec
 UPDATE payments
-SET order_id = $2, customer_id = $3, payment_type = $4, payment_date = $5, payment_value = $6, payment_status = $7, updated_date = $8
+SET payment_type = $2, payment_date = $3, payment_value = $4, payment_status = $5, updated_date = $6
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdatePaymentParams struct {
 	ID            common.ID
-	OrderID       uuid.NullUUID
-	CustomerID    uuid.NullUUID
 	PaymentType   string
 	PaymentDate   sql.NullTime
 	PaymentValue  string
@@ -218,8 +239,6 @@ type UpdatePaymentParams struct {
 func (q *Queries) UpdatePayment(ctx context.Context, arg UpdatePaymentParams) error {
 	_, err := q.db.ExecContext(ctx, updatePayment,
 		arg.ID,
-		arg.OrderID,
-		arg.CustomerID,
 		arg.PaymentType,
 		arg.PaymentDate,
 		arg.PaymentValue,

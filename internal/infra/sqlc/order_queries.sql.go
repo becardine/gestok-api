@@ -16,6 +16,7 @@ import (
 const addOrderProduct = `-- name: AddOrderProduct :exec
 INSERT INTO order_products (order_id, product_id, quantity, unit_price)
 VALUES ($1, $2, $3, $4)
+    ON CONFLICT (order_id, product_id) DO NOTHING
 `
 
 type AddOrderProductParams struct {
@@ -99,10 +100,17 @@ SELECT id, customer_id, order_date, order_status, total_value, deleted_at, creat
 FROM orders
 WHERE customer_id = $1 AND deleted_at IS NULL
 ORDER BY order_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetOrderByCustomerId(ctx context.Context, customerID uuid.NullUUID) ([]Order, error) {
-	rows, err := q.db.QueryContext(ctx, getOrderByCustomerId, customerID)
+type GetOrderByCustomerIdParams struct {
+	CustomerID uuid.NullUUID
+	Limit      int32
+	Offset     int32
+}
+
+func (q *Queries) GetOrderByCustomerId(ctx context.Context, arg GetOrderByCustomerIdParams) ([]Order, error) {
+	rows, err := q.db.QueryContext(ctx, getOrderByCustomerId, arg.CustomerID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -136,13 +144,20 @@ func (q *Queries) GetOrderByCustomerId(ctx context.Context, customerID uuid.Null
 const getOrderByProductId = `-- name: GetOrderByProductId :many
 SELECT o.id, o.customer_id, o.order_date, o.order_status, o.total_value, o.deleted_at, o.created_date, o.updated_date
 FROM orders o
-JOIN order_products op ON o.id = op.order_id
+         JOIN order_products op ON o.id = op.order_id
 WHERE op.product_id = $1 AND o.deleted_at IS NULL
 ORDER BY o.order_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetOrderByProductId(ctx context.Context, productID uuid.NullUUID) ([]Order, error) {
-	rows, err := q.db.QueryContext(ctx, getOrderByProductId, productID)
+type GetOrderByProductIdParams struct {
+	ProductID uuid.NullUUID
+	Limit     int32
+	Offset    int32
+}
+
+func (q *Queries) GetOrderByProductId(ctx context.Context, arg GetOrderByProductIdParams) ([]Order, error) {
+	rows, err := q.db.QueryContext(ctx, getOrderByProductId, arg.ProductID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -174,11 +189,12 @@ func (q *Queries) GetOrderByProductId(ctx context.Context, productID uuid.NullUU
 }
 
 const getOrderProducts = `-- name: GetOrderProducts :many
-SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date 
+SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date
 FROM orders o
-JOIN order_products op ON o.id = op.order_id
-JOIN products p ON op.product_id = p.id
-WHERE o.id = $1 AND o.deleted_at IS NULL
+         JOIN order_products op ON o.id = op.order_id
+         JOIN products p ON op.product_id = p.id
+WHERE o.id = $1 AND o.deleted_at IS NULL AND p.deleted_at IS NULL
+ORDER BY p.name
 `
 
 func (q *Queries) GetOrderProducts(ctx context.Context, id common.ID) ([]Product, error) {
@@ -217,11 +233,20 @@ func (q *Queries) GetOrderProducts(ctx context.Context, id common.ID) ([]Product
 }
 
 const listOrders = `-- name: ListOrders :many
-SELECT id, customer_id, order_date, order_status, total_value, deleted_at, created_date, updated_date FROM orders WHERE deleted_at IS NULL ORDER BY order_date DESC
+SELECT id, customer_id, order_date, order_status, total_value, deleted_at, created_date, updated_date
+FROM orders
+WHERE deleted_at IS NULL
+ORDER BY order_date DESC
+    LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListOrders(ctx context.Context) ([]Order, error) {
-	rows, err := q.db.QueryContext(ctx, listOrders)
+type ListOrdersParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListOrders(ctx context.Context, arg ListOrdersParams) ([]Order, error) {
+	rows, err := q.db.QueryContext(ctx, listOrders, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -252,8 +277,10 @@ func (q *Queries) ListOrders(ctx context.Context) ([]Order, error) {
 	return items, nil
 }
 
-const removeOrderProduct = `-- name: RemoveOrderProduct :exec
-DELETE FROM order_products WHERE order_id = $1 AND product_id = $2
+const removeOrderProduct = `-- name: RemoveOrderProduct :execresult
+DELETE FROM order_products
+WHERE order_id = $1 AND product_id = $2
+    RETURNING id, order_id, product_id, quantity, unit_price, deleted_at, created_date, updated_date
 `
 
 type RemoveOrderProductParams struct {
@@ -261,20 +288,18 @@ type RemoveOrderProductParams struct {
 	ProductID uuid.NullUUID
 }
 
-func (q *Queries) RemoveOrderProduct(ctx context.Context, arg RemoveOrderProductParams) error {
-	_, err := q.db.ExecContext(ctx, removeOrderProduct, arg.OrderID, arg.ProductID)
-	return err
+func (q *Queries) RemoveOrderProduct(ctx context.Context, arg RemoveOrderProductParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, removeOrderProduct, arg.OrderID, arg.ProductID)
 }
 
 const updateOrder = `-- name: UpdateOrder :exec
 UPDATE orders
-SET customer_id = $2, order_date = $3, order_status = $4, total_value = $5, updated_date = $6
+SET order_date = $2, order_status = $3, total_value = $4, updated_date = $5
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateOrderParams struct {
 	ID          common.ID
-	CustomerID  uuid.NullUUID
 	OrderDate   sql.NullTime
 	OrderStatus string
 	TotalValue  string
@@ -284,7 +309,6 @@ type UpdateOrderParams struct {
 func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) error {
 	_, err := q.db.ExecContext(ctx, updateOrder,
 		arg.ID,
-		arg.CustomerID,
 		arg.OrderDate,
 		arg.OrderStatus,
 		arg.TotalValue,

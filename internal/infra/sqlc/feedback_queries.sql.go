@@ -77,10 +77,17 @@ SELECT id, customer_id, order_id, rating, comment, deleted_at, created_date, upd
 FROM feedbacks
 WHERE customer_id = $1 AND deleted_at IS NULL
 ORDER BY created_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetFeedbackByCustomerId(ctx context.Context, customerID uuid.NullUUID) ([]Feedback, error) {
-	rows, err := q.db.QueryContext(ctx, getFeedbackByCustomerId, customerID)
+type GetFeedbackByCustomerIdParams struct {
+	CustomerID uuid.NullUUID
+	Limit      int32
+	Offset     int32
+}
+
+func (q *Queries) GetFeedbackByCustomerId(ctx context.Context, arg GetFeedbackByCustomerIdParams) ([]Feedback, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedbackByCustomerId, arg.CustomerID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -116,10 +123,17 @@ SELECT id, customer_id, order_id, rating, comment, deleted_at, created_date, upd
 FROM feedbacks
 WHERE order_id = $1 AND deleted_at IS NULL
 ORDER BY created_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetFeedbackByOrderId(ctx context.Context, orderID uuid.NullUUID) ([]Feedback, error) {
-	rows, err := q.db.QueryContext(ctx, getFeedbackByOrderId, orderID)
+type GetFeedbackByOrderIdParams struct {
+	OrderID uuid.NullUUID
+	Limit   int32
+	Offset  int32
+}
+
+func (q *Queries) GetFeedbackByOrderId(ctx context.Context, arg GetFeedbackByOrderIdParams) ([]Feedback, error) {
+	rows, err := q.db.QueryContext(ctx, getFeedbackByOrderId, arg.OrderID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -151,11 +165,20 @@ func (q *Queries) GetFeedbackByOrderId(ctx context.Context, orderID uuid.NullUUI
 }
 
 const listFeedbacks = `-- name: ListFeedbacks :many
-SELECT id, customer_id, order_id, rating, comment, deleted_at, created_date, updated_date FROM feedbacks WHERE deleted_at IS NULL ORDER BY created_date DESC
+SELECT id, customer_id, order_id, rating, comment, deleted_at, created_date, updated_date
+FROM feedbacks
+WHERE deleted_at IS NULL
+ORDER BY created_date DESC
+    LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListFeedbacks(ctx context.Context) ([]Feedback, error) {
-	rows, err := q.db.QueryContext(ctx, listFeedbacks)
+type ListFeedbacksParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListFeedbacks(ctx context.Context, arg ListFeedbacksParams) ([]Feedback, error) {
+	rows, err := q.db.QueryContext(ctx, listFeedbacks, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -188,14 +211,12 @@ func (q *Queries) ListFeedbacks(ctx context.Context) ([]Feedback, error) {
 
 const updateFeedback = `-- name: UpdateFeedback :exec
 UPDATE feedbacks
-SET customer_id = $2, order_id = $3, rating = $4, comment = $5, updated_date = $6
+SET rating = $2, comment = $3, updated_date = $4
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateFeedbackParams struct {
 	ID          common.ID
-	CustomerID  uuid.NullUUID
-	OrderID     uuid.NullUUID
 	Rating      sql.NullInt32
 	Comment     sql.NullString
 	UpdatedDate sql.NullTime
@@ -204,8 +225,6 @@ type UpdateFeedbackParams struct {
 func (q *Queries) UpdateFeedback(ctx context.Context, arg UpdateFeedbackParams) error {
 	_, err := q.db.ExecContext(ctx, updateFeedback,
 		arg.ID,
-		arg.CustomerID,
-		arg.OrderID,
 		arg.Rating,
 		arg.Comment,
 		arg.UpdatedDate,

@@ -59,10 +59,17 @@ SELECT id, order_id, customer_id, delivery_type, delivery_date, delivery_status,
 FROM deliveries
 WHERE customer_id = $1 AND deleted_at IS NULL
 ORDER BY delivery_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetDeliveriesByCustomerId(ctx context.Context, customerID uuid.NullUUID) ([]Delivery, error) {
-	rows, err := q.db.QueryContext(ctx, getDeliveriesByCustomerId, customerID)
+type GetDeliveriesByCustomerIdParams struct {
+	CustomerID uuid.NullUUID
+	Limit      int32
+	Offset     int32
+}
+
+func (q *Queries) GetDeliveriesByCustomerId(ctx context.Context, arg GetDeliveriesByCustomerIdParams) ([]Delivery, error) {
+	rows, err := q.db.QueryContext(ctx, getDeliveriesByCustomerId, arg.CustomerID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -99,10 +106,17 @@ SELECT id, order_id, customer_id, delivery_type, delivery_date, delivery_status,
 FROM deliveries
 WHERE order_id = $1 AND deleted_at IS NULL
 ORDER BY delivery_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetDeliveriesByOrderId(ctx context.Context, orderID uuid.NullUUID) ([]Delivery, error) {
-	rows, err := q.db.QueryContext(ctx, getDeliveriesByOrderId, orderID)
+type GetDeliveriesByOrderIdParams struct {
+	OrderID uuid.NullUUID
+	Limit   int32
+	Offset  int32
+}
+
+func (q *Queries) GetDeliveriesByOrderId(ctx context.Context, arg GetDeliveriesByOrderIdParams) ([]Delivery, error) {
+	rows, err := q.db.QueryContext(ctx, getDeliveriesByOrderId, arg.OrderID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -156,11 +170,20 @@ func (q *Queries) GetDelivery(ctx context.Context, id common.ID) (Delivery, erro
 }
 
 const listDeliveries = `-- name: ListDeliveries :many
-SELECT id, order_id, customer_id, delivery_type, delivery_date, delivery_status, deleted_at, created_date, updated_date FROM deliveries WHERE deleted_at IS NULL ORDER BY delivery_date DESC
+SELECT id, order_id, customer_id, delivery_type, delivery_date, delivery_status, deleted_at, created_date, updated_date
+FROM deliveries
+WHERE deleted_at IS NULL
+ORDER BY delivery_date DESC
+    LIMIT $1 OFFSET $2
 `
 
-func (q *Queries) ListDeliveries(ctx context.Context) ([]Delivery, error) {
-	rows, err := q.db.QueryContext(ctx, listDeliveries)
+type ListDeliveriesParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListDeliveries(ctx context.Context, arg ListDeliveriesParams) ([]Delivery, error) {
+	rows, err := q.db.QueryContext(ctx, listDeliveries, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -194,14 +217,12 @@ func (q *Queries) ListDeliveries(ctx context.Context) ([]Delivery, error) {
 
 const updateDelivery = `-- name: UpdateDelivery :exec
 UPDATE deliveries
-SET order_id = $2, customer_id = $3, delivery_type = $4, delivery_date = $5, delivery_status = $6, updated_date = $7
+SET delivery_type = $2, delivery_date = $3, delivery_status = $4, updated_date = $5
 WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateDeliveryParams struct {
 	ID             common.ID
-	OrderID        uuid.NullUUID
-	CustomerID     uuid.NullUUID
 	DeliveryType   string
 	DeliveryDate   sql.NullTime
 	DeliveryStatus string
@@ -211,8 +232,6 @@ type UpdateDeliveryParams struct {
 func (q *Queries) UpdateDelivery(ctx context.Context, arg UpdateDeliveryParams) error {
 	_, err := q.db.ExecContext(ctx, updateDelivery,
 		arg.ID,
-		arg.OrderID,
-		arg.CustomerID,
 		arg.DeliveryType,
 		arg.DeliveryDate,
 		arg.DeliveryStatus,

@@ -7,7 +7,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);
 
 -- name: UpdateFeedback :exec
 UPDATE feedbacks
-SET customer_id = $2, order_id = $3, rating = $4, comment = $5, updated_date = $6
+SET rating = $2, comment = $3, updated_date = $4
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: DeleteFeedback :exec
@@ -16,16 +16,22 @@ SET deleted_at = NOW()
 WHERE id = $1;
 
 -- name: ListFeedbacks :many
-SELECT * FROM feedbacks WHERE deleted_at IS NULL ORDER BY created_date DESC;
+SELECT *
+FROM feedbacks
+WHERE deleted_at IS NULL
+ORDER BY created_date DESC
+    LIMIT $1 OFFSET $2;
 
 -- name: GetFeedbackByOrderId :many
 SELECT *
 FROM feedbacks
 WHERE order_id = $1 AND deleted_at IS NULL
-ORDER BY created_date DESC;
+ORDER BY created_date DESC
+    LIMIT $2 OFFSET $3;
 
 -- name: GetFeedbackByCustomerId :many
 SELECT *
 FROM feedbacks
 WHERE customer_id = $1 AND deleted_at IS NULL
-ORDER BY created_date DESC;
+ORDER BY created_date DESC
+    LIMIT $2 OFFSET $3;

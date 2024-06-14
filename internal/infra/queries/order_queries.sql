@@ -7,7 +7,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7);
 
 -- name: UpdateOrder :exec
 UPDATE orders
-SET customer_id = $2, order_date = $3, order_status = $4, total_value = $5, updated_date = $6
+SET order_date = $2, order_status = $3, total_value = $4, updated_date = $5
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: DeleteOrder :exec
@@ -16,21 +16,29 @@ SET deleted_at = NOW()
 WHERE id = $1;
 
 -- name: ListOrders :many
-SELECT * FROM orders WHERE deleted_at IS NULL ORDER BY order_date DESC;
+SELECT *
+FROM orders
+WHERE deleted_at IS NULL
+ORDER BY order_date DESC
+    LIMIT $1 OFFSET $2;
 
 -- name: GetOrderProducts :many
-SELECT p.* 
+SELECT p.*
 FROM orders o
-JOIN order_products op ON o.id = op.order_id
-JOIN products p ON op.product_id = p.id
-WHERE o.id = $1 AND o.deleted_at IS NULL;
+         JOIN order_products op ON o.id = op.order_id
+         JOIN products p ON op.product_id = p.id
+WHERE o.id = $1 AND o.deleted_at IS NULL AND p.deleted_at IS NULL
+ORDER BY p.name;
 
 -- name: AddOrderProduct :exec
 INSERT INTO order_products (order_id, product_id, quantity, unit_price)
-VALUES ($1, $2, $3, $4);
+VALUES ($1, $2, $3, $4)
+    ON CONFLICT (order_id, product_id) DO NOTHING;
 
--- name: RemoveOrderProduct :exec
-DELETE FROM order_products WHERE order_id = $1 AND product_id = $2;
+-- name: RemoveOrderProduct :execresult
+DELETE FROM order_products
+WHERE order_id = $1 AND product_id = $2
+    RETURNING *;
 
 -- name: UpdateOrderStatus :exec
 UPDATE orders
@@ -41,11 +49,13 @@ WHERE id = $1 AND deleted_at IS NULL;
 SELECT *
 FROM orders
 WHERE customer_id = $1 AND deleted_at IS NULL
-ORDER BY order_date DESC;
+ORDER BY order_date DESC
+    LIMIT $2 OFFSET $3;
 
 -- name: GetOrderByProductId :many
 SELECT o.*
 FROM orders o
-JOIN order_products op ON o.id = op.order_id
+         JOIN order_products op ON o.id = op.order_id
 WHERE op.product_id = $1 AND o.deleted_at IS NULL
-ORDER BY o.order_date DESC;
+ORDER BY o.order_date DESC
+    LIMIT $2 OFFSET $3;

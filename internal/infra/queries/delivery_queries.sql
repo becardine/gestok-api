@@ -7,7 +7,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 
 -- name: UpdateDelivery :exec
 UPDATE deliveries
-SET order_id = $2, customer_id = $3, delivery_type = $4, delivery_date = $5, delivery_status = $6, updated_date = $7
+SET delivery_type = $2, delivery_date = $3, delivery_status = $4, updated_date = $5
 WHERE id = $1 AND deleted_at IS NULL;
 
 -- name: DeleteDelivery :exec
@@ -16,16 +16,22 @@ SET deleted_at = NOW()
 WHERE id = $1;
 
 -- name: ListDeliveries :many
-SELECT * FROM deliveries WHERE deleted_at IS NULL ORDER BY delivery_date DESC;
+SELECT *
+FROM deliveries
+WHERE deleted_at IS NULL
+ORDER BY delivery_date DESC
+    LIMIT $1 OFFSET $2;
 
 -- name: GetDeliveriesByOrderId :many
 SELECT *
 FROM deliveries
 WHERE order_id = $1 AND deleted_at IS NULL
-ORDER BY delivery_date DESC;
+ORDER BY delivery_date DESC
+    LIMIT $2 OFFSET $3;
 
 -- name: GetDeliveriesByCustomerId :many
 SELECT *
 FROM deliveries
 WHERE customer_id = $1 AND deleted_at IS NULL
-ORDER BY delivery_date DESC;
+ORDER BY delivery_date DESC
+    LIMIT $2 OFFSET $3;

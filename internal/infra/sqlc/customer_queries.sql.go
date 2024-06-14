@@ -77,13 +77,20 @@ func (q *Queries) GetCustomer(ctx context.Context, id common.ID) (Customer, erro
 const getCustomerDeliveries = `-- name: GetCustomerDeliveries :many
 SELECT d.id, d.order_id, d.customer_id, d.delivery_type, d.delivery_date, d.delivery_status, d.deleted_at, d.created_date, d.updated_date
 FROM customers c
-JOIN deliveries d ON c.id = d.customer_id
-WHERE c.id = $1 AND c.deleted_at IS NULL AND d.deleted_at IS NULL 
+         JOIN deliveries d ON c.id = d.customer_id
+WHERE c.id = $1 AND c.deleted_at IS NULL AND d.deleted_at IS NULL
 ORDER BY d.delivery_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetCustomerDeliveries(ctx context.Context, id common.ID) ([]Delivery, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerDeliveries, id)
+type GetCustomerDeliveriesParams struct {
+	ID     common.ID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerDeliveries(ctx context.Context, arg GetCustomerDeliveriesParams) ([]Delivery, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerDeliveries, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -118,13 +125,20 @@ func (q *Queries) GetCustomerDeliveries(ctx context.Context, id common.ID) ([]De
 const getCustomerFeedbacks = `-- name: GetCustomerFeedbacks :many
 SELECT f.id, f.customer_id, f.order_id, f.rating, f.comment, f.deleted_at, f.created_date, f.updated_date
 FROM customers c
-JOIN feedbacks f ON c.id = f.customer_id
-WHERE c.id = $1 AND c.deleted_at IS NULL AND f.deleted_at IS NULL 
+         JOIN feedbacks f ON c.id = f.customer_id
+WHERE c.id = $1 AND c.deleted_at IS NULL AND f.deleted_at IS NULL
 ORDER BY f.created_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id common.ID) ([]Feedback, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerFeedbacks, id)
+type GetCustomerFeedbacksParams struct {
+	ID     common.ID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerFeedbacks(ctx context.Context, arg GetCustomerFeedbacksParams) ([]Feedback, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerFeedbacks, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -156,17 +170,22 @@ func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id common.ID) ([]Fee
 }
 
 const getCustomerOrders = `-- name: GetCustomerOrders :many
-
 SELECT o.id, o.customer_id, o.order_date, o.order_status, o.total_value, o.deleted_at, o.created_date, o.updated_date
 FROM customers c
-JOIN orders o ON c.id = o.customer_id
+         JOIN orders o ON c.id = o.customer_id
 WHERE c.id = $1 AND c.deleted_at IS NULL AND o.deleted_at IS NULL
 ORDER BY o.order_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-// Paginação
-func (q *Queries) GetCustomerOrders(ctx context.Context, id common.ID) ([]Order, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerOrders, id)
+type GetCustomerOrdersParams struct {
+	ID     common.ID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerOrders(ctx context.Context, arg GetCustomerOrdersParams) ([]Order, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerOrders, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -200,13 +219,20 @@ func (q *Queries) GetCustomerOrders(ctx context.Context, id common.ID) ([]Order,
 const getCustomerPayments = `-- name: GetCustomerPayments :many
 SELECT p.id, p.order_id, p.customer_id, p.payment_type, p.payment_date, p.payment_value, p.payment_status, p.deleted_at, p.created_date, p.updated_date
 FROM customers c
-JOIN payments p ON c.id = p.customer_id
+         JOIN payments p ON c.id = p.customer_id
 WHERE c.id = $1 AND c.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.payment_date DESC
+    LIMIT $2 OFFSET $3
 `
 
-func (q *Queries) GetCustomerPayments(ctx context.Context, id common.ID) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerPayments, id)
+type GetCustomerPaymentsParams struct {
+	ID     common.ID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerPayments(ctx context.Context, arg GetCustomerPaymentsParams) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerPayments, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -240,11 +266,11 @@ func (q *Queries) GetCustomerPayments(ctx context.Context, id common.ID) ([]Paym
 }
 
 const listCustomers = `-- name: ListCustomers :many
-SELECT id, name, email, password, address, phone, deleted_at, created_date, updated_date 
-FROM customers 
-WHERE deleted_at IS NULL 
+SELECT id, name, email, password, address, phone, deleted_at, created_date, updated_date
+FROM customers
+WHERE deleted_at IS NULL
 ORDER BY name
-LIMIT $1 OFFSET $2
+    LIMIT $1 OFFSET $2
 `
 
 type ListCustomersParams struct {
@@ -287,7 +313,7 @@ func (q *Queries) ListCustomers(ctx context.Context, arg ListCustomersParams) ([
 
 const updateCustomer = `-- name: UpdateCustomer :exec
 UPDATE customers
-SET name = $2, email = $3, address = $4, phone = $5, updated_date = $6 -- Remova a atualização de senha 
+SET name = $2, email = $3, address = $4, phone = $5, updated_date = $6
 WHERE id = $1 AND deleted_at IS NULL
 `
 
