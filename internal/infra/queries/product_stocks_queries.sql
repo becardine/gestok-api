@@ -1,12 +1,12 @@
 -- name: CreateProductStock :one
 INSERT INTO product_stocks (
-  id, product_id, stock_id, quantity, created_at, updated_at
+    id, product_id, stock_id, quantity, created_at, updated_at
 )
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 
 -- name: GetProductStock :one
-SELECT * 
+SELECT *
 FROM product_stocks
 WHERE product_id = $1 AND stock_id = $2 AND deleted_at IS NULL;
 
@@ -21,16 +21,16 @@ SET deleted_at = NOW()
 WHERE product_id = $1 AND stock_id = $2;
 
 -- name: ListProductStocks :many
-SELECT * 
+SELECT *
 FROM product_stocks
-WHERE product_id = $1 AND deleted_at IS NULL 
+WHERE product_id = $1 AND deleted_at IS NULL
 ORDER BY created_at
-LIMIT $2 OFFSET $3; 
+LIMIT $2 OFFSET $3;
 
 -- name: ListProductsInStock :many
 SELECT p.*
 FROM products p
-JOIN product_stocks ps ON p.id = ps.product_id
+         JOIN product_stocks ps ON p.id = ps.product_id
 WHERE ps.stock_id = $1 AND ps.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 LIMIT $2 OFFSET $3;

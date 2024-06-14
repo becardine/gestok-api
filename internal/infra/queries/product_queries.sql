@@ -33,9 +33,9 @@ ORDER BY s.name;
 -- name: AddProductStock :exec
 INSERT INTO product_stocks (stock_id, product_id)
 VALUES ($1, $2)
-    ON CONFLICT (stock_id, product_id) DO NOTHING;
+ON CONFLICT (stock_id, product_id) DO NOTHING;
 
 -- name: RemoveProductStock :execresult
-DELETE FROM product_stocks
-WHERE stock_id = $1 AND product_id = $2
-    RETURNING *;
+DELETE FROM product_stocks ps
+WHERE ps.stock_id = $1 AND ps.product_id = $2
+RETURNING CASE WHEN EXISTS(SELECT 1 FROM product_stocks WHERE stock_id = $1 AND product_id = $2) THEN 0 ELSE 1 END;

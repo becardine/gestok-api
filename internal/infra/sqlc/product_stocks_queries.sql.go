@@ -15,7 +15,7 @@ import (
 
 const createProductStock = `-- name: CreateProductStock :one
 INSERT INTO product_stocks (
-  id, product_id, stock_id, quantity, created_at, updated_at
+    id, product_id, stock_id, quantity, created_at, updated_at
 )
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING id, product_id, stock_id, quantity, created_at, updated_at, deleted_at
@@ -69,7 +69,7 @@ func (q *Queries) DeleteProductStock(ctx context.Context, arg DeleteProductStock
 }
 
 const getProductStock = `-- name: GetProductStock :one
-SELECT id, product_id, stock_id, quantity, created_at, updated_at, deleted_at 
+SELECT id, product_id, stock_id, quantity, created_at, updated_at, deleted_at
 FROM product_stocks
 WHERE product_id = $1 AND stock_id = $2 AND deleted_at IS NULL
 `
@@ -95,9 +95,9 @@ func (q *Queries) GetProductStock(ctx context.Context, arg GetProductStockParams
 }
 
 const listProductStocks = `-- name: ListProductStocks :many
-SELECT id, product_id, stock_id, quantity, created_at, updated_at, deleted_at 
+SELECT id, product_id, stock_id, quantity, created_at, updated_at, deleted_at
 FROM product_stocks
-WHERE product_id = $1 AND deleted_at IS NULL 
+WHERE product_id = $1 AND deleted_at IS NULL
 ORDER BY created_at
 LIMIT $2 OFFSET $3
 `
@@ -142,7 +142,7 @@ func (q *Queries) ListProductStocks(ctx context.Context, arg ListProductStocksPa
 const listProductsInStock = `-- name: ListProductsInStock :many
 SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date
 FROM products p
-JOIN product_stocks ps ON p.id = ps.product_id
+         JOIN product_stocks ps ON p.id = ps.product_id
 WHERE ps.stock_id = $1 AND ps.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 LIMIT $2 OFFSET $3
