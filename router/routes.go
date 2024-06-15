@@ -33,6 +33,13 @@ func initializeRoutes(router *chi.Mux) {
 		}
 		r.Route("/products", productHandler.Routes) // /api/v1/products
 
+		// brand routes
+		brandHandler, err := wire.InitializeBrandHandler()
+		if err != nil {
+			config.GetLogger("router").Errorf("error while initializing brand handler: %v", err)
+		}
+		r.Route("/brands", brandHandler.RegisterRoutes) // /api/v1/brands
+
 		// test routes
 		testHandler := handler.NewTestHandler()
 		r.Route("/test", testHandler.Routes)
