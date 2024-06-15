@@ -12,8 +12,9 @@ type CreateBrandInput struct {
 }
 
 type UpdateBrandInput struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	ID          common.ID `json:"id"`
+	Name        string    `json:"name"`
+	Description string    `json:"description"`
 }
 
 func (input *CreateBrandInput) FromJSON(data []byte) error {
@@ -27,6 +28,22 @@ func (input *CreateBrandInput) FromJSON(data []byte) error {
 func (input *CreateBrandInput) ToEntity() *entity.Brand {
 	return &entity.Brand{
 		ID:          common.NewID(),
+		Name:        input.Name,
+		Description: input.Description,
+	}
+}
+
+func (input *UpdateBrandInput) FromJSON(data []byte) error {
+	if err := json.Unmarshal(data, input); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (input *UpdateBrandInput) ToEntity() *entity.Brand {
+	return &entity.Brand{
+		ID:          input.ID,
 		Name:        input.Name,
 		Description: input.Description,
 	}
