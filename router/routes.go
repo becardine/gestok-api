@@ -40,6 +40,13 @@ func initializeRoutes(router *chi.Mux) {
 		}
 		r.Route("/brands", brandHandler.RegisterRoutes) // /api/v1/brands
 
+		// category routes
+		categoryHandler, err := wire.InitializeCategoryHandler()
+		if err != nil {
+			config.GetLogger("router").Errorf("error while initializing category handler: %v", err)
+		}
+		r.Route("/categories", categoryHandler.RegisterRoutes) // /api/v1/categories
+
 		// test routes
 		testHandler := handler.NewTestHandler()
 		r.Route("/test", testHandler.Routes)

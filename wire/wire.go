@@ -33,6 +33,17 @@ func InitializeBrandHandler() (*handler.BrandHandler, error) {
 	return brandHandler, nil
 }
 
+func InitializeCategoryHandler() (*handler.CategoryHandler, error) {
+	db := DBProvider()
+
+	var categoryRepository repository.CategoryRepositoryInterface
+	categoryRepository = infra.NewCategoryRepository(db)
+	categoryService := service.NewCategoryService(categoryRepository)
+	categoryHandler := handler.NewCategoryHandler(categoryService)
+
+	return categoryHandler, nil
+}
+
 func InitializeConfig() error {
 	return config.Init()
 }
