@@ -2,12 +2,38 @@ basePath: /api/v1
 definitions:
   common.ID:
     type: object
-  entity.User:
-    type: object
-  errors.ErrorHandler:
+  dto.CreateBrandInput:
     properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
+  dto.UpdateBrandInput:
+    properties:
+      description:
+        type: string
+      id:
+        $ref: '#/definitions/common.ID'
+      name:
+        type: string
+    type: object
+  entity.Brand:
+    properties:
+      description:
+        type: string
+      id:
+        $ref: '#/definitions/common.ID'
+      name:
+        type: string
+    type: object
+  errors.HTTPError:
+    properties:
+      error: {}
       message:
         type: string
+      status_code:
+        type: integer
     type: object
 host: localhost:8080
 info:
@@ -18,43 +44,103 @@ info:
   title: Gestok API
   version: "1.0"
 paths:
-  /users:
+  /brands:
+    get:
+      description: List brands
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Brand'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: List brands
+      tags:
+      - brands
     post:
       consumes:
       - application/json
-      description: Create a new user with the input payload
+      description: Create a new brand
       parameters:
-      - description: Create User Input
+      - description: Brand data
         in: body
-        name: request
+        name: input
         required: true
         schema:
-          $ref: '#/definitions/entity.User'
+          $ref: '#/definitions/dto.CreateBrandInput'
       produces:
       - application/json
       responses:
         "201":
           description: Created
+          schema:
+            $ref: '#/definitions/entity.Brand'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/errors.ErrorHandler'
+            $ref: '#/definitions/errors.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/errors.ErrorHandler'
-      summary: Create a new user
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new brand
       tags:
-      - users
-  /users/{email}:
-    get:
-      consumes:
-      - application/json
-      description: Get user by email
+      - brands
+  /brands/{id}:
+    delete:
+      description: Delete a brand
       parameters:
-      - description: User Email
+      - description: Brand ID
         in: path
-        name: email
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a brand
+      tags:
+      - brands
+    get:
+      description: Get a brand
+      parameters:
+      - description: Brand ID
+        format: uuid
+        in: path
+        name: id
         required: true
         type: string
       produces:
@@ -63,18 +149,54 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.User'
-        "404":
-          description: Not Found
+            $ref: '#/definitions/entity.Brand'
+        "400":
+          description: Bad Request
           schema:
-            $ref: '#/definitions/errors.ErrorHandler'
+            $ref: '#/definitions/errors.HTTPError'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/errors.ErrorHandler'
-      summary: Get user by email
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Get a brand
       tags:
-      - users
+      - brands
+    put:
+      consumes:
+      - application/json
+      description: Update a brand
+      parameters:
+      - description: Brand ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Brand data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateBrandInput'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a brand
+      tags:
+      - brands
 securityDefinitions:
   ApiKeyAuth:
     in: header
