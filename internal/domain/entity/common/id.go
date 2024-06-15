@@ -32,7 +32,7 @@ func (i ID) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf(`"%s"`, i.value.String())), nil
 }
 
-func (id *ID) UnmarshalJSON(data []byte) error {
+func (i *ID) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return err
@@ -47,7 +47,7 @@ func (id *ID) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	*id = ID{value: idParsed}
+	*i = ID{value: idParsed}
 	return nil
 }
 
