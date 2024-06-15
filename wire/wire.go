@@ -22,6 +22,17 @@ func InitializeProductHandler() (*handler.ProductHandler, error) {
 	return productHandler, nil
 }
 
+func InitializeBrandHandler() (*handler.BrandHandler, error) {
+	db := DBProvider()
+
+	var brandRepository repository.BrandRepositoryInterface
+	brandRepository = infra.NewBrandRepository(db)
+	brandService := service.NewBrandService(brandRepository)
+	brandHandler := handler.NewBrandHandler(brandService)
+
+	return brandHandler, nil
+}
+
 func InitializeConfig() error {
 	return config.Init()
 }
