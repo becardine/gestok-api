@@ -13,6 +13,4 @@ type CouponRepositoryInterface interface {
 	Delete(ctx context.Context, id common.ID) error
 	List(ctx context.Context, page, pageSize int) ([]*entity.Coupon, error)
 	GetCouponProducts(ctx context.Context, couponID common.ID) ([]*entity.Product, error)
-	AddCouponProduct(ctx context.Context, productID, couponID common.ID) error
-	RemoveCouponProduct(ctx context.Context, productID, couponID common.ID) error
 }

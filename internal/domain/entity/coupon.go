@@ -1,9 +1,10 @@
 package entity
 
 import (
+	"time"
+
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
-	"time"
 )
 
 type Coupon struct {
