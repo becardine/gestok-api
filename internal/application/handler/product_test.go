@@ -3,11 +3,12 @@ package handler_test
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/becardine/gestock-api/config"
-	"github.com/becardine/gestock-api/wire"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/becardine/gestock-api/config"
+	"github.com/becardine/gestock-api/wire"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
@@ -30,7 +31,7 @@ func TestProductHandler_createProduct(t *testing.T) {
 		productHandler, err := wire.InitializeProductHandler()
 		require.NoError(t, err)
 
-		router.Route("/products", productHandler.Routes)
+		router.Route("/products", productHandler.RegisterRoutes)
 
 		expectedInput := &service.CreateProductInput{
 			Name:            "Product Test",
