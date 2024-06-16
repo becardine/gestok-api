@@ -45,4 +45,14 @@ func TestNewOrderItem(t *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, orderItem)
 	})
+
+	t.Run("Should return an correct total price", func(t *testing.T) {
+		orderItem, _ := entity.NewOrderItem(common.NewID(), common.NewID(), 2, 10.0)
+		assert.Equal(t, 20.0, orderItem.TotalPrice())
+	})
+
+	t.Run("Should return an error when total price is incorrect", func(t *testing.T) {
+		orderItem, _ := entity.NewOrderItem(common.NewID(), common.NewID(), 2, 10.0)
+		assert.NotEqual(t, 30.0, orderItem.TotalPrice())
+	})
 }
