@@ -1,8 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
-	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
@@ -246,14 +244,5 @@ func (h *CategoryHandler) listCategories(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, categories)
-}
-
-func respondWithJSON(w http.ResponseWriter, ok int, categories []*entity.Category) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(ok)
-	if err := json.NewEncoder(w).Encode(categories); err != nil {
-		errors.NewHTTPError(w, http.StatusInternalServerError, "Error encoding response", err)
-		return
-	}
+	utils.RespondWithJSON(w, http.StatusOK, categories)
 }
