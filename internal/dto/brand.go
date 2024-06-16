@@ -2,6 +2,7 @@ package dto
 
 import (
 	"encoding/json"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
 )
