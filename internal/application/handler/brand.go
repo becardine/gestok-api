@@ -6,6 +6,7 @@ import (
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/becardine/gestock-api/internal/utils"
 	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
@@ -62,12 +63,7 @@ func (h *BrandHandler) createBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	if err := json.NewEncoder(w).Encode(brand); err != nil {
-		errors.NewHTTPError(w, http.StatusInternalServerError, "Error encoding response", err)
-		return
-	}
+	utils.RespondWithJSON(w, http.StatusCreated, brand)
 }
 
 // updateBrand godoc
@@ -112,7 +108,7 @@ func (h *BrandHandler) updateBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	utils.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // deleteBrand godoc
@@ -144,7 +140,7 @@ func (h *BrandHandler) deleteBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	utils.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // getBrand godoc
@@ -177,11 +173,7 @@ func (h *BrandHandler) getBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(brand); err != nil {
-		errors.NewHTTPError(w, http.StatusInternalServerError, "Error encoding response", err)
-		return
-	}
+	utils.RespondWithJSON(w, http.StatusOK, brand)
 }
 
 // listBrands godoc
@@ -216,10 +208,5 @@ func (h *BrandHandler) listBrands(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-
-	if err := json.NewEncoder(w).Encode(brands); err != nil {
-		errors.NewHTTPError(w, http.StatusInternalServerError, "Error encoding response", err)
-		return
-	}
+	utils.RespondWithJSON(w, http.StatusOK, brands)
 }

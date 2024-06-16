@@ -7,6 +7,7 @@ import (
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/becardine/gestock-api/internal/utils"
 	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
@@ -63,7 +64,7 @@ func (h *CategoryHandler) createCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	respondWithJSON(w, http.StatusCreated, []*entity.Category{category})
+	utils.RespondWithJSON(w, http.StatusCreated, category)
 }
 
 // updateCategory godoc
@@ -111,7 +112,7 @@ func (h *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	utils.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // deleteCategory godoc
@@ -143,7 +144,7 @@ func (h *CategoryHandler) deleteCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	utils.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // getProducts godoc
@@ -176,13 +177,7 @@ func (h *CategoryHandler) getProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// todo: refactor to respondWithJSON function
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	if err := json.NewEncoder(w).Encode(products); err != nil {
-		errors.NewHTTPError(w, http.StatusInternalServerError, "Error encoding response", err)
-		return
-	}
+	utils.RespondWithJSON(w, http.StatusOK, products)
 }
 
 // getCategory godoc
@@ -216,7 +211,7 @@ func (h *CategoryHandler) getCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, []*entity.Category{category})
+	utils.RespondWithJSON(w, http.StatusOK, category)
 }
 
 // listCategories godoc
