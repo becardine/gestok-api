@@ -65,7 +65,7 @@ func TestOrderValidate(t *testing.T) {
 				OrderStatus: "Pending",
 				TotalValue:  100.50,
 			},
-			expectedErr: errors.NewEntityValidationError("order_date", "required", ""),
+			expectedErr: errors.NewEntityValidationError("order_at", "required", ""),
 		},
 		{
 			name: "empty order status",

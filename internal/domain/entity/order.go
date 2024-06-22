@@ -10,7 +10,7 @@ import (
 type Order struct {
 	ID          uuid.UUID `json:"id"`
 	CustomerID  uuid.UUID `json:"customer_id"`
-	OrderDate   time.Time `json:"order_date"`
+	OrderDate   time.Time `json:"order_at"`
 	OrderStatus string    `json:"order_status"`
 	TotalValue  float64   `json:"total_value"`
 }
@@ -37,7 +37,7 @@ func (o *Order) Validate() error {
 	}
 
 	if o.OrderDate.IsZero() {
-		return errors.NewEntityValidationError("order_date", "required", "")
+		return errors.NewEntityValidationError("order_at", "required", "")
 	}
 
 	if o.OrderStatus == "" {

@@ -12,7 +12,7 @@ type CreateDeliveryInput struct {
 	OrderID        uuid.UUID `json:"order_id"`
 	CustomerID     uuid.UUID `json:"customer_id"`
 	DeliveryType   string    `json:"delivery_type"`
-	DeliveryDate   time.Time `json:"delivery_date"`
+	DeliveryDate   time.Time `json:"delivery_at"`
 	DeliveryStatus string    `json:"delivery_status"`
 }
 
@@ -21,7 +21,7 @@ type UpdateDeliveryInput struct {
 	OrderID        uuid.UUID `json:"order_id"`
 	CustomerID     uuid.UUID `json:"customer_id"`
 	DeliveryType   string    `json:"delivery_type"`
-	DeliveryDate   time.Time `json:"delivery_date"`
+	DeliveryDate   time.Time `json:"delivery_at"`
 	DeliveryStatus string    `json:"delivery_status"`
 }
 

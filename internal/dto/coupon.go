@@ -11,7 +11,7 @@ import (
 type CreateCouponInput struct {
 	Code           string    `json:"code"`
 	Discount       float64   `json:"discount"`
-	ExpirationDate time.Time `json:"expiration_date"`
+	ExpirationDate time.Time `json:"expiration_at"`
 	Status         string    `json:"status"`
 }
 
@@ -19,7 +19,7 @@ type UpdateCouponInput struct {
 	ID             uuid.UUID `json:"id"`
 	Code           string    `json:"code"`
 	Discount       float64   `json:"discount"`
-	ExpirationDate time.Time `json:"expiration_date"`
+	ExpirationDate time.Time `json:"expiration_at"`
 	Status         string    `json:"status"`
 }
 

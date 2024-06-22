@@ -11,7 +11,7 @@ type Coupon struct {
 	ID             uuid.UUID `json:"id"`
 	Code           string    `json:"code"`
 	Discount       float64   `json:"discount"`
-	ExpirationDate time.Time `json:"expiration_date"`
+	ExpirationDate time.Time `json:"expiration_at"`
 	Status         string    `json:"status"`
 }
 
@@ -45,7 +45,7 @@ func (c *Coupon) Validate() error {
 	}
 
 	if c.ExpirationDate.IsZero() {
-		return errors.NewEntityValidationError("expiration_date", "required", "")
+		return errors.NewEntityValidationError("expiration_at", "required", "")
 	}
 
 	if c.Status == "" {

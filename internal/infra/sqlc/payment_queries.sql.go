@@ -8,25 +8,23 @@ package db
 import (
 	"context"
 	"database/sql"
-
-	"github.com/google/uuid"
 )
 
 const createPayment = `-- name: CreatePayment :exec
-INSERT INTO payments (id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, created_date, updated_date)
-VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+INSERT INTO payments (id, order_id, customer_id, payment_type, payment_at, payment_value, payment_status, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreatePaymentParams struct {
-	ID            uuid.UUID
-	OrderID       uuid.NullUUID
-	CustomerID    uuid.NullUUID
+	ID            string
+	OrderID       sql.NullString
+	CustomerID    sql.NullString
 	PaymentType   string
-	PaymentDate   sql.NullTime
-	PaymentValue  string
+	PaymentAt     sql.NullTime
+	PaymentValue  float64
 	PaymentStatus string
-	CreatedDate   sql.NullTime
-	UpdatedDate   sql.NullTime
+	CreatedAt     sql.NullTime
+	UpdatedAt     sql.NullTime
 }
 
 func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) error {
@@ -35,11 +33,11 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) er
 		arg.OrderID,
 		arg.CustomerID,
 		arg.PaymentType,
-		arg.PaymentDate,
+		arg.PaymentAt,
 		arg.PaymentValue,
 		arg.PaymentStatus,
-		arg.CreatedDate,
-		arg.UpdatedDate,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 	)
 	return err
 }
@@ -47,19 +45,19 @@ func (q *Queries) CreatePayment(ctx context.Context, arg CreatePaymentParams) er
 const deletePayment = `-- name: DeletePayment :exec
 UPDATE payments
 SET deleted_at = NOW()
-WHERE id = $1
+WHERE id = ?
 `
 
-func (q *Queries) DeletePayment(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeletePayment(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deletePayment, id)
 	return err
 }
 
 const getPayment = `-- name: GetPayment :one
-SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date FROM payments WHERE id = $1 AND deleted_at IS NULL
+SELECT id, order_id, customer_id, payment_type, payment_at, payment_value, payment_status, deleted_at, created_at, updated_at FROM payments WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetPayment(ctx context.Context, id uuid.UUID) (Payment, error) {
+func (q *Queries) GetPayment(ctx context.Context, id string) (Payment, error) {
 	row := q.db.QueryRowContext(ctx, getPayment, id)
 	var i Payment
 	err := row.Scan(
@@ -67,32 +65,26 @@ func (q *Queries) GetPayment(ctx context.Context, id uuid.UUID) (Payment, error)
 		&i.OrderID,
 		&i.CustomerID,
 		&i.PaymentType,
-		&i.PaymentDate,
+		&i.PaymentAt,
 		&i.PaymentValue,
 		&i.PaymentStatus,
 		&i.DeletedAt,
-		&i.CreatedDate,
-		&i.UpdatedDate,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getPaymentsByCustomerId = `-- name: GetPaymentsByCustomerId :many
-SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date
+SELECT id, order_id, customer_id, payment_type, payment_at, payment_value, payment_status, deleted_at, created_at, updated_at
 FROM payments
-WHERE customer_id = $1 AND deleted_at IS NULL
-ORDER BY payment_date DESC
-    LIMIT $2 OFFSET $3
+WHERE customer_id = ? AND deleted_at IS NULL
+ORDER BY payment_at DESC
+LIMIT 2 OFFSET 3
 `
 
-type GetPaymentsByCustomerIdParams struct {
-	CustomerID uuid.NullUUID
-	Limit      int32
-	Offset     int32
-}
-
-func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, arg GetPaymentsByCustomerIdParams) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, getPaymentsByCustomerId, arg.CustomerID, arg.Limit, arg.Offset)
+func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, customerID sql.NullString) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, getPaymentsByCustomerId, customerID)
 	if err != nil {
 		return nil, err
 	}
@@ -105,12 +97,12 @@ func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, arg GetPaymentsBy
 			&i.OrderID,
 			&i.CustomerID,
 			&i.PaymentType,
-			&i.PaymentDate,
+			&i.PaymentAt,
 			&i.PaymentValue,
 			&i.PaymentStatus,
 			&i.DeletedAt,
-			&i.CreatedDate,
-			&i.UpdatedDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -126,21 +118,15 @@ func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, arg GetPaymentsBy
 }
 
 const getPaymentsByOrderId = `-- name: GetPaymentsByOrderId :many
-SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date
+SELECT id, order_id, customer_id, payment_type, payment_at, payment_value, payment_status, deleted_at, created_at, updated_at
 FROM payments
-WHERE order_id = $1 AND deleted_at IS NULL
-ORDER BY payment_date DESC
-    LIMIT $2 OFFSET $3
+WHERE order_id = ? AND deleted_at IS NULL
+ORDER BY payment_at DESC
+LIMIT 2 OFFSET 3
 `
 
-type GetPaymentsByOrderIdParams struct {
-	OrderID uuid.NullUUID
-	Limit   int32
-	Offset  int32
-}
-
-func (q *Queries) GetPaymentsByOrderId(ctx context.Context, arg GetPaymentsByOrderIdParams) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, getPaymentsByOrderId, arg.OrderID, arg.Limit, arg.Offset)
+func (q *Queries) GetPaymentsByOrderId(ctx context.Context, orderID sql.NullString) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, getPaymentsByOrderId, orderID)
 	if err != nil {
 		return nil, err
 	}
@@ -153,12 +139,12 @@ func (q *Queries) GetPaymentsByOrderId(ctx context.Context, arg GetPaymentsByOrd
 			&i.OrderID,
 			&i.CustomerID,
 			&i.PaymentType,
-			&i.PaymentDate,
+			&i.PaymentAt,
 			&i.PaymentValue,
 			&i.PaymentStatus,
 			&i.DeletedAt,
-			&i.CreatedDate,
-			&i.UpdatedDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -174,20 +160,15 @@ func (q *Queries) GetPaymentsByOrderId(ctx context.Context, arg GetPaymentsByOrd
 }
 
 const listPayments = `-- name: ListPayments :many
-SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date
+SELECT id, order_id, customer_id, payment_type, payment_at, payment_value, payment_status, deleted_at, created_at, updated_at
 FROM payments
 WHERE deleted_at IS NULL
-ORDER BY payment_date DESC
-    LIMIT $1 OFFSET $2
+ORDER BY payment_at DESC
+LIMIT 1 OFFSET 2
 `
 
-type ListPaymentsParams struct {
-	Limit  int32
-	Offset int32
-}
-
-func (q *Queries) ListPayments(ctx context.Context, arg ListPaymentsParams) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, listPayments, arg.Limit, arg.Offset)
+func (q *Queries) ListPayments(ctx context.Context) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, listPayments)
 	if err != nil {
 		return nil, err
 	}
@@ -200,12 +181,12 @@ func (q *Queries) ListPayments(ctx context.Context, arg ListPaymentsParams) ([]P
 			&i.OrderID,
 			&i.CustomerID,
 			&i.PaymentType,
-			&i.PaymentDate,
+			&i.PaymentAt,
 			&i.PaymentValue,
 			&i.PaymentStatus,
 			&i.DeletedAt,
-			&i.CreatedDate,
-			&i.UpdatedDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -222,27 +203,27 @@ func (q *Queries) ListPayments(ctx context.Context, arg ListPaymentsParams) ([]P
 
 const updatePayment = `-- name: UpdatePayment :exec
 UPDATE payments
-SET payment_type = $2, payment_date = $3, payment_value = $4, payment_status = $5, updated_date = $6
-WHERE id = $1 AND deleted_at IS NULL
+SET payment_type = ?, payment_at = ?, payment_value = ?, payment_status = ?, updated_at = ?
+WHERE id = ? AND deleted_at IS NULL
 `
 
 type UpdatePaymentParams struct {
-	ID            uuid.UUID
 	PaymentType   string
-	PaymentDate   sql.NullTime
-	PaymentValue  string
+	PaymentAt     sql.NullTime
+	PaymentValue  float64
 	PaymentStatus string
-	UpdatedDate   sql.NullTime
+	UpdatedAt     sql.NullTime
+	ID            string
 }
 
 func (q *Queries) UpdatePayment(ctx context.Context, arg UpdatePaymentParams) error {
 	_, err := q.db.ExecContext(ctx, updatePayment,
-		arg.ID,
 		arg.PaymentType,
-		arg.PaymentDate,
+		arg.PaymentAt,
 		arg.PaymentValue,
 		arg.PaymentStatus,
-		arg.UpdatedDate,
+		arg.UpdatedAt,
+		arg.ID,
 	)
 	return err
 }

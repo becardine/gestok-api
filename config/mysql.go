@@ -4,26 +4,32 @@ import (
 	"database/sql"
 	"fmt"
 
-	_ "github.com/lib/pq"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func InitializePostgreSQL() (*sql.DB, error) {
-	logger := GetLogger("PostgreSQL")
+func InitializeMySQL() (*sql.DB, error) {
+	logger := GetLogger("MySQL")
 
 	// create connection
 	env := GetEnv()
 
-	dns := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=require TimeZone=America/Sao_Paulo",
-		env.DBHost,
+	dns := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
 		env.DBUser,
 		env.DBPassword,
-		env.DBName,
+		env.DBHost,
 		env.DBPort,
+		env.DBName,
 	)
 	logger.Infof("connecting to database: %s", dns)
-	db, err := sql.Open("postgres", dns)
+	db, err := sql.Open("mysql", dns)
 	if err != nil {
 		logger.Errorf("failed to connect database: %v", err)
+		return nil, err
+	}
+
+	err = db.Ping()
+	if err != nil {
+		logger.Errorf("failed to ping database: %v", err)
 		return nil, err
 	}
 

@@ -10,7 +10,7 @@ import (
 
 type CreateOrderInput struct {
 	CustomerID  uuid.UUID `json:"customer_id"`
-	OrderDate   time.Time `json:"order_date"`
+	OrderDate   time.Time `json:"order_at"`
 	OrderStatus string    `json:"order_status"`
 	TotalValue  float64   `json:"total_value"`
 }
@@ -18,7 +18,7 @@ type CreateOrderInput struct {
 type UpdateOrderInput struct {
 	ID          uuid.UUID `json:"id"`
 	CustomerID  uuid.UUID `json:"customer_id"`
-	OrderDate   time.Time `json:"order_date"`
+	OrderDate   time.Time `json:"order_at"`
 	OrderStatus string    `json:"order_status"`
 	TotalValue  float64   `json:"total_value"`
 }

@@ -8,21 +8,19 @@ package db
 import (
 	"context"
 	"database/sql"
-
-	"github.com/google/uuid"
 )
 
 const createBrand = `-- name: CreateBrand :exec
-INSERT INTO brands (id, name, description, created_date, updated_date)
-VALUES ($1, $2, $3, $4, $5)
+INSERT INTO brands (id, name, description, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?)
 `
 
 type CreateBrandParams struct {
-	ID          uuid.UUID
+	ID          string
 	Name        string
 	Description sql.NullString
-	CreatedDate sql.NullTime
-	UpdatedDate sql.NullTime
+	CreatedAt   sql.NullTime
+	UpdatedAt   sql.NullTime
 }
 
 func (q *Queries) CreateBrand(ctx context.Context, arg CreateBrandParams) error {
@@ -30,8 +28,8 @@ func (q *Queries) CreateBrand(ctx context.Context, arg CreateBrandParams) error 
 		arg.ID,
 		arg.Name,
 		arg.Description,
-		arg.CreatedDate,
-		arg.UpdatedDate,
+		arg.CreatedAt,
+		arg.UpdatedAt,
 	)
 	return err
 }
@@ -39,19 +37,19 @@ func (q *Queries) CreateBrand(ctx context.Context, arg CreateBrandParams) error 
 const deleteBrand = `-- name: DeleteBrand :exec
 UPDATE brands
 SET deleted_at = NOW()
-WHERE id = $1
+WHERE id = ?
 `
 
-func (q *Queries) DeleteBrand(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteBrand(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteBrand, id)
 	return err
 }
 
 const getBrand = `-- name: GetBrand :one
-SELECT id, name, description, deleted_at, created_date, updated_date FROM brands WHERE id = $1 AND deleted_at IS NULL
+SELECT id, name, description, deleted_at, created_at, updated_at FROM brands WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetBrand(ctx context.Context, id uuid.UUID) (Brand, error) {
+func (q *Queries) GetBrand(ctx context.Context, id string) (Brand, error) {
 	row := q.db.QueryRowContext(ctx, getBrand, id)
 	var i Brand
 	err := row.Scan(
@@ -59,21 +57,21 @@ func (q *Queries) GetBrand(ctx context.Context, id uuid.UUID) (Brand, error) {
 		&i.Name,
 		&i.Description,
 		&i.DeletedAt,
-		&i.CreatedDate,
-		&i.UpdatedDate,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const getBrandProducts = `-- name: GetBrandProducts :many
-SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_date, p.updated_date
+SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_at, p.updated_at
 FROM brands b
 JOIN products p ON b.id = p.brand_id
-WHERE b.id = $1 AND b.deleted_at IS NULL AND p.deleted_at IS NULL
+WHERE b.id = ? AND b.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetBrandProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
+func (q *Queries) GetBrandProducts(ctx context.Context, id string) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getBrandProducts, id)
 	if err != nil {
 		return nil, err
@@ -92,8 +90,8 @@ func (q *Queries) GetBrandProducts(ctx context.Context, id uuid.UUID) ([]Product
 			&i.CategoryID,
 			&i.BrandID,
 			&i.DeletedAt,
-			&i.CreatedDate,
-			&i.UpdatedDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -109,11 +107,11 @@ func (q *Queries) GetBrandProducts(ctx context.Context, id uuid.UUID) ([]Product
 }
 
 const listBrands = `-- name: ListBrands :many
-SELECT id, name, description, deleted_at, created_date, updated_date
+SELECT id, name, description, deleted_at, created_at, updated_at
 FROM brands
 WHERE deleted_at IS NULL
 ORDER BY name
-LIMIT $1 OFFSET $2
+LIMIT ? OFFSET ?
 `
 
 type ListBrandsParams struct {
@@ -135,8 +133,8 @@ func (q *Queries) ListBrands(ctx context.Context, arg ListBrandsParams) ([]Brand
 			&i.Name,
 			&i.Description,
 			&i.DeletedAt,
-			&i.CreatedDate,
-			&i.UpdatedDate,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -153,23 +151,23 @@ func (q *Queries) ListBrands(ctx context.Context, arg ListBrandsParams) ([]Brand
 
 const updateBrand = `-- name: UpdateBrand :exec
 UPDATE brands
-SET name = $2, description = $3, updated_date = $4
-WHERE id = $1 AND deleted_at IS NULL
+SET name = ?, description = ?, updated_at = ?
+WHERE id = ? AND deleted_at IS NULL
 `
 
 type UpdateBrandParams struct {
-	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
-	UpdatedDate sql.NullTime
+	UpdatedAt   sql.NullTime
+	ID          string
 }
 
 func (q *Queries) UpdateBrand(ctx context.Context, arg UpdateBrandParams) error {
 	_, err := q.db.ExecContext(ctx, updateBrand,
-		arg.ID,
 		arg.Name,
 		arg.Description,
-		arg.UpdatedDate,
+		arg.UpdatedAt,
+		arg.ID,
 	)
 	return err
 }

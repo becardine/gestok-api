@@ -21,7 +21,7 @@ func Init() error {
 	}
 
 	// initialize db
-	db, err = InitializePostgreSQL()
+	db, err = InitializeMySQL()
 	if err != nil {
 		return fmt.Errorf("failed to initialize db: %v", err)
 	}

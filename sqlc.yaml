@@ -3,7 +3,7 @@ version: "2"
 sql:
 - schema: "internal/infra/migrations"
   queries: "internal/infra/queries"
-  engine: "postgresql"
+  engine: "mysql"
   gen:
     go:
       package: "db"

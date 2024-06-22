@@ -7,31 +7,28 @@ package db
 
 import (
 	"context"
-	"time"
-
-	"github.com/google/uuid"
+	"database/sql"
 )
 
-const createOrderItem = `-- name: CreateOrderItem :one
+const createOrderItem = `-- name: CreateOrderItem :exec
 INSERT INTO order_items (
     id, order_id, product_id, quantity, unit_price, created_at, updated_at
 )
-VALUES ($1, $2, $3, $4, $5, $6, $7)
-RETURNING id, order_id, product_id, quantity, unit_price, created_at, updated_at, deleted_at
+VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateOrderItemParams struct {
-	ID        uuid.UUID
-	OrderID   uuid.NullUUID
-	ProductID uuid.NullUUID
+	ID        string
+	OrderID   sql.NullString
+	ProductID sql.NullString
 	Quantity  int32
-	UnitPrice string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	UnitPrice float64
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
 }
 
-func (q *Queries) CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) (OrderItem, error) {
-	row := q.db.QueryRowContext(ctx, createOrderItem,
+func (q *Queries) CreateOrderItem(ctx context.Context, arg CreateOrderItemParams) error {
+	_, err := q.db.ExecContext(ctx, createOrderItem,
 		arg.ID,
 		arg.OrderID,
 		arg.ProductID,
@@ -40,36 +37,25 @@ func (q *Queries) CreateOrderItem(ctx context.Context, arg CreateOrderItemParams
 		arg.CreatedAt,
 		arg.UpdatedAt,
 	)
-	var i OrderItem
-	err := row.Scan(
-		&i.ID,
-		&i.OrderID,
-		&i.ProductID,
-		&i.Quantity,
-		&i.UnitPrice,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
+	return err
 }
 
 const deleteOrderItem = `-- name: DeleteOrderItem :exec
 UPDATE order_items
 SET deleted_at = NOW()
-WHERE id = $1
+WHERE id = ?
 `
 
-func (q *Queries) DeleteOrderItem(ctx context.Context, id uuid.UUID) error {
+func (q *Queries) DeleteOrderItem(ctx context.Context, id string) error {
 	_, err := q.db.ExecContext(ctx, deleteOrderItem, id)
 	return err
 }
 
 const getOrderItem = `-- name: GetOrderItem :one
-SELECT id, order_id, product_id, quantity, unit_price, created_at, updated_at, deleted_at FROM order_items WHERE id = $1 AND deleted_at IS NULL
+SELECT id, order_id, product_id, quantity, unit_price, deleted_at, created_at, updated_at FROM order_items WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetOrderItem(ctx context.Context, id uuid.UUID) (OrderItem, error) {
+func (q *Queries) GetOrderItem(ctx context.Context, id string) (OrderItem, error) {
 	row := q.db.QueryRowContext(ctx, getOrderItem, id)
 	var i OrderItem
 	err := row.Scan(
@@ -78,29 +64,23 @@ func (q *Queries) GetOrderItem(ctx context.Context, id uuid.UUID) (OrderItem, er
 		&i.ProductID,
 		&i.Quantity,
 		&i.UnitPrice,
+		&i.DeletedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const listOrderItems = `-- name: ListOrderItems :many
-SELECT id, order_id, product_id, quantity, unit_price, created_at, updated_at, deleted_at 
+SELECT id, order_id, product_id, quantity, unit_price, deleted_at, created_at, updated_at 
 FROM order_items 
-WHERE order_id = $1 AND deleted_at IS NULL 
+WHERE order_id = ? AND deleted_at IS NULL 
 ORDER BY created_at
-LIMIT $2 OFFSET $3
+LIMIT 2 OFFSET 3
 `
 
-type ListOrderItemsParams struct {
-	OrderID uuid.NullUUID
-	Limit   int32
-	Offset  int32
-}
-
-func (q *Queries) ListOrderItems(ctx context.Context, arg ListOrderItemsParams) ([]OrderItem, error) {
-	rows, err := q.db.QueryContext(ctx, listOrderItems, arg.OrderID, arg.Limit, arg.Offset)
+func (q *Queries) ListOrderItems(ctx context.Context, orderID sql.NullString) ([]OrderItem, error) {
+	rows, err := q.db.QueryContext(ctx, listOrderItems, orderID)
 	if err != nil {
 		return nil, err
 	}
@@ -114,9 +94,9 @@ func (q *Queries) ListOrderItems(ctx context.Context, arg ListOrderItemsParams) 
 			&i.ProductID,
 			&i.Quantity,
 			&i.UnitPrice,
+			&i.DeletedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-			&i.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -133,23 +113,23 @@ func (q *Queries) ListOrderItems(ctx context.Context, arg ListOrderItemsParams) 
 
 const updateOrderItem = `-- name: UpdateOrderItem :exec
 UPDATE order_items
-SET quantity = $2, unit_price = $3, updated_at = $4
-WHERE id = $1 AND deleted_at IS NULL
+SET quantity = ?, unit_price = ?, updated_at = ?
+WHERE id = ? AND deleted_at IS NULL
 `
 
 type UpdateOrderItemParams struct {
-	ID        uuid.UUID
 	Quantity  int32
-	UnitPrice string
-	UpdatedAt time.Time
+	UnitPrice float64
+	UpdatedAt sql.NullTime
+	ID        string
 }
 
 func (q *Queries) UpdateOrderItem(ctx context.Context, arg UpdateOrderItemParams) error {
 	_, err := q.db.ExecContext(ctx, updateOrderItem,
-		arg.ID,
 		arg.Quantity,
 		arg.UnitPrice,
 		arg.UpdatedAt,
+		arg.ID,
 	)
 	return err
 }
