@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,7 +68,7 @@ func TestCoupon_Validate(t *testing.T) {
 	t.Run("should return no error if coupon is valid", func(t *testing.T) {
 		expirationDate := time.Now().AddDate(0, 1, 0)
 		coupon := &entity.Coupon{
-			ID:             common.NewID(),
+			ID:             uuid.New(),
 			Code:           "SUMMER20",
 			Discount:       10.0,
 			ExpirationDate: expirationDate,

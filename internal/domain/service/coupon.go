@@ -4,19 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	"github.com/becardine/gestock-api/internal/dto"
+	"github.com/google/uuid"
 )
 
 type CouponServiceInterface interface {
-	Get(ctx context.Context, id common.ID) (*entity.Coupon, error)
+	Get(ctx context.Context, id uuid.UUID) (*entity.Coupon, error)
 	Create(ctx context.Context, input *dto.CreateCouponInput) (*entity.Coupon, error)
 	Update(ctx context.Context, input *dto.UpdateCouponInput) error
-	Delete(ctx context.Context, id common.ID) error
+	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, page, pageSize int) ([]*entity.Coupon, error)
-	GetCouponProducts(ctx context.Context, couponID common.ID) ([]*entity.Product, error)
+	GetCouponProducts(ctx context.Context, couponID uuid.UUID) ([]*entity.Product, error)
 }
 
 type couponService struct {
@@ -29,7 +30,7 @@ func NewCouponService(repo domain.CouponRepositoryInterface) CouponServiceInterf
 	}
 }
 
-func (c *couponService) Get(ctx context.Context, id common.ID) (*entity.Coupon, error) {
+func (c *couponService) Get(ctx context.Context, id uuid.UUID) (*entity.Coupon, error) {
 	coupon, err := c.repo.Get(ctx, id)
 	if err != nil {
 		return nil, c.handleCouponError(err, id)
@@ -74,7 +75,7 @@ func (c *couponService) Update(ctx context.Context, input *dto.UpdateCouponInput
 	return nil
 }
 
-func (c *couponService) Delete(ctx context.Context, id common.ID) error {
+func (c *couponService) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := c.Get(ctx, id)
 	if err != nil {
 		return err
@@ -96,7 +97,7 @@ func (c *couponService) List(ctx context.Context, page, pageSize int) ([]*entity
 	return coupons, nil
 }
 
-func (c *couponService) GetCouponProducts(ctx context.Context, couponID common.ID) ([]*entity.Product, error) {
+func (c *couponService) GetCouponProducts(ctx context.Context, couponID uuid.UUID) ([]*entity.Product, error) {
 	products, err := c.repo.GetCouponProducts(ctx, couponID)
 	if err != nil {
 		return nil, fmt.Errorf("error while fetching coupon products from repository: %w", err)
@@ -105,7 +106,7 @@ func (c *couponService) GetCouponProducts(ctx context.Context, couponID common.I
 	return products, nil
 }
 
-func (c *couponService) handleCouponError(err error, id common.ID) error {
+func (c *couponService) handleCouponError(err error, id uuid.UUID) error {
 	if errors.Is(err, &ErrNotFound{}) {
 		return &ErrNotFound{Entity: "Coupon", ID: id}
 	}

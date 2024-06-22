@@ -1,23 +1,24 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/becardine/gestock-api/internal/errors"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Delivery struct {
-	ID             common.ID `json:"id"`
-	OrderID        common.ID `json:"order_id"`
-	CustomerID     common.ID `json:"customer_id"`
+	ID             uuid.UUID `json:"id"`
+	OrderID        uuid.UUID `json:"order_id"`
+	CustomerID     uuid.UUID `json:"customer_id"`
 	DeliveryType   string    `json:"delivery_type"`
 	DeliveryDate   time.Time `json:"delivery_date"`
 	DeliveryStatus string    `json:"delivery_status"`
 }
 
-func NewDelivery(orderID, customerID common.ID, deliveryType, deliveryStatus string, deliveryDate time.Time) (*Delivery, error) {
+func NewDelivery(orderID, customerID uuid.UUID, deliveryType, deliveryStatus string, deliveryDate time.Time) (*Delivery, error) {
 	return &Delivery{
-		ID:             common.NewID(),
+		ID:             uuid.New(),
 		OrderID:        orderID,
 		CustomerID:     customerID,
 		DeliveryType:   deliveryType,
@@ -27,11 +28,11 @@ func NewDelivery(orderID, customerID common.ID, deliveryType, deliveryStatus str
 }
 
 func (d *Delivery) Validate() error {
-	if d.OrderID.IsEmpty() {
+	if d.OrderID == uuid.Nil {
 		return errors.NewEntityValidationError("order_id", "required", "")
 	}
 
-	if d.CustomerID.IsEmpty() {
+	if d.CustomerID == uuid.Nil {
 		return errors.NewEntityValidationError("customer_id", "required", "")
 	}
 

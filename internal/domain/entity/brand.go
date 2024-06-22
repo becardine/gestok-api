@@ -1,19 +1,19 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Brand struct {
-	ID          common.ID `json:"id"`
+	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
 
 func NewBrand(name, description string) (*Brand, error) {
 	brand := &Brand{
-		ID:          common.NewID(),
+		ID:          uuid.New(),
 		Name:        name,
 		Description: description,
 	}

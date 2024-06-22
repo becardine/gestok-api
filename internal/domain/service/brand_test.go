@@ -2,20 +2,21 @@ package service_test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"testing"
 )
 
 type BrandRepositoryMock struct {
 	mock.Mock
 }
 
-func (m *BrandRepositoryMock) Get(ctx context.Context, id common.ID) (*entity.Brand, error) {
+func (m *BrandRepositoryMock) Get(ctx context.Context, id uuid.UUID) (*entity.Brand, error) {
 	args := m.Called(ctx, id)
 	return args.Get(0).(*entity.Brand), args.Error(1)
 }
@@ -30,7 +31,7 @@ func (m *BrandRepositoryMock) Update(ctx context.Context, brand *entity.Brand) e
 	return args.Error(0)
 }
 
-func (m *BrandRepositoryMock) Delete(ctx context.Context, id common.ID) error {
+func (m *BrandRepositoryMock) Delete(ctx context.Context, id uuid.UUID) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
@@ -45,7 +46,7 @@ func TestBrandService_Get(t *testing.T) {
 		mockRepo := new(BrandRepositoryMock)
 		brandService := service.NewBrandService(mockRepo)
 
-		id := common.NewID()
+		id := uuid.New()
 		expectedBrand := &entity.Brand{
 			ID:   id,
 			Name: "Brand Test",
@@ -67,11 +68,11 @@ func TestBrandService_List(t *testing.T) {
 
 		expectedBrands := []*entity.Brand{
 			{
-				ID:   common.NewID(),
+				ID:   uuid.New(),
 				Name: "Brand Test 1",
 			},
 			{
-				ID:   common.NewID(),
+				ID:   uuid.New(),
 				Name: "Brand Test 2",
 			},
 		}
@@ -96,7 +97,7 @@ func TestBrandService_Create(t *testing.T) {
 		}
 
 		expectedBrand := &entity.Brand{
-			ID:          common.NewID(),
+			ID:          uuid.New(),
 			Name:        input.Name,
 			Description: input.Description,
 		}
@@ -117,7 +118,7 @@ func TestBrandService_Update(t *testing.T) {
 		brandService := service.NewBrandService(mockRepo)
 
 		input := &dto.UpdateBrandInput{
-			ID:          common.NewID(),
+			ID:          uuid.New(),
 			Name:        "Brand Test",
 			Description: "Brand Test Description",
 		}
@@ -137,7 +138,7 @@ func TestBrandService_Delete(t *testing.T) {
 		mockRepo := new(BrandRepositoryMock)
 		brandService := service.NewBrandService(mockRepo)
 
-		id := common.NewID()
+		id := uuid.New()
 		mockRepo.On("Get", mock.Anything, id).Return(&entity.Brand{}, nil)
 		mockRepo.On("Delete", mock.Anything, id).Return(nil)
 

@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewDelivery(t *testing.T) {
-	orderID := common.NewID()
-	customerID := common.NewID()
+	orderID := uuid.New()
+	customerID := uuid.New()
 	deliveryType := "Correios"
 	deliveryDate := time.Date(2024, 6, 12, 0, 0, 0, 0, time.UTC)
 	deliveryStatus := "In transit"
@@ -29,8 +29,8 @@ func TestNewDelivery(t *testing.T) {
 }
 
 func TestDeliveryValidate(t *testing.T) {
-	orderID := common.NewID()
-	customerID := common.NewID()
+	orderID := uuid.New()
+	customerID := uuid.New()
 
 	deliveryDate := time.Date(2024, 6, 12, 0, 0, 0, 0, time.UTC)
 
@@ -42,7 +42,7 @@ func TestDeliveryValidate(t *testing.T) {
 		{
 			name: "valid delivery",
 			delivery: &entity.Delivery{
-				ID:             common.NewID(),
+				ID:             uuid.New(),
 				OrderID:        orderID,
 				CustomerID:     customerID,
 				DeliveryType:   "Correios",
@@ -54,7 +54,7 @@ func TestDeliveryValidate(t *testing.T) {
 		{
 			name: "empty order ID",
 			delivery: &entity.Delivery{
-				ID:             common.NewID(),
+				ID:             uuid.New(),
 				CustomerID:     customerID,
 				DeliveryType:   "Correios",
 				DeliveryDate:   deliveryDate,
@@ -65,7 +65,7 @@ func TestDeliveryValidate(t *testing.T) {
 		{
 			name: "empty customer ID",
 			delivery: &entity.Delivery{
-				ID:             common.NewID(),
+				ID:             uuid.New(),
 				OrderID:        orderID,
 				DeliveryType:   "Correios",
 				DeliveryDate:   deliveryDate,

@@ -1,22 +1,23 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/becardine/gestock-api/internal/errors"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Order struct {
-	ID          common.ID `json:"id"`
-	CustomerID  common.ID `json:"customer_id"`
+	ID          uuid.UUID `json:"id"`
+	CustomerID  uuid.UUID `json:"customer_id"`
 	OrderDate   time.Time `json:"order_date"`
 	OrderStatus string    `json:"order_status"`
 	TotalValue  float64   `json:"total_value"`
 }
 
-func NewOrder(customerID common.ID, orderDate time.Time, orderStatus string, totalValue float64) (*Order, error) {
+func NewOrder(customerID uuid.UUID, orderDate time.Time, orderStatus string, totalValue float64) (*Order, error) {
 	order := &Order{
-		ID:          common.NewID(),
+		ID:          uuid.New(),
 		CustomerID:  customerID,
 		OrderDate:   orderDate,
 		OrderStatus: orderStatus,
@@ -31,7 +32,7 @@ func NewOrder(customerID common.ID, orderDate time.Time, orderStatus string, tot
 }
 
 func (o *Order) Validate() error {
-	if o.CustomerID.IsEmpty() {
+	if o.CustomerID == uuid.Nil {
 		return errors.NewEntityValidationError("customer_id", "required", "")
 	}
 

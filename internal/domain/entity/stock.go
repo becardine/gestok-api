@@ -1,12 +1,12 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Stock struct {
-	ID       common.ID `json:"id"`
+	ID       uuid.UUID `json:"id"`
 	Name     string    `json:"name"`
 	Location string    `json:"location"`
 	Capacity int       `json:"capacity"`
@@ -14,7 +14,7 @@ type Stock struct {
 
 func NewStock(name, location string, capacity int) (*Stock, error) {
 	stock := &Stock{
-		ID:       common.NewID(),
+		ID:       uuid.New(),
 		Name:     name,
 		Location: location,
 		Capacity: capacity,

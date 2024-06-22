@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	database "github.com/becardine/gestock-api/internal/infra/sqlc"
+	"github.com/google/uuid"
 )
 
 type CouponRepository struct {
@@ -40,7 +40,7 @@ func (c *CouponRepository) Create(ctx context.Context, coupon *entity.Coupon) (*
 }
 
 // Delete implements repository.CouponRepositoryInterface.
-func (c *CouponRepository) Delete(ctx context.Context, id common.ID) error {
+func (c *CouponRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := c.queries.DeleteCoupon(ctx, id)
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func (c *CouponRepository) Delete(ctx context.Context, id common.ID) error {
 }
 
 // Get implements repository.CouponRepositoryInterface.
-func (c *CouponRepository) Get(ctx context.Context, id common.ID) (*entity.Coupon, error) {
+func (c *CouponRepository) Get(ctx context.Context, id uuid.UUID) (*entity.Coupon, error) {
 	coupon, err := c.queries.GetCoupon(ctx, id)
 	if err != nil {
 		return nil, err
@@ -66,7 +66,7 @@ func (c *CouponRepository) Get(ctx context.Context, id common.ID) (*entity.Coupo
 }
 
 // GetCouponProducts implements repository.CouponRepositoryInterface.
-func (c *CouponRepository) GetCouponProducts(ctx context.Context, couponID common.ID) ([]*entity.Product, error) {
+func (c *CouponRepository) GetCouponProducts(ctx context.Context, couponID uuid.UUID) ([]*entity.Product, error) {
 	panic("unimplemented")
 }
 

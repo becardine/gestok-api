@@ -2,20 +2,21 @@ package service_test
 
 import (
 	"context"
-	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/becardine/gestock-api/internal/domain/service"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"testing"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/domain/entity"
+	"github.com/becardine/gestock-api/internal/domain/service"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 type CouponRepositoryMock struct {
 	mock.Mock
 }
 
-func (m *CouponRepositoryMock) Get(ctx context.Context, id common.ID) (*entity.Coupon, error) {
+func (m *CouponRepositoryMock) Get(ctx context.Context, id uuid.UUID) (*entity.Coupon, error) {
 	args := m.Called(ctx, id)
 	return args.Get(0).(*entity.Coupon), args.Error(1)
 }
@@ -30,7 +31,7 @@ func (m *CouponRepositoryMock) Update(ctx context.Context, coupon *entity.Coupon
 	return args.Error(0)
 }
 
-func (m *CouponRepositoryMock) Delete(ctx context.Context, id common.ID) error {
+func (m *CouponRepositoryMock) Delete(ctx context.Context, id uuid.UUID) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }
@@ -40,7 +41,7 @@ func (m *CouponRepositoryMock) List(ctx context.Context, page, pageSize int) ([]
 	return args.Get(0).([]*entity.Coupon), args.Error(1)
 }
 
-func (m *CouponRepositoryMock) GetCouponProducts(ctx context.Context, couponID common.ID) ([]*entity.Product, error) {
+func (m *CouponRepositoryMock) GetCouponProducts(ctx context.Context, couponID uuid.UUID) ([]*entity.Product, error) {
 	args := m.Called(ctx, couponID)
 	return args.Get(0).([]*entity.Product), args.Error(1)
 }
@@ -50,7 +51,7 @@ func TestCouponService_Get(t *testing.T) {
 		mockRepo := new(CouponRepositoryMock)
 		couponService := service.NewCouponService(mockRepo)
 
-		id := common.NewID()
+		id := uuid.New()
 		expectedCoupon := &entity.Coupon{
 			ID:             id,
 			Code:           "NEWCOUPON",

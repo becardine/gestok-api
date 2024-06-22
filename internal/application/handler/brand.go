@@ -6,11 +6,17 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+)
+
+const (
+	basePath  = "/brands"
+	missingID = "Missing brand ID"
+	invalidID = "Invalid brand ID"
 )
 
 type BrandHandler struct {
@@ -24,11 +30,11 @@ func NewBrandHandler(brandService service.BrandService) *BrandHandler {
 }
 
 func (h *BrandHandler) RegisterRoutes(router chi.Router) {
-	router.Get("/brands", h.listBrands)
-	router.Get("/brands/{id}", h.getBrand)
-	router.Post("/brands", h.createBrand)
-	router.Put("/brands/{id}", h.updateBrand)
-	router.Delete("/brands/{id}", h.deleteBrand)
+	router.Get(basePath, h.listBrands)
+	router.Get(basePath+"/{id}", h.getBrand)
+	router.Post(basePath, h.createBrand)
+	router.Put(basePath+"/{id}", h.updateBrand)
+	router.Delete(basePath+"/{id}", h.deleteBrand)
 }
 
 // createBrand godoc
@@ -90,13 +96,13 @@ func (h *BrandHandler) updateBrand(w http.ResponseWriter, r *http.Request) {
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing brand ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingID, nil)
 		return
 	}
 
-	commonID, err := common.NewIDFromString(id) // convert string to common.ID
+	commonID, err := uuid.Parse(id) // convert string to uuid.UUID
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid brand ID", err)
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidID, err)
 		return
 	}
 
@@ -124,13 +130,13 @@ func (h *BrandHandler) updateBrand(w http.ResponseWriter, r *http.Request) {
 func (h *BrandHandler) deleteBrand(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing brand ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingID, nil)
 		return
 	}
 
-	commonID, err := common.NewIDFromString(id)
+	commonID, err := uuid.Parse(id)
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid brand ID", err)
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidID, err)
 		return
 	}
 
@@ -157,13 +163,13 @@ func (h *BrandHandler) deleteBrand(w http.ResponseWriter, r *http.Request) {
 func (h *BrandHandler) getBrand(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing brand ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingID, nil)
 		return
 	}
 
-	commonID, err := common.NewIDFromString(id)
+	commonID, err := uuid.Parse(id)
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid brand ID", err)
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidID, err)
 		return
 	}
 

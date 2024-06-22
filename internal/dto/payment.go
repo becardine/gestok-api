@@ -2,14 +2,15 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/domain/entity"
+	"github.com/google/uuid"
 )
 
 type CreatePaymentInput struct {
-	OrderID    common.ID `json:"order_id"`
-	CustomerID common.ID `json:"customer_id"`
+	OrderID    uuid.UUID `json:"order_id"`
+	CustomerID uuid.UUID `json:"customer_id"`
 	Method     string    `json:"method"`
 	Date       time.Time `json:"date"`
 	Amount     float64   `json:"amount"`
@@ -17,9 +18,9 @@ type CreatePaymentInput struct {
 }
 
 type UpdatePaymentInput struct {
-	ID         common.ID `json:"id"`
-	OrderID    common.ID `json:"order_id"`
-	CustomerID common.ID `json:"customer_id"`
+	ID         uuid.UUID `json:"id"`
+	OrderID    uuid.UUID `json:"order_id"`
+	CustomerID uuid.UUID `json:"customer_id"`
 	Method     string    `json:"method"`
 	Date       time.Time `json:"date"`
 	Amount     float64   `json:"amount"`

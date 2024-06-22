@@ -2,9 +2,10 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/domain/entity"
+	"github.com/google/uuid"
 )
 
 type CreateCouponInput struct {
@@ -15,7 +16,7 @@ type CreateCouponInput struct {
 }
 
 type UpdateCouponInput struct {
-	ID             common.ID `json:"id"`
+	ID             uuid.UUID `json:"id"`
 	Code           string    `json:"code"`
 	Discount       float64   `json:"discount"`
 	ExpirationDate time.Time `json:"expiration_date"`

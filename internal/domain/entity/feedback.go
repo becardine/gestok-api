@@ -1,21 +1,21 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Feedback struct {
-	ID         common.ID `json:"id"`
-	CustomerID common.ID `json:"customer_id"`
-	OrderID    common.ID `json:"order_id"`
+	ID         uuid.UUID `json:"id"`
+	CustomerID uuid.UUID `json:"customer_id"`
+	OrderID    uuid.UUID `json:"order_id"`
 	Rating     int       `json:"rating"`
 	Comment    string    `json:"comment"`
 }
 
-func NewFeedback(customerID, orderID common.ID, rating int, comment string) (*Feedback, error) {
+func NewFeedback(customerID, orderID uuid.UUID, rating int, comment string) (*Feedback, error) {
 	feedback := &Feedback{
-		ID:         common.NewID(),
+		ID:         uuid.New(),
 		CustomerID: customerID,
 		OrderID:    orderID,
 		Rating:     rating,
@@ -30,11 +30,11 @@ func NewFeedback(customerID, orderID common.ID, rating int, comment string) (*Fe
 }
 
 func (f *Feedback) Validate() error {
-	if f.CustomerID.IsEmpty() {
+	if f.CustomerID == uuid.Nil {
 		return errors.NewEntityValidationError("customer_id", "required", "")
 	}
 
-	if f.OrderID.IsEmpty() {
+	if f.OrderID == uuid.Nil {
 		return errors.NewEntityValidationError("order_id", "required", "")
 	}
 

@@ -782,9 +782,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "common.ID": {
-            "type": "object"
-        },
         "dto.CreateBrandInput": {
             "type": "object",
             "properties": {
@@ -803,7 +800,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -817,7 +814,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -831,7 +828,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "name": {
                     "type": "string"
@@ -842,16 +839,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand_id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "category_id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "image_url": {
                     "type": "string"
@@ -883,10 +880,10 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand_id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "category_id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
@@ -909,16 +906,16 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "brand_id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "category_id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
                 "id": {
-                    "$ref": "#/definitions/common.ID"
+                    "type": "string"
                 },
                 "image_url": {
                     "type": "string"

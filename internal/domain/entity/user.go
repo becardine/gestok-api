@@ -1,12 +1,12 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID       common.ID `json:"id"`
+	ID       uuid.UUID `json:"id"`
 	Name     string    `json:"name"`
 	Email    string    `json:"email"`
 	Password string    `json:"-"` // - means that this field will not be serialized
@@ -19,7 +19,7 @@ func NewUser(name, email, password string) (*User, error) {
 	}
 
 	return &User{
-		ID:       common.NewID(),
+		ID:       uuid.New(),
 		Name:     name,
 		Email:    email,
 		Password: string(hashedPassword),

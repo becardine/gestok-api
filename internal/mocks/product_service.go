@@ -30,17 +30,17 @@ func (m *ProductServiceMock) CreateProduct(ctx context.Context, input *service.C
 	return args.Get(0).(*entity.Product), args.Error(1)
 }
 
-func (m *ProductServiceMock) GetProduct(ctx context.Context, id common.ID) (*entity.Product, error) {
+func (m *ProductServiceMock) GetProduct(ctx context.Context, id uuid.UUID) (*entity.Product, error) {
 	args := m.Called(ctx, id)
 	return args.Get(0).(*entity.Product), args.Error(1)
 }
 
-func (m *ProductServiceMock) UpdateProduct(ctx context.Context, id common.ID, input *service.UpdateProductInput) error {
+func (m *ProductServiceMock) UpdateProduct(ctx context.Context, id uuid.UUID, input *service.UpdateProductInput) error {
 	args := m.Called(ctx, id, input)
 	return args.Error(0)
 }
 
-func (m *ProductServiceMock) DeleteProduct(ctx context.Context, id common.ID) error {
+func (m *ProductServiceMock) DeleteProduct(ctx context.Context, id uuid.UUID) error {
 	args := m.Called(ctx, id)
 	return args.Error(0)
 }

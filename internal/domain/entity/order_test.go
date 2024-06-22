@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewOrder(t *testing.T) {
-	customerID := common.NewID()
+	customerID := uuid.New()
 	orderDate := time.Now()
 	orderStatus := "Pending"
 	totalValue := 100.50
@@ -28,7 +28,7 @@ func TestNewOrder(t *testing.T) {
 }
 
 func TestOrderValidate(t *testing.T) {
-	customerID := common.NewID()
+	customerID := uuid.New()
 	orderDate := time.Now()
 
 	testCases := []struct {
@@ -39,7 +39,7 @@ func TestOrderValidate(t *testing.T) {
 		{
 			name: "valid order",
 			order: &entity.Order{
-				ID:          common.NewID(),
+				ID:          uuid.New(),
 				CustomerID:  customerID,
 				OrderDate:   orderDate,
 				OrderStatus: "Pending",
@@ -50,7 +50,7 @@ func TestOrderValidate(t *testing.T) {
 		{
 			name: "empty customer ID",
 			order: &entity.Order{
-				ID:          common.NewID(),
+				ID:          uuid.New(),
 				OrderDate:   orderDate,
 				OrderStatus: "Pending",
 				TotalValue:  100.50,
@@ -60,7 +60,7 @@ func TestOrderValidate(t *testing.T) {
 		{
 			name: "empty order date",
 			order: &entity.Order{
-				ID:          common.NewID(),
+				ID:          uuid.New(),
 				CustomerID:  customerID,
 				OrderStatus: "Pending",
 				TotalValue:  100.50,
@@ -70,7 +70,7 @@ func TestOrderValidate(t *testing.T) {
 		{
 			name: "empty order status",
 			order: &entity.Order{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				OrderDate:  orderDate,
 				TotalValue: 100.50,
@@ -80,7 +80,7 @@ func TestOrderValidate(t *testing.T) {
 		{
 			name: "invalid total value",
 			order: &entity.Order{
-				ID:          common.NewID(),
+				ID:          uuid.New(),
 				CustomerID:  customerID,
 				OrderDate:   orderDate,
 				OrderStatus: "Pending",

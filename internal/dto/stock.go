@@ -2,8 +2,9 @@ package dto
 
 import (
 	"encoding/json"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 type CreateStockInput struct {
@@ -13,7 +14,7 @@ type CreateStockInput struct {
 }
 
 type UpdateStockInput struct {
-	ID       common.ID `json:"id"`
+	ID       uuid.UUID `json:"id"`
 	Name     string    `json:"name"`
 	Location string    `json:"location"`
 	Capacity int       `json:"capacity"`

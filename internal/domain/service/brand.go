@@ -4,18 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	"github.com/becardine/gestock-api/internal/dto"
+	"github.com/google/uuid"
 )
 
 type BrandService interface {
-	Get(ctx context.Context, id common.ID) (*entity.Brand, error)
+	Get(ctx context.Context, id uuid.UUID) (*entity.Brand, error)
 	List(ctx context.Context, page, pageSize int) ([]*entity.Brand, error)
 	Create(ctx context.Context, brand *dto.CreateBrandInput) (*entity.Brand, error)
 	Update(ctx context.Context, brand *dto.UpdateBrandInput) error
-	Delete(ctx context.Context, id common.ID) error
+	Delete(ctx context.Context, id uuid.UUID) error
 }
 
 type brandService struct {
@@ -28,7 +29,7 @@ func NewBrandService(brandRepo domain.BrandRepositoryInterface) BrandService {
 	}
 }
 
-func (b *brandService) Get(ctx context.Context, id common.ID) (*entity.Brand, error) {
+func (b *brandService) Get(ctx context.Context, id uuid.UUID) (*entity.Brand, error) {
 	brand, err := b.repository.Get(ctx, id)
 	if err != nil {
 		return nil, b.handleBrandNotFound(err, id)
@@ -78,7 +79,7 @@ func (b *brandService) Update(ctx context.Context, input *dto.UpdateBrandInput) 
 	return nil
 }
 
-func (b *brandService) Delete(ctx context.Context, id common.ID) error {
+func (b *brandService) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := b.repository.Get(ctx, id)
 	if err != nil {
 		return b.handleBrandNotFound(err, id)
@@ -92,7 +93,7 @@ func (b *brandService) Delete(ctx context.Context, id common.ID) error {
 	return nil
 }
 
-func (b *brandService) handleBrandNotFound(err error, id common.ID) error {
+func (b *brandService) handleBrandNotFound(err error, id uuid.UUID) error {
 	if errors.Is(err, &ErrNotFound{}) {
 		return &ErrNotFound{Entity: "Brand", ID: id}
 	}

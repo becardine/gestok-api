@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,7 +41,7 @@ func TestNewBrand(t *testing.T) {
 func TestBrand_Validate(t *testing.T) {
 	t.Run("should return no error if brand is valid", func(t *testing.T) {
 		brand := &entity.Brand{
-			ID:          common.NewID(),
+			ID:          uuid.New(),
 			Name:        "Brand Test",
 			Description: "Description Test",
 		}
@@ -51,7 +51,7 @@ func TestBrand_Validate(t *testing.T) {
 
 	t.Run("should return error if name is empty", func(t *testing.T) {
 		brand := &entity.Brand{
-			ID:          common.NewID(),
+			ID:          uuid.New(),
 			Name:        "",
 			Description: "Description Test",
 		}
@@ -62,7 +62,7 @@ func TestBrand_Validate(t *testing.T) {
 	t.Run("should return error if name exceeds max length", func(t *testing.T) {
 		longName := "This is a very long brand name that exceeds the maximum allowed length of 100 characters"
 		brand := &entity.Brand{
-			ID:          common.NewID(),
+			ID:          uuid.New(),
 			Name:        longName,
 			Description: "Description Test",
 		}
@@ -73,7 +73,7 @@ func TestBrand_Validate(t *testing.T) {
 	t.Run("should return error if description exceeds max length", func(t *testing.T) {
 		longDescription := "This is a very long description that exceeds the maximum allowed length of 255 characters. This is a very long description that exceeds the maximum allowed length of 255 characters. This is a very long description that exceeds the maximum allowed length of 255 characters."
 		brand := &entity.Brand{
-			ID:          common.NewID(),
+			ID:          uuid.New(),
 			Name:        "Brand Test",
 			Description: longDescription,
 		}

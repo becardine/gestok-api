@@ -2,21 +2,22 @@ package dto
 
 import (
 	"encoding/json"
-	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/domain/entity"
+	"github.com/google/uuid"
 )
 
 type CreateOrderInput struct {
-	CustomerID  common.ID `json:"customer_id"`
+	CustomerID  uuid.UUID `json:"customer_id"`
 	OrderDate   time.Time `json:"order_date"`
 	OrderStatus string    `json:"order_status"`
 	TotalValue  float64   `json:"total_value"`
 }
 
 type UpdateOrderInput struct {
-	ID          common.ID `json:"id"`
-	CustomerID  common.ID `json:"customer_id"`
+	ID          uuid.UUID `json:"id"`
+	CustomerID  uuid.UUID `json:"customer_id"`
 	OrderDate   time.Time `json:"order_date"`
 	OrderStatus string    `json:"order_status"`
 	TotalValue  float64   `json:"total_value"`

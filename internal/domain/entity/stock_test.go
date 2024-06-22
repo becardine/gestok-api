@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -31,7 +31,7 @@ func TestStockValidate(t *testing.T) {
 		{
 			name: "valid stock",
 			stock: &entity.Stock{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "Main Warehouse",
 				Location: "123 Main St",
 				Capacity: 1000,
@@ -41,7 +41,7 @@ func TestStockValidate(t *testing.T) {
 		{
 			name: "empty name",
 			stock: &entity.Stock{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Location: "123 Main St",
 				Capacity: 1000,
 			},
@@ -50,7 +50,7 @@ func TestStockValidate(t *testing.T) {
 		{
 			name: "name exceeding max length",
 			stock: &entity.Stock{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "Main Warehouse Main Warehouse Main Warehouse Main Warehouse Main Warehouse Main Warehouse Main Warehouse",
 				Location: "123 Main St",
 				Capacity: 1000,
@@ -60,7 +60,7 @@ func TestStockValidate(t *testing.T) {
 		{
 			name: "empty location",
 			stock: &entity.Stock{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "Main Warehouse",
 				Capacity: 1000,
 			},
@@ -69,7 +69,7 @@ func TestStockValidate(t *testing.T) {
 		{
 			name: "location exceeding max length",
 			stock: &entity.Stock{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "Main Warehouse",
 				Location: "123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St 123 Main St Main St 123 Main St 123 Main St 123 Main StMain St 123 Main St 123 Main St 123 Main StMain St 123 Main St 123 Main St 123 Main St",
 				Capacity: 1000,
@@ -79,7 +79,7 @@ func TestStockValidate(t *testing.T) {
 		{
 			name: "invalid capacity",
 			stock: &entity.Stock{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "Main Warehouse",
 				Location: "123 Main St",
 				Capacity: 0,

@@ -2,21 +2,22 @@ package dto
 
 import (
 	"encoding/json"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 type CreateFeedbackInput struct {
-	CustomerID common.ID `json:"customer_id"`
-	OrderID    common.ID `json:"order_id"`
+	CustomerID uuid.UUID `json:"customer_id"`
+	OrderID    uuid.UUID `json:"order_id"`
 	Rating     int       `json:"rating"`
 	Comment    string    `json:"comment"`
 }
 
 type UpdateFeedbackInput struct {
-	ID         common.ID `json:"id"`
-	CustomerID common.ID `json:"customer_id"`
-	OrderID    common.ID `json:"order_id"`
+	ID         uuid.UUID `json:"id"`
+	CustomerID uuid.UUID `json:"customer_id"`
+	OrderID    uuid.UUID `json:"order_id"`
 	Rating     int       `json:"rating"`
 	Comment    string    `json:"comment"`
 }

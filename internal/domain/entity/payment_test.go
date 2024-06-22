@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewPayment(t *testing.T) {
-	orderID := common.NewID()
-	customerID := common.NewID()
+	orderID := uuid.New()
+	customerID := uuid.New()
 	method := "Credit Card"
 	date := time.Now()
 	amount := 100.50
@@ -31,8 +31,8 @@ func TestNewPayment(t *testing.T) {
 }
 
 func TestPaymentValidate(t *testing.T) {
-	orderID := common.NewID()
-	customerID := common.NewID()
+	orderID := uuid.New()
+	customerID := uuid.New()
 	date := time.Now()
 
 	testCases := []struct {
@@ -43,7 +43,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "valid payment",
 			payment: &entity.Payment{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				OrderID:    orderID,
 				CustomerID: customerID,
 				Method:     "Credit Card",
@@ -56,7 +56,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "empty order ID",
 			payment: &entity.Payment{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				Method:     "Credit Card",
 				Date:       date,
@@ -68,7 +68,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "empty customer ID",
 			payment: &entity.Payment{
-				ID:      common.NewID(),
+				ID:      uuid.New(),
 				OrderID: orderID,
 				Method:  "Credit Card",
 				Date:    date,
@@ -80,7 +80,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "empty method",
 			payment: &entity.Payment{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				OrderID:    orderID,
 				CustomerID: customerID,
 				Date:       date,
@@ -92,7 +92,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "empty date",
 			payment: &entity.Payment{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				OrderID:    orderID,
 				CustomerID: customerID,
 				Method:     "Credit Card",
@@ -104,7 +104,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "invalid amount",
 			payment: &entity.Payment{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				OrderID:    orderID,
 				CustomerID: customerID,
 				Method:     "Credit Card",
@@ -117,7 +117,7 @@ func TestPaymentValidate(t *testing.T) {
 		{
 			name: "empty status",
 			payment: &entity.Payment{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				OrderID:    orderID,
 				CustomerID: customerID,
 				Method:     "Credit Card",

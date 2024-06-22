@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"time"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	database "github.com/becardine/gestock-api/internal/infra/sqlc"
-	"time"
+	"github.com/google/uuid"
 )
 
 type BrandRepository struct {
@@ -21,7 +22,7 @@ func NewBrandRepository(db *sql.DB) domain.BrandRepositoryInterface {
 	}
 }
 
-func (b *BrandRepository) Get(ctx context.Context, id common.ID) (*entity.Brand, error) {
+func (b *BrandRepository) Get(ctx context.Context, id uuid.UUID) (*entity.Brand, error) {
 	brand, err := b.queries.GetBrand(ctx, id)
 	if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (b *BrandRepository) Update(ctx context.Context, brand *entity.Brand) error
 	return nil
 }
 
-func (b *BrandRepository) Delete(ctx context.Context, id common.ID) error {
+func (b *BrandRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := b.queries.DeleteBrand(ctx, id)
 	if err != nil {
 		return fmt.Errorf("error deleting brand: %w", err)

@@ -3,12 +3,12 @@ package entity
 import (
 	"time"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Coupon struct {
-	ID             common.ID `json:"id"`
+	ID             uuid.UUID `json:"id"`
 	Code           string    `json:"code"`
 	Discount       float64   `json:"discount"`
 	ExpirationDate time.Time `json:"expiration_date"`
@@ -17,7 +17,7 @@ type Coupon struct {
 
 func NewCoupon(code string, discount float64, expirationDate time.Time, status string) (*Coupon, error) {
 	coupon := &Coupon{
-		ID:             common.NewID(),
+		ID:             uuid.New(),
 		Code:           code,
 		Discount:       discount,
 		ExpirationDate: expirationDate,

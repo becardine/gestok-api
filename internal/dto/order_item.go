@@ -2,21 +2,22 @@ package dto
 
 import (
 	"encoding/json"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 type CreateOrderItemInput struct {
-	OrderID   common.ID `json:"order_id"`
-	ProductID common.ID `json:"product_id"`
+	OrderID   uuid.UUID `json:"order_id"`
+	ProductID uuid.UUID `json:"product_id"`
 	Quantity  int       `json:"quantity"`
 	UnitPrice float64   `json:"unit_price"`
 }
 
 type UpdateOrderItemInput struct {
-	ID        common.ID `json:"id"`
-	OrderID   common.ID `json:"order_id"`
-	ProductID common.ID `json:"product_id"`
+	ID        uuid.UUID `json:"id"`
+	OrderID   uuid.UUID `json:"order_id"`
+	ProductID uuid.UUID `json:"product_id"`
 	Quantity  int       `json:"quantity"`
 	UnitPrice float64   `json:"unit_price"`
 }
@@ -31,7 +32,7 @@ func (input *CreateOrderItemInput) FromJSON(data []byte) error {
 
 func (input *CreateOrderItemInput) ToEntity() *entity.OrderItem {
 	return &entity.OrderItem{
-		ID:        common.NewID(),
+		ID:        uuid.New(),
 		OrderID:   input.OrderID,
 		ProductID: input.ProductID,
 		Quantity:  input.Quantity,

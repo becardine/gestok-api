@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 type CreateBrandInput struct {
@@ -13,7 +13,7 @@ type CreateBrandInput struct {
 }
 
 type UpdateBrandInput struct {
-	ID          common.ID `json:"id"`
+	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
@@ -28,7 +28,7 @@ func (input *CreateBrandInput) FromJSON(data []byte) error {
 
 func (input *CreateBrandInput) ToEntity() *entity.Brand {
 	return &entity.Brand{
-		ID:          common.NewID(),
+		ID:          uuid.New(),
 		Name:        input.Name,
 		Description: input.Description,
 	}

@@ -1,9 +1,10 @@
 package entity_test
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/becardine/gestock-api/internal/errors"
 	"testing"
+
+	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/stretchr/testify/assert"
@@ -41,7 +42,7 @@ func TestCustomer_Validate(t *testing.T) {
 		{
 			name: "valid customer",
 			customer: &entity.Customer{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "John Doe",
 				Email:    "john.doe@example.com",
 				Password: "password123",
@@ -53,7 +54,7 @@ func TestCustomer_Validate(t *testing.T) {
 		{
 			name: "empty name",
 			customer: &entity.Customer{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Email:    "john.doe@example.com",
 				Password: "password123",
 				Address:  "123 Main St",
@@ -64,7 +65,7 @@ func TestCustomer_Validate(t *testing.T) {
 		{
 			name: "name exceeding max length",
 			customer: &entity.Customer{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "John Doe John Doe John Doe John Doe John Doe John Doe John Doe John Doe John Doe John Doe",
 				Email:    "john.doe@example.com",
 				Password: "password123",
@@ -119,7 +120,7 @@ func TestCustomer_Validate_Email(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			customer := &entity.Customer{
-				ID:       common.NewID(),
+				ID:       uuid.New(),
 				Name:     "John Doe",
 				Email:    tc.email,
 				Password: "password123",

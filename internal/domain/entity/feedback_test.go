@@ -4,14 +4,14 @@ import (
 	"testing"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewFeedback(t *testing.T) {
-	customerID := common.NewID()
-	orderID := common.NewID()
+	customerID := uuid.New()
+	orderID := uuid.New()
 	rating := 4
 	comment := "Great service!"
 
@@ -26,8 +26,8 @@ func TestNewFeedback(t *testing.T) {
 }
 
 func TestFeedbackValidate(t *testing.T) {
-	customerID := common.NewID()
-	orderID := common.NewID()
+	customerID := uuid.New()
+	orderID := uuid.New()
 
 	testCases := []struct {
 		name        string
@@ -37,7 +37,7 @@ func TestFeedbackValidate(t *testing.T) {
 		{
 			name: "valid feedback",
 			feedback: &entity.Feedback{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				OrderID:    orderID,
 				Rating:     4,
@@ -48,7 +48,7 @@ func TestFeedbackValidate(t *testing.T) {
 		{
 			name: "empty customer ID",
 			feedback: &entity.Feedback{
-				ID:      common.NewID(),
+				ID:      uuid.New(),
 				OrderID: orderID,
 				Rating:  4,
 				Comment: "Great service!",
@@ -58,7 +58,7 @@ func TestFeedbackValidate(t *testing.T) {
 		{
 			name: "empty order ID",
 			feedback: &entity.Feedback{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				Rating:     4,
 				Comment:    "Great service!",
@@ -68,7 +68,7 @@ func TestFeedbackValidate(t *testing.T) {
 		{
 			name: "invalid rating (below minimum)",
 			feedback: &entity.Feedback{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				OrderID:    orderID,
 				Rating:     0,
@@ -79,7 +79,7 @@ func TestFeedbackValidate(t *testing.T) {
 		{
 			name: "invalid rating (above maximum)",
 			feedback: &entity.Feedback{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				OrderID:    orderID,
 				Rating:     6,
@@ -90,7 +90,7 @@ func TestFeedbackValidate(t *testing.T) {
 		{
 			name: "empty comment",
 			feedback: &entity.Feedback{
-				ID:         common.NewID(),
+				ID:         uuid.New(),
 				CustomerID: customerID,
 				OrderID:    orderID,
 				Rating:     4,

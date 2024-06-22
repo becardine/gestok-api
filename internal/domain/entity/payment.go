@@ -1,24 +1,25 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/becardine/gestock-api/internal/errors"
 	"time"
+
+	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Payment struct {
-	ID         common.ID `json:"id"`
-	OrderID    common.ID `json:"order_id"`
-	CustomerID common.ID `json:"customer_id"`
+	ID         uuid.UUID `json:"id"`
+	OrderID    uuid.UUID `json:"order_id"`
+	CustomerID uuid.UUID `json:"customer_id"`
 	Method     string    `json:"method"`
 	Date       time.Time `json:"date"`
 	Amount     float64   `json:"amount"`
 	Status     string    `json:"status"`
 }
 
-func NewPayment(orderID, customerID common.ID, method string, date time.Time, amount float64, status string) (*Payment, error) {
+func NewPayment(orderID, customerID uuid.UUID, method string, date time.Time, amount float64, status string) (*Payment, error) {
 	payment := &Payment{
-		ID:         common.NewID(),
+		ID:         uuid.New(),
 		OrderID:    orderID,
 		CustomerID: customerID,
 		Method:     method,
@@ -35,11 +36,11 @@ func NewPayment(orderID, customerID common.ID, method string, date time.Time, am
 }
 
 func (p *Payment) Validate() error {
-	if p.OrderID.IsEmpty() {
+	if p.OrderID == uuid.Nil {
 		return errors.NewEntityValidationError("order_id", "required", "")
 	}
 
-	if p.CustomerID.IsEmpty() {
+	if p.CustomerID == uuid.Nil {
 		return errors.NewEntityValidationError("customer_id", "required", "")
 	}
 
