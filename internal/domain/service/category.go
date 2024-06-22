@@ -4,21 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	"github.com/becardine/gestock-api/internal/dto"
+	"github.com/google/uuid"
 )
 
 type CategoryServiceInterface interface {
-	Get(ctx context.Context, id common.ID) (*entity.Category, error)
+	Get(ctx context.Context, id uuid.UUID) (*entity.Category, error)
 	Create(ctx context.Context, category *dto.CreateCategoryInput) (*entity.Category, error)
 	Update(ctx context.Context, category *dto.UpdateCategoryInput) error
-	Delete(ctx context.Context, id common.ID) error
+	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, page, pageSize int) ([]*entity.Category, error)
-	GetCategoryProducts(ctx context.Context, categoryID common.ID) ([]*entity.Product, error)
-	//AddCategoryProduct(ctx context.Context, productID, categoryID common.ID) error
-	//RemoveCategoryProduct(ctx context.Context, productID, categoryID common.ID) error
+	GetCategoryProducts(ctx context.Context, categoryID uuid.UUID) ([]*entity.Product, error)
+	//AddCategoryProduct(ctx context.Context, productID, categoryID uuid.UUID) error
+	//RemoveCategoryProduct(ctx context.Context, productID, categoryID uuid.UUID) error
 }
 
 type categoryService struct {
@@ -29,7 +30,7 @@ func NewCategoryService(categoryRepo domain.CategoryRepositoryInterface) Categor
 	return &categoryService{categoryRepo: categoryRepo}
 }
 
-func (c *categoryService) Get(ctx context.Context, id common.ID) (*entity.Category, error) {
+func (c *categoryService) Get(ctx context.Context, id uuid.UUID) (*entity.Category, error) {
 	category, err := c.categoryRepo.Get(ctx, id)
 	if err != nil {
 		return nil, c.handleCategoryError(err, id)
@@ -44,7 +45,8 @@ func (c *categoryService) Create(ctx context.Context, input *dto.CreateCategoryI
 		return nil, fmt.Errorf("error while validating category: %w", err)
 	}
 
-	if err := c.categoryRepo.Create(ctx, category); err != nil {
+	category, err := c.categoryRepo.Create(ctx, category)
+	if err != nil {
 		return nil, fmt.Errorf("error while creating category in repository: %w", err)
 	}
 
@@ -71,7 +73,7 @@ func (c *categoryService) Update(ctx context.Context, input *dto.UpdateCategoryI
 	return nil
 }
 
-func (c *categoryService) Delete(ctx context.Context, id common.ID) error {
+func (c *categoryService) Delete(ctx context.Context, id uuid.UUID) error {
 	_, err := c.Get(ctx, id)
 	if err != nil {
 		return err
@@ -93,7 +95,7 @@ func (c *categoryService) List(ctx context.Context, page, pageSize int) ([]*enti
 	return categories, nil
 }
 
-func (c *categoryService) GetCategoryProducts(ctx context.Context, categoryID common.ID) ([]*entity.Product, error) {
+func (c *categoryService) GetCategoryProducts(ctx context.Context, categoryID uuid.UUID) ([]*entity.Product, error) {
 	products, err := c.categoryRepo.GetCategoryProducts(ctx, categoryID)
 	if err != nil {
 		return nil, fmt.Errorf("error while fetching category products from repository: %w", err)
@@ -102,7 +104,7 @@ func (c *categoryService) GetCategoryProducts(ctx context.Context, categoryID co
 	return products, nil
 }
 
-func (c *categoryService) handleCategoryError(err error, id common.ID) error {
+func (c *categoryService) handleCategoryError(err error, id uuid.UUID) error {
 	if errors.Is(err, &ErrNotFound{}) {
 		return &ErrNotFound{Entity: "Category", ID: id}
 	}

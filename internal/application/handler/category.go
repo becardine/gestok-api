@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 )
 
 const missingCategoryID = "Missing category ID"
@@ -89,7 +89,7 @@ func (h *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	categoryId, err := common.NewIDFromString(id)
+	categoryId, err := uuid.Parse(id)
 	if err != nil {
 
 		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
@@ -137,7 +137,7 @@ func (h *CategoryHandler) deleteCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	categoryId, err := common.NewIDFromString(id)
+	categoryId, err := uuid.Parse(id)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return
@@ -169,7 +169,7 @@ func (h *CategoryHandler) getProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	categoryId, err := common.NewIDFromString(id)
+	categoryId, err := uuid.Parse(id)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return
@@ -203,7 +203,7 @@ func (h *CategoryHandler) getCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	categoryId, err := common.NewIDFromString(id)
+	categoryId, err := uuid.Parse(id)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return

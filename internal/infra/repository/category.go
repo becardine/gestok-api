@@ -3,11 +3,12 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	database "github.com/becardine/gestock-api/internal/infra/sqlc"
-	"time"
+	"github.com/google/uuid"
 )
 
 type CategoryRepository struct {
@@ -20,7 +21,7 @@ func NewCategoryRepository(db *sql.DB) domain.CategoryRepositoryInterface {
 	}
 }
 
-func (c CategoryRepository) Get(ctx context.Context, id common.ID) (*entity.Category, error) {
+func (c CategoryRepository) Get(ctx context.Context, id uuid.UUID) (*entity.Category, error) {
 	category, err := c.queries.GetCategory(ctx, id)
 	if err != nil {
 		return nil, err
@@ -33,7 +34,7 @@ func (c CategoryRepository) Get(ctx context.Context, id common.ID) (*entity.Cate
 	}, nil
 }
 
-func (c CategoryRepository) Create(ctx context.Context, category *entity.Category) error {
+func (c CategoryRepository) Create(ctx context.Context, category *entity.Category) (*entity.Category, error) {
 	err := c.queries.CreateCategory(ctx, database.CreateCategoryParams{
 		ID:          category.ID,
 		Name:        category.Name,
@@ -42,10 +43,10 @@ func (c CategoryRepository) Create(ctx context.Context, category *entity.Categor
 		UpdatedDate: sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return nil
+	return category, nil
 }
 
 func (c CategoryRepository) Update(ctx context.Context, category *entity.Category) error {
@@ -62,7 +63,7 @@ func (c CategoryRepository) Update(ctx context.Context, category *entity.Categor
 	return nil
 }
 
-func (c CategoryRepository) Delete(ctx context.Context, id common.ID) error {
+func (c CategoryRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	err := c.queries.DeleteCategory(ctx, id)
 	if err != nil {
 		return err
@@ -92,7 +93,7 @@ func (c CategoryRepository) List(ctx context.Context, page, pageSize int) ([]*en
 	return result, nil
 }
 
-func (c CategoryRepository) GetCategoryProducts(ctx context.Context, categoryID common.ID) ([]*entity.Product, error) {
+func (c CategoryRepository) GetCategoryProducts(ctx context.Context, categoryID uuid.UUID) ([]*entity.Product, error) {
 	products, err := c.queries.GetCategoryProducts(ctx, categoryID)
 	if err != nil {
 		return nil, err

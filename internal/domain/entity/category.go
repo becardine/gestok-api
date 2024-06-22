@@ -1,19 +1,19 @@
 package entity
 
 import (
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/errors"
+	"github.com/google/uuid"
 )
 
 type Category struct {
-	ID          common.ID `json:"id"`
+	ID          uuid.UUID `json:"id"`
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
 
 func NewCategory(name, description string) (*Category, error) {
 	category := &Category{
-		ID:          common.NewID(),
+		ID:          uuid.New(),
 		Name:        name,
 		Description: description,
 	}
