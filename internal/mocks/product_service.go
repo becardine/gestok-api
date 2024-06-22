@@ -5,8 +5,8 @@ import (
 	"database/sql"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 )
 
