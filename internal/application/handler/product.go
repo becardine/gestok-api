@@ -2,13 +2,15 @@ package handler
 
 import (
 	"encoding/json"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
-	"github.com/go-chi/chi/v5"
 	"io"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
 	"github.com/becardine/gestock-api/config"
 	"github.com/becardine/gestock-api/internal/domain/service"
+	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
 )
 
@@ -23,11 +25,12 @@ func NewProductHandler(productService service.ProductService) *ProductHandler {
 }
 
 func (h *ProductHandler) RegisterRoutes(router chi.Router) {
-	router.Get("/products", h.listProducts)
-	router.Get("/products/{id}", h.getProduct)
-	router.Post("/products", h.createProduct)
-	router.Put("/products/{id}", h.updateProduct)
-	router.Delete("/products/{id}", h.deleteProduct)
+	const basePath = "/products"
+	router.Get(basePath, h.listProducts)
+	router.Get(basePath+"/{id}", h.getProduct)
+	router.Post(basePath, h.createProduct)
+	router.Put(basePath+"/{id}", h.updateProduct)
+	router.Delete(basePath+"/{id}", h.deleteProduct)
 }
 
 // createProduct godoc
@@ -100,27 +103,13 @@ func (h *ProductHandler) updateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productID, err := common.NewIDFromString(id)
-	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid product ID", err)
-		return
-	}
-
-	input.ID = productID
-
-	err = h.productService.UpdateProduct(r.Context(), productID, &input)
+	err := h.productService.UpdateProduct(r.Context(), input.ID, &input)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusInternalServerError, "Failed to update product", err)
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(input)
-	if err != nil {
-		return
-	}
-
-	w.WriteHeader(http.StatusNoContent)
+	dto.RespondWithJSON(w, http.StatusOK, input)
 }
 
 // deleteProduct godoc
@@ -142,7 +131,7 @@ func (h *ProductHandler) deleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productID, err := common.NewIDFromString(id)
+	productID, err := uuid.Parse(id)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid product ID", err)
 		return
@@ -154,7 +143,7 @@ func (h *ProductHandler) deleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	dto.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // listProducts godoc
@@ -174,11 +163,7 @@ func (h *ProductHandler) listProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(products)
-	if err != nil {
-		return
-	}
+	dto.RespondWithJSON(w, http.StatusOK, products)
 }
 
 // getProduct godoc
@@ -200,7 +185,7 @@ func (h *ProductHandler) getProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	productID, err := common.NewIDFromString(id)
+	productID, err := uuid.Parse(id)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid brand ID", err)
 		return
@@ -212,9 +197,5 @@ func (h *ProductHandler) getProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(product)
-	if err != nil {
-		return
-	}
+	dto.RespondWithJSON(w, http.StatusOK, product)
 }
