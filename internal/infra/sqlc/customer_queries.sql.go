@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 const createCustomer = `-- name: CreateCustomer :exec
@@ -18,7 +18,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 type CreateCustomerParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	Name        string
 	Email       string
 	Password    string
@@ -48,7 +48,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCustomer(ctx context.Context, id common.ID) error {
+func (q *Queries) DeleteCustomer(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteCustomer, id)
 	return err
 }
@@ -57,7 +57,7 @@ const getCustomer = `-- name: GetCustomer :one
 SELECT id, name, email, password, address, phone, deleted_at, created_date, updated_date FROM customers WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCustomer(ctx context.Context, id common.ID) (Customer, error) {
+func (q *Queries) GetCustomer(ctx context.Context, id uuid.UUID) (Customer, error) {
 	row := q.db.QueryRowContext(ctx, getCustomer, id)
 	var i Customer
 	err := row.Scan(
@@ -84,7 +84,7 @@ ORDER BY d.delivery_date DESC
 `
 
 type GetCustomerDeliveriesParams struct {
-	ID     common.ID
+	ID     uuid.UUID
 	Limit  int32
 	Offset int32
 }
@@ -132,7 +132,7 @@ ORDER BY f.created_date DESC
 `
 
 type GetCustomerFeedbacksParams struct {
-	ID     common.ID
+	ID     uuid.UUID
 	Limit  int32
 	Offset int32
 }
@@ -179,7 +179,7 @@ ORDER BY o.order_date DESC
 `
 
 type GetCustomerOrdersParams struct {
-	ID     common.ID
+	ID     uuid.UUID
 	Limit  int32
 	Offset int32
 }
@@ -226,7 +226,7 @@ ORDER BY p.payment_date DESC
 `
 
 type GetCustomerPaymentsParams struct {
-	ID     common.ID
+	ID     uuid.UUID
 	Limit  int32
 	Offset int32
 }
@@ -318,7 +318,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateCustomerParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	Name        string
 	Email       string
 	Address     sql.NullString

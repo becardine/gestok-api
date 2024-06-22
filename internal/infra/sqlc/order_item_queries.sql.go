@@ -9,7 +9,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -22,7 +21,7 @@ RETURNING id, order_id, product_id, quantity, unit_price, created_at, updated_at
 `
 
 type CreateOrderItemParams struct {
-	ID        common.ID
+	ID        uuid.UUID
 	OrderID   uuid.NullUUID
 	ProductID uuid.NullUUID
 	Quantity  int32
@@ -61,7 +60,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteOrderItem(ctx context.Context, id common.ID) error {
+func (q *Queries) DeleteOrderItem(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteOrderItem, id)
 	return err
 }
@@ -70,7 +69,7 @@ const getOrderItem = `-- name: GetOrderItem :one
 SELECT id, order_id, product_id, quantity, unit_price, created_at, updated_at, deleted_at FROM order_items WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetOrderItem(ctx context.Context, id common.ID) (OrderItem, error) {
+func (q *Queries) GetOrderItem(ctx context.Context, id uuid.UUID) (OrderItem, error) {
 	row := q.db.QueryRowContext(ctx, getOrderItem, id)
 	var i OrderItem
 	err := row.Scan(
@@ -139,7 +138,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateOrderItemParams struct {
-	ID        common.ID
+	ID        uuid.UUID
 	Quantity  int32
 	UnitPrice string
 	UpdatedAt time.Time

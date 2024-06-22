@@ -9,7 +9,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -42,7 +41,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateOrderParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	CustomerID  uuid.NullUUID
 	OrderDate   sql.NullTime
 	OrderStatus string
@@ -70,7 +69,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteOrder(ctx context.Context, id common.ID) error {
+func (q *Queries) DeleteOrder(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteOrder, id)
 	return err
 }
@@ -79,7 +78,7 @@ const getOrder = `-- name: GetOrder :one
 SELECT id, customer_id, order_date, order_status, total_value, deleted_at, created_date, updated_date FROM orders WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetOrder(ctx context.Context, id common.ID) (Order, error) {
+func (q *Queries) GetOrder(ctx context.Context, id uuid.UUID) (Order, error) {
 	row := q.db.QueryRowContext(ctx, getOrder, id)
 	var i Order
 	err := row.Scan(
@@ -197,7 +196,7 @@ WHERE o.id = $1 AND o.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetOrderProducts(ctx context.Context, id common.ID) ([]Product, error) {
+func (q *Queries) GetOrderProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getOrderProducts, id)
 	if err != nil {
 		return nil, err
@@ -299,7 +298,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateOrderParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	OrderDate   sql.NullTime
 	OrderStatus string
 	TotalValue  string
@@ -324,7 +323,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateOrderStatusParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	OrderStatus string
 }
 

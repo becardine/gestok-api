@@ -9,7 +9,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -19,7 +18,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 `
 
 type CreateDeliveryParams struct {
-	ID             common.ID
+	ID             uuid.UUID
 	OrderID        uuid.NullUUID
 	CustomerID     uuid.NullUUID
 	DeliveryType   string
@@ -49,7 +48,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteDelivery(ctx context.Context, id common.ID) error {
+func (q *Queries) DeleteDelivery(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteDelivery, id)
 	return err
 }
@@ -152,7 +151,7 @@ const getDelivery = `-- name: GetDelivery :one
 SELECT id, order_id, customer_id, delivery_type, delivery_date, delivery_status, deleted_at, created_date, updated_date FROM deliveries WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetDelivery(ctx context.Context, id common.ID) (Delivery, error) {
+func (q *Queries) GetDelivery(ctx context.Context, id uuid.UUID) (Delivery, error) {
 	row := q.db.QueryRowContext(ctx, getDelivery, id)
 	var i Delivery
 	err := row.Scan(
@@ -222,7 +221,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateDeliveryParams struct {
-	ID             common.ID
+	ID             uuid.UUID
 	DeliveryType   string
 	DeliveryDate   sql.NullTime
 	DeliveryStatus string

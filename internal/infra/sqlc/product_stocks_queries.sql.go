@@ -9,7 +9,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -22,7 +21,7 @@ RETURNING id, product_id, stock_id, quantity, created_at, updated_at, deleted_at
 `
 
 type CreateProductStockParams struct {
-	ID        common.ID
+	ID        uuid.UUID
 	ProductID uuid.NullUUID
 	StockID   uuid.NullUUID
 	Quantity  int32

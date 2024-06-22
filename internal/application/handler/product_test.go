@@ -9,9 +9,9 @@ import (
 
 	"github.com/becardine/gestock-api/config"
 	"github.com/becardine/gestock-api/wire"
+	"github.com/google/uuid"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/mocks"
 	"github.com/go-chi/chi/v5"
@@ -20,7 +20,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestProductHandler_createProduct(t *testing.T) {
+func TestCreateProduct(t *testing.T) {
 	t.Run("success when creating product", func(t *testing.T) {
 		// Arrange
 		err := config.Init()
@@ -39,12 +39,12 @@ func TestProductHandler_createProduct(t *testing.T) {
 			Price:           10.50,
 			QuantityInStock: 10,
 			ImageURL:        "https://example.com/image.jpg",
-			CategoryID:      common.NewID(),
-			BrandID:         common.NewID(),
+			CategoryID:      uuid.New(),
+			BrandID:         uuid.New(),
 		}
 
 		expectedProduct := &entity.Product{
-			ID:              common.NewID(),
+			ID:              uuid.New(),
 			Name:            expectedInput.Name,
 			Description:     expectedInput.Description,
 			Price:           expectedInput.Price,

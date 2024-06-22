@@ -9,7 +9,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -35,7 +34,7 @@ VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 type CreateStockParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	Name        string
 	Location    sql.NullString
 	Capacity    int32
@@ -61,7 +60,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteStock(ctx context.Context, id common.ID) error {
+func (q *Queries) DeleteStock(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteStock, id)
 	return err
 }
@@ -70,7 +69,7 @@ const getStock = `-- name: GetStock :one
 SELECT id, name, location, capacity, deleted_at, created_date, updated_date FROM stocks WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetStock(ctx context.Context, id common.ID) (Stock, error) {
+func (q *Queries) GetStock(ctx context.Context, id uuid.UUID) (Stock, error) {
 	row := q.db.QueryRowContext(ctx, getStock, id)
 	var i Stock
 	err := row.Scan(
@@ -96,7 +95,7 @@ ORDER BY p.name
 `
 
 // Paginação
-func (q *Queries) GetStockProducts(ctx context.Context, id common.ID) ([]Product, error) {
+func (q *Queries) GetStockProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getStockProducts, id)
 	if err != nil {
 		return nil, err
@@ -197,7 +196,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateStockParams struct {
-	ID          common.ID
+	ID          uuid.UUID
 	Name        string
 	Location    sql.NullString
 	Capacity    int32

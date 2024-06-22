@@ -4,11 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	domain "github.com/becardine/gestock-api/internal/domain/repository"
 	"time"
 
+	domain "github.com/becardine/gestock-api/internal/domain/repository"
+
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	database "github.com/becardine/gestock-api/internal/infra/sqlc"
 	"github.com/google/uuid"
 )
@@ -24,12 +24,12 @@ func NewProductRepository(db *sql.DB) domain.ProductRepository {
 }
 
 // DeleteProduct implements repository.ProductRepository.
-func (pr *ProductRepository) DeleteProduct(ctx context.Context, id common.ID) error {
+func (pr *ProductRepository) DeleteProduct(ctx context.Context, id uuid.UUID) error {
 	return nil
 }
 
 // GetProduct implements repository.ProductRepository.
-func (pr *ProductRepository) GetProduct(ctx context.Context, id common.ID) (*entity.Product, error) {
+func (pr *ProductRepository) GetProduct(ctx context.Context, id uuid.UUID) (*entity.Product, error) {
 	return nil, nil
 }
 
@@ -53,12 +53,12 @@ func (pr *ProductRepository) CreateProduct(ctx context.Context, product *entity.
 		QuantityInStock: int32(product.QuantityInStock),
 		ImageUrl:        sql.NullString{String: product.ImageURL, Valid: true},
 		CategoryID: uuid.NullUUID{
-			Valid: !product.CategoryID.IsEmpty(),
-			UUID:  product.CategoryID.Value(),
+			Valid: product.CategoryID != uuid.Nil,
+			UUID:  product.CategoryID,
 		},
 		BrandID: uuid.NullUUID{
-			Valid: !product.BrandID.IsEmpty(),
-			UUID:  product.BrandID.Value(),
+			Valid: product.BrandID != uuid.Nil,
+			UUID:  product.BrandID,
 		},
 		CreatedDate: sql.NullTime{Time: time.Now(), Valid: true},
 		UpdatedDate: sql.NullTime{Time: time.Now(), Valid: true},

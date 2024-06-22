@@ -1,16 +1,19 @@
 package handler
 
 import (
+	"io"
+	"net/http"
+	"strconv"
+
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
-	"github.com/becardine/gestock-api/internal/utils"
 	"github.com/go-chi/chi/v5"
-	"io"
-	"net/http"
-	"strconv"
 )
+
+const missingCategoryID = "Missing category ID"
+const invalidCategoryID = "Invalid category ID"
 
 type CategoryHandler struct {
 	categoryService service.CategoryServiceInterface
@@ -23,12 +26,13 @@ func NewCategoryHandler(categoryService service.CategoryServiceInterface) *Categ
 }
 
 func (h *CategoryHandler) RegisterRoutes(router chi.Router) {
-	router.Get("/categories", h.listCategories)
-	router.Get("/categories/{id}", h.getCategory)
-	router.Post("/categories", h.createCategory)
-	router.Put("/categories/{id}", h.updateCategory)
-	router.Delete("/categories/{id}", h.deleteCategory)
-	router.Get("/categories/{id}/products", h.getProducts)
+	const basePath = "/categories"
+	router.Get(basePath, h.listCategories)
+	router.Get(basePath+"/{id}", h.getCategory)
+	router.Post(basePath, h.createCategory)
+	router.Put(basePath+"/{id}", h.updateCategory)
+	router.Delete(basePath+"/{id}", h.deleteCategory)
+	router.Get(basePath+"/{id}/products", h.getProducts)
 }
 
 // createCategory godoc
@@ -62,7 +66,7 @@ func (h *CategoryHandler) createCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusCreated, category)
+	dto.RespondWithJSON(w, http.StatusCreated, category)
 }
 
 // updateCategory godoc
@@ -71,7 +75,7 @@ func (h *CategoryHandler) createCategory(w http.ResponseWriter, r *http.Request)
 // @Tags categories
 // @Accept json
 // @Produce json
-// @Param id path common.ID true "Category ID"
+// @Param id path string true "Category ID"
 // @Param category body entity.Category true "Category object"
 // @Success 204 No Content
 // @Failure 400 {object} errors.HTTPError
@@ -79,14 +83,16 @@ func (h *CategoryHandler) createCategory(w http.ResponseWriter, r *http.Request)
 // @Router /categories/{id} [put]
 func (h *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
+
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing category ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingCategoryID, nil)
 		return
 	}
 
 	categoryId, err := common.NewIDFromString(id)
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid category ID", err)
+
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return
 	}
 
@@ -110,7 +116,7 @@ func (h *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusNoContent, nil)
+	dto.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // deleteCategory godoc
@@ -119,7 +125,7 @@ func (h *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request)
 // @Tags categories
 // @Accept json
 // @Produce json
-// @Param id path common.ID true "Category ID"
+// @Param id path string true "Category ID"
 // @Success 204 No Content
 // @Failure 400 {object} errors.HTTPError
 // @Failure 500 {object} errors.HTTPError
@@ -127,13 +133,13 @@ func (h *CategoryHandler) updateCategory(w http.ResponseWriter, r *http.Request)
 func (h *CategoryHandler) deleteCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing category ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingCategoryID, nil)
 		return
 	}
 
 	categoryId, err := common.NewIDFromString(id)
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid category ID", err)
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return
 	}
 
@@ -142,7 +148,7 @@ func (h *CategoryHandler) deleteCategory(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusNoContent, nil)
+	dto.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // getProducts godoc
@@ -151,7 +157,7 @@ func (h *CategoryHandler) deleteCategory(w http.ResponseWriter, r *http.Request)
 // @Tags categories
 // @Accept json
 // @Produce json
-// @Param id path common.ID true "Category ID"
+// @Param id path string true "Category ID"
 // @Success 200 {array} entity.Product
 // @Failure 400 {object} errors.HTTPError
 // @Failure 500 {object} errors.HTTPError
@@ -159,13 +165,13 @@ func (h *CategoryHandler) deleteCategory(w http.ResponseWriter, r *http.Request)
 func (h *CategoryHandler) getProducts(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing category ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingCategoryID, nil)
 		return
 	}
 
 	categoryId, err := common.NewIDFromString(id)
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid category ID", err)
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return
 	}
 
@@ -175,7 +181,7 @@ func (h *CategoryHandler) getProducts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, products)
+	dto.RespondWithJSON(w, http.StatusOK, products)
 }
 
 // getCategory godoc
@@ -184,7 +190,7 @@ func (h *CategoryHandler) getProducts(w http.ResponseWriter, r *http.Request) {
 // @Tags categories
 // @Accept json
 // @Produce json
-// @Param id path common.ID true "Category ID"
+// @Param id path string true "Category ID"
 // @Success 200 {object} entity.Category
 // @Failure 400 {object} errors.HTTPError
 // @Failure 404 {object} errors.HTTPError
@@ -193,13 +199,13 @@ func (h *CategoryHandler) getProducts(w http.ResponseWriter, r *http.Request) {
 func (h *CategoryHandler) getCategory(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 	if id == "" {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Missing category ID", nil)
+		errors.NewHTTPError(w, http.StatusBadRequest, missingCategoryID, nil)
 		return
 	}
 
 	categoryId, err := common.NewIDFromString(id)
 	if err != nil {
-		errors.NewHTTPError(w, http.StatusBadRequest, "Invalid category ID", err)
+		errors.NewHTTPError(w, http.StatusBadRequest, invalidCategoryID, err)
 		return
 	}
 
@@ -209,7 +215,7 @@ func (h *CategoryHandler) getCategory(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, category)
+	dto.RespondWithJSON(w, http.StatusOK, category)
 }
 
 // listCategories godoc
@@ -244,5 +250,5 @@ func (h *CategoryHandler) listCategories(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, categories)
+	dto.RespondWithJSON(w, http.StatusOK, categories)
 }

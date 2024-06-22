@@ -9,7 +9,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/google/uuid"
 )
 
@@ -19,7 +18,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 `
 
 type CreatePaymentParams struct {
-	ID            common.ID
+	ID            uuid.UUID
 	OrderID       uuid.NullUUID
 	CustomerID    uuid.NullUUID
 	PaymentType   string
@@ -51,7 +50,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeletePayment(ctx context.Context, id common.ID) error {
+func (q *Queries) DeletePayment(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deletePayment, id)
 	return err
 }
@@ -60,7 +59,7 @@ const getPayment = `-- name: GetPayment :one
 SELECT id, order_id, customer_id, payment_type, payment_date, payment_value, payment_status, deleted_at, created_date, updated_date FROM payments WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetPayment(ctx context.Context, id common.ID) (Payment, error) {
+func (q *Queries) GetPayment(ctx context.Context, id uuid.UUID) (Payment, error) {
 	row := q.db.QueryRowContext(ctx, getPayment, id)
 	var i Payment
 	err := row.Scan(
@@ -228,7 +227,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdatePaymentParams struct {
-	ID            common.ID
+	ID            uuid.UUID
 	PaymentType   string
 	PaymentDate   sql.NullTime
 	PaymentValue  string

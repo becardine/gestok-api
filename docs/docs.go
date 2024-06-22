@@ -368,6 +368,15 @@ const docTemplate = `{
                     "categories"
                 ],
                 "summary": "Get category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -408,6 +417,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update category",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Category object",
                         "name": "category",
@@ -451,6 +467,15 @@ const docTemplate = `{
                     "categories"
                 ],
                 "summary": "Delete category",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content",
@@ -486,6 +511,15 @@ const docTemplate = `{
                     "categories"
                 ],
                 "summary": "Get category products",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Category ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

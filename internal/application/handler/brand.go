@@ -2,15 +2,15 @@ package handler
 
 import (
 	"encoding/json"
+	"io"
+	"net/http"
+	"strconv"
+
 	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/errors"
-	"github.com/becardine/gestock-api/internal/utils"
 	"github.com/go-chi/chi/v5"
-	"io"
-	"net/http"
-	"strconv"
 )
 
 type BrandHandler struct {
@@ -63,7 +63,7 @@ func (h *BrandHandler) createBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusCreated, brand)
+	dto.RespondWithJSON(w, http.StatusCreated, brand)
 }
 
 // updateBrand godoc
@@ -108,7 +108,7 @@ func (h *BrandHandler) updateBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusNoContent, nil)
+	dto.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // deleteBrand godoc
@@ -140,7 +140,7 @@ func (h *BrandHandler) deleteBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusNoContent, nil)
+	dto.RespondWithJSON(w, http.StatusNoContent, nil)
 }
 
 // getBrand godoc
@@ -173,7 +173,7 @@ func (h *BrandHandler) getBrand(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, brand)
+	dto.RespondWithJSON(w, http.StatusOK, brand)
 }
 
 // listBrands godoc
@@ -208,5 +208,5 @@ func (h *BrandHandler) listBrands(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.RespondWithJSON(w, http.StatusOK, brands)
+	dto.RespondWithJSON(w, http.StatusOK, brands)
 }

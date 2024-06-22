@@ -4,13 +4,13 @@ import (
 	"testing"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewProduct(t *testing.T) {
-	categoryID := common.NewID()
-	brandID := common.NewID()
+	categoryID := uuid.New()
+	brandID := uuid.New()
 
 	product, err := entity.NewProduct("Product Test", "Description Test", 10.50, 10, "https://www.example.com/image.jpg", categoryID, brandID)
 
@@ -25,13 +25,13 @@ func TestNewProduct(t *testing.T) {
 	assert.Equal(t, brandID, product.BrandID)
 }
 
-func TestProduct_Validate(t *testing.T) {
-	categoryID := common.NewID()
-	brandID := common.NewID()
+func TestProductValidate(t *testing.T) {
+	categoryID := uuid.New()
+	brandID := uuid.New()
 
 	t.Run("Successful validation", func(t *testing.T) {
 		product := &entity.Product{
-			ID:              common.NewID(),
+			ID:              uuid.New(),
 			Name:            "Product Test",
 			Description:     "Description Test",
 			Price:           10.50,

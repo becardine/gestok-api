@@ -4,23 +4,23 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 type Product struct {
-	ID              common.ID `json:"id"`
+	ID              uuid.UUID `json:"id"`
 	Name            string    `json:"name"`
 	Description     string    `json:"description"`
 	Price           float64   `json:"price"`
 	QuantityInStock int       `json:"quantity_in_stock"`
 	ImageURL        string    `json:"image_url"`
-	CategoryID      common.ID `json:"category_id"`
-	BrandID         common.ID `json:"brand_id"`
+	CategoryID      uuid.UUID `json:"category_id"`
+	BrandID         uuid.UUID `json:"brand_id"`
 }
 
-func NewProduct(name string, description string, price float64, quantityInStock int, imageURL string, categoryID, brandID common.ID) (*Product, error) {
+func NewProduct(name string, description string, price float64, quantityInStock int, imageURL string, categoryID, brandID uuid.UUID) (*Product, error) {
 	product := &Product{
-		ID:              common.NewID(),
+		ID:              uuid.New(),
 		Name:            name,
 		Description:     description,
 		Price:           price,
@@ -59,11 +59,11 @@ func (p *Product) Validate() error {
 		}
 	}
 
-	if p.CategoryID.IsEmpty() {
+	if p.CategoryID == uuid.Nil {
 		return fmt.Errorf("category ID is required")
 	}
 
-	if p.BrandID.IsEmpty() {
+	if p.BrandID == uuid.Nil {
 		return fmt.Errorf("brand ID is required")
 	}
 

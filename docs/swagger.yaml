@@ -329,6 +329,12 @@ paths:
       consumes:
       - application/json
       description: Delete a category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -351,6 +357,12 @@ paths:
       consumes:
       - application/json
       description: Get a category by ID
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -378,6 +390,11 @@ paths:
       - application/json
       description: Update a category by ID
       parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
       - description: Category object
         in: body
         name: category
@@ -407,6 +424,12 @@ paths:
       consumes:
       - application/json
       description: Get all products for a category
+      parameters:
+      - description: Category ID
+        in: path
+        name: id
+        required: true
+        type: string
       produces:
       - application/json
       responses:

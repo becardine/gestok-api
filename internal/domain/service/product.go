@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
+	"github.com/google/uuid"
 )
 
 type productService struct {
@@ -36,8 +36,8 @@ func (ps *productService) CreateProduct(ctx context.Context, input *CreateProduc
 	return product, nil
 }
 
-func (ps *productService) GetProduct(ctx context.Context, id common.ID) (*entity.Product, error) {
-	product, err := ps.productRepository.GetProduct(ctx, common.NewIDFromUUID(id.Value()))
+func (ps *productService) GetProduct(ctx context.Context, id uuid.UUID) (*entity.Product, error) {
+	product, err := ps.productRepository.GetProduct(ctx, id)
 	if err != nil {
 		return nil, ps.handleProductNotFoundError(err, id)
 	}
@@ -45,8 +45,8 @@ func (ps *productService) GetProduct(ctx context.Context, id common.ID) (*entity
 	return product, nil
 }
 
-func (ps *productService) UpdateProduct(ctx context.Context, id common.ID, input *UpdateProductInput) error {
-	product, err := ps.productRepository.GetProduct(ctx, common.NewIDFromUUID(id.Value()))
+func (ps *productService) UpdateProduct(ctx context.Context, id uuid.UUID, input *UpdateProductInput) error {
+	product, err := ps.productRepository.GetProduct(ctx, id)
 	if err != nil {
 		return ps.handleProductNotFoundError(err, id)
 	}
@@ -67,8 +67,8 @@ func (ps *productService) UpdateProduct(ctx context.Context, id common.ID, input
 	return nil
 }
 
-func (ps *productService) DeleteProduct(ctx context.Context, id common.ID) error {
-	err := ps.productRepository.DeleteProduct(ctx, common.NewIDFromUUID(id.Value()))
+func (ps *productService) DeleteProduct(ctx context.Context, id uuid.UUID) error {
+	err := ps.productRepository.DeleteProduct(ctx, id)
 	if err != nil {
 		return fmt.Errorf("error while deleting product in repository: %w", err)
 	}
@@ -85,7 +85,7 @@ func (ps *productService) ListProducts(ctx context.Context) ([]*entity.Product, 
 	return products, nil
 }
 
-func (ps *productService) handleProductNotFoundError(err error, id common.ID) error {
+func (ps *productService) handleProductNotFoundError(err error, id uuid.UUID) error {
 	if errors.Is(err, &ErrNotFound{}) {
 		return &ErrNotFound{Entity: "Product", ID: id}
 	}

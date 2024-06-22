@@ -9,9 +9,6 @@ sql:
       package: "db"
       out: "internal/infra/sqlc"
       overrides:
-      - db_type: "uuid"
-        go_type:
-          import: "github.com/becardine/gestock-api/internal/domain/entity/common"
-          type: "ID"
       - db_type: "decimal"
         go_type: "float64"
+      

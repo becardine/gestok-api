@@ -10,7 +10,7 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 const createCoupon = `-- name: CreateCoupon :exec
@@ -19,7 +19,7 @@ VALUES ($1, $2, $3, $4, $5, $6, $7)
 `
 
 type CreateCouponParams struct {
-	ID             common.ID
+	ID             uuid.UUID
 	Code           string
 	Discount       string
 	ExpirationDate time.Time
@@ -47,7 +47,7 @@ SET deleted_at = NOW()
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCoupon(ctx context.Context, id common.ID) error {
+func (q *Queries) DeleteCoupon(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteCoupon, id)
 	return err
 }
@@ -56,7 +56,7 @@ const getCoupon = `-- name: GetCoupon :one
 SELECT id, code, discount, expiration_date, status, deleted_at, created_date, updated_date FROM coupons WHERE id = $1 AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCoupon(ctx context.Context, id common.ID) (Coupon, error) {
+func (q *Queries) GetCoupon(ctx context.Context, id uuid.UUID) (Coupon, error) {
 	row := q.db.QueryRowContext(ctx, getCoupon, id)
 	var i Coupon
 	err := row.Scan(
@@ -146,7 +146,7 @@ WHERE id = $1 AND deleted_at IS NULL
 `
 
 type UpdateCouponParams struct {
-	ID             common.ID
+	ID             uuid.UUID
 	Code           string
 	Discount       string
 	ExpirationDate time.Time

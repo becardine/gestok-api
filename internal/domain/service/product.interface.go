@@ -5,14 +5,14 @@ import (
 	"encoding/json"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/entity/common"
+	"github.com/google/uuid"
 )
 
 type ProductService interface {
-	GetProduct(ctx context.Context, id common.ID) (*entity.Product, error)
+	GetProduct(ctx context.Context, id uuid.UUID) (*entity.Product, error)
 	CreateProduct(ctx context.Context, input *CreateProductInput) (*entity.Product, error)
-	UpdateProduct(ctx context.Context, id common.ID, input *UpdateProductInput) error
-	DeleteProduct(ctx context.Context, id common.ID) error
+	UpdateProduct(ctx context.Context, id uuid.UUID, input *UpdateProductInput) error
+	DeleteProduct(ctx context.Context, id uuid.UUID) error
 	ListProducts(ctx context.Context) ([]*entity.Product, error)
 }
 
@@ -22,19 +22,19 @@ type CreateProductInput struct {
 	Price           float64   `json:"price"`
 	QuantityInStock int       `json:"quantity_in_stock"`
 	ImageURL        string    `json:"image_url"`
-	CategoryID      common.ID `json:"category_id"`
-	BrandID         common.ID `json:"brand_id"`
+	CategoryID      uuid.UUID `json:"category_id"`
+	BrandID         uuid.UUID `json:"brand_id"`
 }
 
 type UpdateProductInput struct {
-	ID              common.ID `json:"id"`
+	ID              uuid.UUID `json:"id"`
 	Name            string    `json:"name"`
 	Description     string    `json:"description"`
 	Price           float64   `json:"price"`
 	QuantityInStock int       `json:"quantity_in_stock"`
 	ImageURL        string    `json:"image_url"`
-	CategoryID      common.ID `json:"category_id"`
-	BrandID         common.ID `json:"brand_id"`
+	CategoryID      uuid.UUID `json:"category_id"`
+	BrandID         uuid.UUID `json:"brand_id"`
 }
 
 func (input *CreateProductInput) FromJSON(data []byte) error {
@@ -47,7 +47,7 @@ func (input *CreateProductInput) FromJSON(data []byte) error {
 
 func (input *CreateProductInput) ToEntity() *entity.Product {
 	return &entity.Product{
-		ID:              common.NewID(),
+		ID:              uuid.New(),
 		Name:            input.Name,
 		Description:     input.Description,
 		Price:           input.Price,
