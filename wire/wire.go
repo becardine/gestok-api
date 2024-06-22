@@ -8,7 +8,6 @@ import (
 	"github.com/becardine/gestock-api/internal/domain/repository"
 	"github.com/becardine/gestock-api/internal/domain/service"
 	infra "github.com/becardine/gestock-api/internal/infra/repository"
-	"github.com/becardine/gestock-api/internal/mocks"
 )
 
 func InitializeProductHandler() (*handler.ProductHandler, error) {
@@ -50,8 +49,4 @@ func InitializeConfig() error {
 
 func DBProvider() *sql.DB {
 	return config.GetDB()
-}
-
-func MockProductService() service.ProductService {
-	return new(mocks.ProductServiceMock)
 }
