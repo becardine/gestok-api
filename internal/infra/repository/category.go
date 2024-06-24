@@ -39,8 +39,8 @@ func (c CategoryRepository) Create(ctx context.Context, category *entity.Categor
 		ID:          category.ID,
 		Name:        category.Name,
 		Description: sql.NullString{String: category.Description, Valid: true},
-		CreatedDate: sql.NullTime{Time: time.Now(), Valid: true},
-		UpdatedDate: sql.NullTime{Time: time.Now(), Valid: true},
+		CreatedAt:   sql.NullTime{Time: time.Now(), Valid: true},
+		UpdatedAt:   sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (c CategoryRepository) Update(ctx context.Context, category *entity.Categor
 		ID:          category.ID,
 		Name:        category.Name,
 		Description: sql.NullString{String: category.Description, Valid: true},
-		UpdatedDate: sql.NullTime{Time: time.Now(), Valid: true},
+		UpdatedAt:   sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
 		return err

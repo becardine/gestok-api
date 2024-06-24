@@ -36,10 +36,10 @@ func (b *BrandRepository) Get(ctx context.Context, id uuid.UUID) (*entity.Brand,
 
 func (b *BrandRepository) Create(ctx context.Context, brand *entity.Brand) error {
 	err := b.queries.CreateBrand(ctx, database.CreateBrandParams{
-		ID:          brand.ID,
-		Name:        brand.Name,
-		CreatedDate: sql.NullTime{Time: time.Now(), Valid: true},
-		UpdatedDate: sql.NullTime{Time: time.Now(), Valid: true},
+		ID:        brand.ID,
+		Name:      brand.Name,
+		CreatedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		UpdatedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
 		return fmt.Errorf("error creating brand: %w", err)
@@ -50,9 +50,9 @@ func (b *BrandRepository) Create(ctx context.Context, brand *entity.Brand) error
 
 func (b *BrandRepository) Update(ctx context.Context, brand *entity.Brand) error {
 	err := b.queries.UpdateBrand(ctx, database.UpdateBrandParams{
-		ID:          brand.ID,
-		Name:        brand.Name,
-		UpdatedDate: sql.NullTime{Time: time.Now(), Valid: true},
+		ID:        brand.ID,
+		Name:      brand.Name,
+		UpdatedAt: sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
 		return fmt.Errorf("error updating brand: %w", err)

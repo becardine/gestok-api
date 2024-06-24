@@ -48,11 +48,11 @@ func (q *Queries) DeleteCategory(ctx context.Context, id uuid.UUID) error {
 }
 
 const getCategory = `-- name: GetCategory :one
-SELECT id, name, description, deleted_at, created_at, updated_at FROM categories WHERE id = 1 AND deleted_at IS NULL
+SELECT id, name, description, deleted_at, created_at, updated_at FROM categories WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCategory(ctx context.Context) (Category, error) {
-	row := q.db.QueryRowContext(ctx, getCategory)
+func (q *Queries) GetCategory(ctx context.Context, id uuid.UUID) (Category, error) {
+	row := q.db.QueryRowContext(ctx, getCategory, id)
 	var i Category
 	err := row.Scan(
 		&i.ID,
@@ -69,12 +69,12 @@ const getCategoryProducts = `-- name: GetCategoryProducts :many
 SELECT p.id, p.name, p.description, p.price, p.quantity_in_stock, p.image_url, p.category_id, p.brand_id, p.deleted_at, p.created_at, p.updated_at
 FROM categories c
 JOIN products p ON c.id = p.category_id
-WHERE c.id = 1 AND c.deleted_at IS NULL AND p.deleted_at IS NULL 
+WHERE c.id = ? AND c.deleted_at IS NULL AND p.deleted_at IS NULL 
 ORDER BY p.name
 `
 
-func (q *Queries) GetCategoryProducts(ctx context.Context) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, getCategoryProducts)
+func (q *Queries) GetCategoryProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
+	rows, err := q.db.QueryContext(ctx, getCategoryProducts, id)
 	if err != nil {
 		return nil, err
 	}
@@ -113,11 +113,16 @@ SELECT id, name, description, deleted_at, created_at, updated_at
 FROM categories 
 WHERE deleted_at IS NULL 
 ORDER BY name
-LIMIT 1 OFFSET 2
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListCategories(ctx context.Context) ([]Category, error) {
-	rows, err := q.db.QueryContext(ctx, listCategories)
+type ListCategoriesParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListCategories(ctx context.Context, arg ListCategoriesParams) ([]Category, error) {
+	rows, err := q.db.QueryContext(ctx, listCategories, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
