@@ -14,18 +14,18 @@ import (
 )
 
 const createCoupon = `-- name: CreateCoupon :exec
-INSERT INTO coupons (id, code, discount, expiration_at, status, created_at, updated_at)
+INSERT INTO coupons (id, code, discount, expiration_date, status, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateCouponParams struct {
-	ID           uuid.UUID
-	Code         string
-	Discount     float64
-	ExpirationAt time.Time
-	Status       string
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
+	ID             uuid.UUID
+	Code           string
+	Discount       float64
+	ExpirationDate time.Time
+	Status         string
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
 }
 
 func (q *Queries) CreateCoupon(ctx context.Context, arg CreateCouponParams) error {
@@ -33,7 +33,7 @@ func (q *Queries) CreateCoupon(ctx context.Context, arg CreateCouponParams) erro
 		arg.ID,
 		arg.Code,
 		arg.Discount,
-		arg.ExpirationAt,
+		arg.ExpirationDate,
 		arg.Status,
 		arg.CreatedAt,
 		arg.UpdatedAt,
@@ -53,7 +53,7 @@ func (q *Queries) DeleteCoupon(ctx context.Context, id uuid.UUID) error {
 }
 
 const getCoupon = `-- name: GetCoupon :one
-SELECT id, code, discount, expiration_at, status, deleted_at, created_at, updated_at FROM coupons WHERE id = ? AND deleted_at IS NULL
+SELECT id, code, discount, expiration_date, status, deleted_at, created_at, updated_at FROM coupons WHERE id = ? AND deleted_at IS NULL
 `
 
 func (q *Queries) GetCoupon(ctx context.Context, id uuid.UUID) (Coupon, error) {
@@ -63,7 +63,7 @@ func (q *Queries) GetCoupon(ctx context.Context, id uuid.UUID) (Coupon, error) {
 		&i.ID,
 		&i.Code,
 		&i.Discount,
-		&i.ExpirationAt,
+		&i.ExpirationDate,
 		&i.Status,
 		&i.DeletedAt,
 		&i.CreatedAt,
@@ -73,7 +73,7 @@ func (q *Queries) GetCoupon(ctx context.Context, id uuid.UUID) (Coupon, error) {
 }
 
 const getCouponByCode = `-- name: GetCouponByCode :one
-SELECT id, code, discount, expiration_at, status, deleted_at, created_at, updated_at
+SELECT id, code, discount, expiration_date, status, deleted_at, created_at, updated_at
 FROM coupons
 WHERE LOWER(code) = LOWER(?) AND deleted_at IS NULL
 `
@@ -85,7 +85,7 @@ func (q *Queries) GetCouponByCode(ctx context.Context, lower string) (Coupon, er
 		&i.ID,
 		&i.Code,
 		&i.Discount,
-		&i.ExpirationAt,
+		&i.ExpirationDate,
 		&i.Status,
 		&i.DeletedAt,
 		&i.CreatedAt,
@@ -95,15 +95,20 @@ func (q *Queries) GetCouponByCode(ctx context.Context, lower string) (Coupon, er
 }
 
 const listCoupons = `-- name: ListCoupons :many
-SELECT id, code, discount, expiration_at, status, deleted_at, created_at, updated_at
+SELECT id, code, discount, expiration_date, status, deleted_at, created_at, updated_at
 FROM coupons
 WHERE deleted_at IS NULL
 ORDER BY created_at DESC
-LIMIT 1 OFFSET 2
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListCoupons(ctx context.Context) ([]Coupon, error) {
-	rows, err := q.db.QueryContext(ctx, listCoupons)
+type ListCouponsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListCoupons(ctx context.Context, arg ListCouponsParams) ([]Coupon, error) {
+	rows, err := q.db.QueryContext(ctx, listCoupons, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +120,7 @@ func (q *Queries) ListCoupons(ctx context.Context) ([]Coupon, error) {
 			&i.ID,
 			&i.Code,
 			&i.Discount,
-			&i.ExpirationAt,
+			&i.ExpirationDate,
 			&i.Status,
 			&i.DeletedAt,
 			&i.CreatedAt,
@@ -136,24 +141,24 @@ func (q *Queries) ListCoupons(ctx context.Context) ([]Coupon, error) {
 
 const updateCoupon = `-- name: UpdateCoupon :exec
 UPDATE coupons
-SET code = ?, discount = ?, expiration_at = ?, status = ?, updated_at = ?
+SET code = ?, discount = ?, expiration_date = ?, status = ?, updated_at = ?
 WHERE id = ? AND deleted_at IS NULL
 `
 
 type UpdateCouponParams struct {
-	Code         string
-	Discount     float64
-	ExpirationAt time.Time
-	Status       string
-	UpdatedAt    sql.NullTime
-	ID           uuid.UUID
+	Code           string
+	Discount       float64
+	ExpirationDate time.Time
+	Status         string
+	UpdatedAt      sql.NullTime
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateCoupon(ctx context.Context, arg UpdateCouponParams) error {
 	_, err := q.db.ExecContext(ctx, updateCoupon,
 		arg.Code,
 		arg.Discount,
-		arg.ExpirationAt,
+		arg.ExpirationDate,
 		arg.Status,
 		arg.UpdatedAt,
 		arg.ID,

@@ -11,7 +11,7 @@ type Coupon struct {
 	ID             uuid.UUID `json:"id"`
 	Code           string    `json:"code"`
 	Discount       float64   `json:"discount"`
-	ExpirationDate time.Time `json:"expiration_at"`
+	ExpirationDate time.Time `json:"expiration_date"`
 	Status         string    `json:"status"`
 }
 

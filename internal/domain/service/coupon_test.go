@@ -46,7 +46,7 @@ func (m *CouponRepositoryMock) GetCouponProducts(ctx context.Context, couponID u
 	return args.Get(0).([]*entity.Product), args.Error(1)
 }
 
-func TestCouponService_Get(t *testing.T) {
+func TestCouponServiceGet(t *testing.T) {
 	t.Run("should create a new coupon successfully", func(t *testing.T) {
 		mockRepo := new(CouponRepositoryMock)
 		couponService := service.NewCouponService(mockRepo)

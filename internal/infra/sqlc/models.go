@@ -30,14 +30,14 @@ type Category struct {
 }
 
 type Coupon struct {
-	ID           uuid.UUID
-	Code         string
-	Discount     float64
-	ExpirationAt time.Time
-	Status       string
-	DeletedAt    sql.NullTime
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
+	ID             uuid.UUID
+	Code           string
+	Discount       float64
+	ExpirationDate time.Time
+	Status         string
+	DeletedAt      sql.NullTime
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
 }
 
 type Customer struct {

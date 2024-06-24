@@ -2,12 +2,12 @@
 SELECT * FROM coupons WHERE id = ? AND deleted_at IS NULL;
 
 -- name: CreateCoupon :exec
-INSERT INTO coupons (id, code, discount, expiration_at, status, created_at, updated_at)
+INSERT INTO coupons (id, code, discount, expiration_date, status, created_at, updated_at)
 VALUES (?, ?, ?, ?, ?, ?, ?);
 
 -- name: UpdateCoupon :exec
 UPDATE coupons
-SET code = ?, discount = ?, expiration_at = ?, status = ?, updated_at = ?
+SET code = ?, discount = ?, expiration_date = ?, status = ?, updated_at = ?
 WHERE id = ? AND deleted_at IS NULL;
 
 -- name: DeleteCoupon :exec
@@ -20,7 +20,7 @@ SELECT *
 FROM coupons
 WHERE deleted_at IS NULL
 ORDER BY created_at DESC
-LIMIT 1 OFFSET 2;
+LIMIT ? OFFSET ?;
 
 -- name: GetCouponByCode :one
 SELECT *

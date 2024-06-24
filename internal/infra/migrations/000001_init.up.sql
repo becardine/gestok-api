@@ -105,7 +105,7 @@ CREATE TABLE coupons (
     id CHAR(36) PRIMARY KEY DEFAULT (UUID()),
     code VARCHAR(255) UNIQUE NOT NULL,
     discount DECIMAL(10,2) NOT NULL,
-    expiration_at TIMESTAMP NOT NULL,
+    expiration_date TIMESTAMP NOT NULL,
     status VARCHAR(255) NOT NULL,
     deleted_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

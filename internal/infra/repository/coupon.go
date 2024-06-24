@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"time"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
@@ -27,10 +26,10 @@ func (c *CouponRepository) Create(ctx context.Context, coupon *entity.Coupon) (*
 	err := c.queries.CreateCoupon(ctx, database.CreateCouponParams{
 		ID:             coupon.ID,
 		Code:           coupon.Code,
-		Discount:       fmt.Sprintf("%.2f", coupon.Discount),
+		Discount:       coupon.Discount,
 		ExpirationDate: coupon.ExpirationDate,
-		CreatedDate:    sql.NullTime{Time: time.Now(), Valid: true},
-		UpdatedDate:    sql.NullTime{Time: time.Now(), Valid: true},
+		CreatedAt:      sql.NullTime{Time: time.Now(), Valid: true},
+		UpdatedAt:      sql.NullTime{Time: time.Now(), Valid: true},
 	})
 	if err != nil {
 		return nil, err
@@ -67,15 +66,65 @@ func (c *CouponRepository) Get(ctx context.Context, id uuid.UUID) (*entity.Coupo
 
 // GetCouponProducts implements repository.CouponRepositoryInterface.
 func (c *CouponRepository) GetCouponProducts(ctx context.Context, couponID uuid.UUID) ([]*entity.Product, error) {
-	panic("unimplemented")
+	products, err := c.queries.GetCategoryProducts(ctx, couponID)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*entity.Product, len(products))
+	for i, product := range products {
+		result[i] = &entity.Product{
+			ID:              product.ID,
+			Name:            product.Name,
+			Description:     product.Description.String,
+			Price:           product.Price,
+			QuantityInStock: int(product.QuantityInStock),
+			ImageURL:        product.ImageUrl.String,
+			CategoryID:      product.CategoryID,
+			BrandID:         product.BrandID,
+		}
+	}
+
+	return result, nil
 }
 
 // List implements repository.CouponRepositoryInterface.
 func (c *CouponRepository) List(ctx context.Context, page int, pageSize int) ([]*entity.Coupon, error) {
-	panic("unimplemented")
+	coupons, err := c.queries.ListCoupons(ctx, database.ListCouponsParams{
+		Limit:  int32(pageSize),
+		Offset: int32((page - 1) * pageSize),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*entity.Coupon, len(coupons))
+	for i, coupon := range coupons {
+		result[i] = &entity.Coupon{
+			ID:             coupon.ID,
+			Code:           coupon.Code,
+			Discount:       coupon.Discount,
+			ExpirationDate: coupon.ExpirationDate,
+			Status:         coupon.Status,
+		}
+	}
+
+	return result, nil
 }
 
 // Update implements repository.CouponRepositoryInterface.
 func (c *CouponRepository) Update(ctx context.Context, coupon *entity.Coupon) error {
-	panic("unimplemented")
+	err := c.queries.UpdateCoupon(ctx, database.UpdateCouponParams{
+		ID:             coupon.ID,
+		Code:           coupon.Code,
+		Discount:       coupon.Discount,
+		ExpirationDate: coupon.ExpirationDate,
+		Status:         coupon.Status,
+		UpdatedAt:      sql.NullTime{Time: time.Now(), Valid: true},
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
