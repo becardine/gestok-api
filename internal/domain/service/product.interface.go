@@ -13,7 +13,7 @@ type ProductService interface {
 	CreateProduct(ctx context.Context, input *CreateProductInput) (*entity.Product, error)
 	UpdateProduct(ctx context.Context, id uuid.UUID, input *UpdateProductInput) error
 	DeleteProduct(ctx context.Context, id uuid.UUID) error
-	ListProducts(ctx context.Context) ([]*entity.Product, error)
+	ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error)
 }
 
 type CreateProductInput struct {

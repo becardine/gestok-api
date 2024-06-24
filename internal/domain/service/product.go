@@ -76,8 +76,8 @@ func (ps *productService) DeleteProduct(ctx context.Context, id uuid.UUID) error
 	return nil
 }
 
-func (ps *productService) ListProducts(ctx context.Context) ([]*entity.Product, error) {
-	products, err := ps.productRepository.ListProducts(ctx)
+func (ps *productService) ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error) {
+	products, err := ps.productRepository.ListProducts(ctx, page, pageSize)
 	if err != nil {
 		return nil, fmt.Errorf("error while fetching products from repository: %w", err)
 	}

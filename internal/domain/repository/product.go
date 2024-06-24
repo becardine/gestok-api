@@ -12,7 +12,7 @@ type ProductRepository interface {
 	CreateProduct(ctx context.Context, product *entity.Product) error
 	UpdateProduct(ctx context.Context, product *entity.Product) error
 	DeleteProduct(ctx context.Context, id uuid.UUID) error
-	ListProducts(ctx context.Context) ([]*entity.Product, error)
+	ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error)
 	// GetProductStocks(ctx context.Context, productID uuid.UUID) ([]*entity.Stock, error)
 	// AddProductStock(ctx context.Context, stockID, productID uuid.UUID) error
 	// RemoveProductStock(ctx context.Context, stockID, productID uuid.UUID) error

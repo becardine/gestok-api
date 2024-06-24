@@ -21,7 +21,7 @@ func (m *ProductRepositoryMock) DeleteProduct(ctx context.Context, id uuid.UUID)
 }
 
 // ListProducts implements repository.ProductRepository.
-func (m *ProductRepositoryMock) ListProducts(ctx context.Context) ([]*entity.Product, error) {
+func (m *ProductRepositoryMock) ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error) {
 	panic("unimplemented")
 }
 
