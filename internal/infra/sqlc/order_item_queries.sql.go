@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: order_item_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createOrderItem = `-- name: CreateOrderItem :exec
@@ -18,9 +20,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateOrderItemParams struct {
-	ID        string
-	OrderID   sql.NullString
-	ProductID sql.NullString
+	ID        uuid.UUID
+	OrderID   uuid.UUID
+	ProductID uuid.UUID
 	Quantity  int32
 	UnitPrice float64
 	CreatedAt sql.NullTime
@@ -46,7 +48,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteOrderItem(ctx context.Context, id string) error {
+func (q *Queries) DeleteOrderItem(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteOrderItem, id)
 	return err
 }
@@ -55,7 +57,7 @@ const getOrderItem = `-- name: GetOrderItem :one
 SELECT id, order_id, product_id, quantity, unit_price, deleted_at, created_at, updated_at FROM order_items WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetOrderItem(ctx context.Context, id string) (OrderItem, error) {
+func (q *Queries) GetOrderItem(ctx context.Context, id uuid.UUID) (OrderItem, error) {
 	row := q.db.QueryRowContext(ctx, getOrderItem, id)
 	var i OrderItem
 	err := row.Scan(
@@ -79,7 +81,7 @@ ORDER BY created_at
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) ListOrderItems(ctx context.Context, orderID sql.NullString) ([]OrderItem, error) {
+func (q *Queries) ListOrderItems(ctx context.Context, orderID uuid.UUID) ([]OrderItem, error) {
 	rows, err := q.db.QueryContext(ctx, listOrderItems, orderID)
 	if err != nil {
 		return nil, err
@@ -121,7 +123,7 @@ type UpdateOrderItemParams struct {
 	Quantity  int32
 	UnitPrice float64
 	UpdatedAt sql.NullTime
-	ID        string
+	ID        uuid.UUID
 }
 
 func (q *Queries) UpdateOrderItem(ctx context.Context, arg UpdateOrderItemParams) error {

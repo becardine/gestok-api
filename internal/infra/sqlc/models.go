@@ -2,15 +2,17 @@
 // versions:
 //   sqlc v1.26.0
 
-package db
+package sqlc
 
 import (
 	"database/sql"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Brand struct {
-	ID          string
+	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
 	DeletedAt   sql.NullTime
@@ -19,7 +21,7 @@ type Brand struct {
 }
 
 type Category struct {
-	ID          string
+	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
 	DeletedAt   sql.NullTime
@@ -28,7 +30,7 @@ type Category struct {
 }
 
 type Coupon struct {
-	ID           string
+	ID           uuid.UUID
 	Code         string
 	Discount     float64
 	ExpirationAt time.Time
@@ -39,7 +41,7 @@ type Coupon struct {
 }
 
 type Customer struct {
-	ID        string
+	ID        uuid.UUID
 	Name      string
 	Email     string
 	Password  string
@@ -51,9 +53,9 @@ type Customer struct {
 }
 
 type Delivery struct {
-	ID             string
-	OrderID        sql.NullString
-	CustomerID     sql.NullString
+	ID             uuid.UUID
+	OrderID        uuid.UUID
+	CustomerID     uuid.UUID
 	DeliveryType   string
 	DeliveryAt     sql.NullTime
 	DeliveryStatus string
@@ -63,9 +65,9 @@ type Delivery struct {
 }
 
 type Feedback struct {
-	ID         string
-	CustomerID sql.NullString
-	OrderID    sql.NullString
+	ID         uuid.UUID
+	CustomerID uuid.UUID
+	OrderID    uuid.UUID
 	Rating     sql.NullInt32
 	Comment    sql.NullString
 	DeletedAt  sql.NullTime
@@ -74,8 +76,8 @@ type Feedback struct {
 }
 
 type Order struct {
-	ID          string
-	CustomerID  sql.NullString
+	ID          uuid.UUID
+	CustomerID  uuid.UUID
 	OrderAt     sql.NullTime
 	OrderStatus string
 	TotalValue  float64
@@ -85,9 +87,9 @@ type Order struct {
 }
 
 type OrderItem struct {
-	ID        string
-	OrderID   sql.NullString
-	ProductID sql.NullString
+	ID        uuid.UUID
+	OrderID   uuid.UUID
+	ProductID uuid.UUID
 	Quantity  int32
 	UnitPrice float64
 	DeletedAt sql.NullTime
@@ -96,9 +98,9 @@ type OrderItem struct {
 }
 
 type OrderProduct struct {
-	ID        string
-	OrderID   sql.NullString
-	ProductID sql.NullString
+	ID        uuid.UUID
+	OrderID   uuid.UUID
+	ProductID uuid.UUID
 	Quantity  int32
 	UnitPrice float64
 	DeletedAt sql.NullTime
@@ -107,9 +109,9 @@ type OrderProduct struct {
 }
 
 type Payment struct {
-	ID            string
-	OrderID       sql.NullString
-	CustomerID    sql.NullString
+	ID            uuid.UUID
+	OrderID       uuid.UUID
+	CustomerID    uuid.UUID
 	PaymentType   string
 	PaymentAt     sql.NullTime
 	PaymentValue  float64
@@ -120,23 +122,23 @@ type Payment struct {
 }
 
 type Product struct {
-	ID              string
+	ID              uuid.UUID
 	Name            string
 	Description     sql.NullString
 	Price           float64
 	QuantityInStock int32
 	ImageUrl        sql.NullString
-	CategoryID      sql.NullString
-	BrandID         sql.NullString
+	CategoryID      uuid.UUID
+	BrandID         uuid.UUID
 	DeletedAt       sql.NullTime
 	CreatedAt       sql.NullTime
 	UpdatedAt       sql.NullTime
 }
 
 type ProductStock struct {
-	ID        string
-	ProductID sql.NullString
-	StockID   sql.NullString
+	ID        uuid.UUID
+	ProductID uuid.UUID
+	StockID   uuid.UUID
 	Quantity  int32
 	DeletedAt sql.NullTime
 	CreatedAt sql.NullTime
@@ -144,7 +146,7 @@ type ProductStock struct {
 }
 
 type Stock struct {
-	ID        string
+	ID        uuid.UUID
 	Name      string
 	Location  sql.NullString
 	Capacity  int32

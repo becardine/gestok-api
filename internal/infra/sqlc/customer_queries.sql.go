@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: customer_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createCustomer = `-- name: CreateCustomer :exec
@@ -16,7 +18,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateCustomerParams struct {
-	ID        string
+	ID        uuid.UUID
 	Name      string
 	Email     string
 	Password  string
@@ -46,7 +48,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteCustomer(ctx context.Context, id string) error {
+func (q *Queries) DeleteCustomer(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteCustomer, id)
 	return err
 }
@@ -55,7 +57,7 @@ const getCustomer = `-- name: GetCustomer :one
 SELECT id, name, email, password, address, phone, deleted_at, created_at, updated_at FROM customers WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCustomer(ctx context.Context, id string) (Customer, error) {
+func (q *Queries) GetCustomer(ctx context.Context, id uuid.UUID) (Customer, error) {
 	row := q.db.QueryRowContext(ctx, getCustomer, id)
 	var i Customer
 	err := row.Scan(
@@ -81,7 +83,7 @@ ORDER BY d.delivery_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetCustomerDeliveries(ctx context.Context, id string) ([]Delivery, error) {
+func (q *Queries) GetCustomerDeliveries(ctx context.Context, id uuid.UUID) ([]Delivery, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerDeliveries, id)
 	if err != nil {
 		return nil, err
@@ -123,7 +125,7 @@ ORDER BY f.created_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id string) ([]Feedback, error) {
+func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id uuid.UUID) ([]Feedback, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerFeedbacks, id)
 	if err != nil {
 		return nil, err
@@ -164,7 +166,7 @@ ORDER BY o.order_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetCustomerOrders(ctx context.Context, id string) ([]Order, error) {
+func (q *Queries) GetCustomerOrders(ctx context.Context, id uuid.UUID) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerOrders, id)
 	if err != nil {
 		return nil, err
@@ -205,7 +207,7 @@ ORDER BY p.payment_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetCustomerPayments(ctx context.Context, id string) ([]Payment, error) {
+func (q *Queries) GetCustomerPayments(ctx context.Context, id uuid.UUID) ([]Payment, error) {
 	rows, err := q.db.QueryContext(ctx, getCustomerPayments, id)
 	if err != nil {
 		return nil, err
@@ -292,7 +294,7 @@ type UpdateCustomerParams struct {
 	Address   sql.NullString
 	Phone     sql.NullString
 	UpdatedAt sql.NullTime
-	ID        string
+	ID        uuid.UUID
 }
 
 func (q *Queries) UpdateCustomer(ctx context.Context, arg UpdateCustomerParams) error {

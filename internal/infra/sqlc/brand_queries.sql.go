@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: brand_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createBrand = `-- name: CreateBrand :exec
@@ -16,7 +18,7 @@ VALUES (?, ?, ?, ?, ?)
 `
 
 type CreateBrandParams struct {
-	ID          string
+	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
 	CreatedAt   sql.NullTime
@@ -40,7 +42,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteBrand(ctx context.Context, id string) error {
+func (q *Queries) DeleteBrand(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteBrand, id)
 	return err
 }
@@ -49,7 +51,7 @@ const getBrand = `-- name: GetBrand :one
 SELECT id, name, description, deleted_at, created_at, updated_at FROM brands WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetBrand(ctx context.Context, id string) (Brand, error) {
+func (q *Queries) GetBrand(ctx context.Context, id uuid.UUID) (Brand, error) {
 	row := q.db.QueryRowContext(ctx, getBrand, id)
 	var i Brand
 	err := row.Scan(
@@ -71,7 +73,7 @@ WHERE b.id = ? AND b.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetBrandProducts(ctx context.Context, id string) ([]Product, error) {
+func (q *Queries) GetBrandProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getBrandProducts, id)
 	if err != nil {
 		return nil, err
@@ -159,7 +161,7 @@ type UpdateBrandParams struct {
 	Name        string
 	Description sql.NullString
 	UpdatedAt   sql.NullTime
-	ID          string
+	ID          uuid.UUID
 }
 
 func (q *Queries) UpdateBrand(ctx context.Context, arg UpdateBrandParams) error {

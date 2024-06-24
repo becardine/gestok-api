@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: payment_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createPayment = `-- name: CreatePayment :exec
@@ -16,9 +18,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreatePaymentParams struct {
-	ID            string
-	OrderID       sql.NullString
-	CustomerID    sql.NullString
+	ID            uuid.UUID
+	OrderID       uuid.UUID
+	CustomerID    uuid.UUID
 	PaymentType   string
 	PaymentAt     sql.NullTime
 	PaymentValue  float64
@@ -48,7 +50,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeletePayment(ctx context.Context, id string) error {
+func (q *Queries) DeletePayment(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deletePayment, id)
 	return err
 }
@@ -57,7 +59,7 @@ const getPayment = `-- name: GetPayment :one
 SELECT id, order_id, customer_id, payment_type, payment_at, payment_value, payment_status, deleted_at, created_at, updated_at FROM payments WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetPayment(ctx context.Context, id string) (Payment, error) {
+func (q *Queries) GetPayment(ctx context.Context, id uuid.UUID) (Payment, error) {
 	row := q.db.QueryRowContext(ctx, getPayment, id)
 	var i Payment
 	err := row.Scan(
@@ -83,7 +85,7 @@ ORDER BY payment_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, customerID sql.NullString) ([]Payment, error) {
+func (q *Queries) GetPaymentsByCustomerId(ctx context.Context, customerID uuid.UUID) ([]Payment, error) {
 	rows, err := q.db.QueryContext(ctx, getPaymentsByCustomerId, customerID)
 	if err != nil {
 		return nil, err
@@ -125,7 +127,7 @@ ORDER BY payment_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetPaymentsByOrderId(ctx context.Context, orderID sql.NullString) ([]Payment, error) {
+func (q *Queries) GetPaymentsByOrderId(ctx context.Context, orderID uuid.UUID) ([]Payment, error) {
 	rows, err := q.db.QueryContext(ctx, getPaymentsByOrderId, orderID)
 	if err != nil {
 		return nil, err
@@ -213,7 +215,7 @@ type UpdatePaymentParams struct {
 	PaymentValue  float64
 	PaymentStatus string
 	UpdatedAt     sql.NullTime
-	ID            string
+	ID            uuid.UUID
 }
 
 func (q *Queries) UpdatePayment(ctx context.Context, arg UpdatePaymentParams) error {

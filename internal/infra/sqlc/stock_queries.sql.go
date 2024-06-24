@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: stock_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const addStockProduct = `-- name: AddStockProduct :exec
@@ -17,8 +19,8 @@ ON DUPLICATE KEY UPDATE stock_id = stock_id
 `
 
 type AddStockProductParams struct {
-	StockID   sql.NullString
-	ProductID sql.NullString
+	StockID   uuid.UUID
+	ProductID uuid.UUID
 }
 
 func (q *Queries) AddStockProduct(ctx context.Context, arg AddStockProductParams) error {
@@ -32,7 +34,7 @@ VALUES (?, ?, ?, ?, ?, ?)
 `
 
 type CreateStockParams struct {
-	ID        string
+	ID        uuid.UUID
 	Name      string
 	Location  sql.NullString
 	Capacity  int32
@@ -58,7 +60,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteStock(ctx context.Context, id string) error {
+func (q *Queries) DeleteStock(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteStock, id)
 	return err
 }
@@ -67,7 +69,7 @@ const getStock = `-- name: GetStock :one
 SELECT id, name, location, capacity, deleted_at, created_at, updated_at FROM stocks WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetStock(ctx context.Context, id string) (Stock, error) {
+func (q *Queries) GetStock(ctx context.Context, id uuid.UUID) (Stock, error) {
 	row := q.db.QueryRowContext(ctx, getStock, id)
 	var i Stock
 	err := row.Scan(
@@ -91,7 +93,7 @@ WHERE s.id = ? AND s.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetStockProducts(ctx context.Context, id string) ([]Product, error) {
+func (q *Queries) GetStockProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getStockProducts, id)
 	if err != nil {
 		return nil, err
@@ -171,8 +173,8 @@ WHERE stock_id = ? AND product_id = ?
 `
 
 type RemoveStockProductParams struct {
-	StockID   sql.NullString
-	ProductID sql.NullString
+	StockID   uuid.UUID
+	ProductID uuid.UUID
 }
 
 func (q *Queries) RemoveStockProduct(ctx context.Context, arg RemoveStockProductParams) (sql.Result, error) {
@@ -190,7 +192,7 @@ type UpdateStockParams struct {
 	Location  sql.NullString
 	Capacity  int32
 	UpdatedAt sql.NullTime
-	ID        string
+	ID        uuid.UUID
 }
 
 func (q *Queries) UpdateStock(ctx context.Context, arg UpdateStockParams) error {

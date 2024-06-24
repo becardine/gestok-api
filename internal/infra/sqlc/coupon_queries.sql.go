@@ -3,12 +3,14 @@
 //   sqlc v1.26.0
 // source: coupon_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const createCoupon = `-- name: CreateCoupon :exec
@@ -17,7 +19,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateCouponParams struct {
-	ID           string
+	ID           uuid.UUID
 	Code         string
 	Discount     float64
 	ExpirationAt time.Time
@@ -45,7 +47,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteCoupon(ctx context.Context, id string) error {
+func (q *Queries) DeleteCoupon(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteCoupon, id)
 	return err
 }
@@ -54,7 +56,7 @@ const getCoupon = `-- name: GetCoupon :one
 SELECT id, code, discount, expiration_at, status, deleted_at, created_at, updated_at FROM coupons WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetCoupon(ctx context.Context, id string) (Coupon, error) {
+func (q *Queries) GetCoupon(ctx context.Context, id uuid.UUID) (Coupon, error) {
 	row := q.db.QueryRowContext(ctx, getCoupon, id)
 	var i Coupon
 	err := row.Scan(
@@ -144,7 +146,7 @@ type UpdateCouponParams struct {
 	ExpirationAt time.Time
 	Status       string
 	UpdatedAt    sql.NullTime
-	ID           string
+	ID           uuid.UUID
 }
 
 func (q *Queries) UpdateCoupon(ctx context.Context, arg UpdateCouponParams) error {

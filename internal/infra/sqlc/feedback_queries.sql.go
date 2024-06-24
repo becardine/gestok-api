@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: feedback_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createFeedback = `-- name: CreateFeedback :exec
@@ -16,9 +18,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateFeedbackParams struct {
-	ID         string
-	CustomerID sql.NullString
-	OrderID    sql.NullString
+	ID         uuid.UUID
+	CustomerID uuid.UUID
+	OrderID    uuid.UUID
 	Rating     sql.NullInt32
 	Comment    sql.NullString
 	CreatedAt  sql.NullTime
@@ -44,7 +46,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteFeedback(ctx context.Context, id string) error {
+func (q *Queries) DeleteFeedback(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteFeedback, id)
 	return err
 }
@@ -53,7 +55,7 @@ const getFeedback = `-- name: GetFeedback :one
 SELECT id, customer_id, order_id, rating, comment, deleted_at, created_at, updated_at FROM feedbacks WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetFeedback(ctx context.Context, id string) (Feedback, error) {
+func (q *Queries) GetFeedback(ctx context.Context, id uuid.UUID) (Feedback, error) {
 	row := q.db.QueryRowContext(ctx, getFeedback, id)
 	var i Feedback
 	err := row.Scan(
@@ -77,7 +79,7 @@ ORDER BY created_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetFeedbackByCustomerId(ctx context.Context, customerID sql.NullString) ([]Feedback, error) {
+func (q *Queries) GetFeedbackByCustomerId(ctx context.Context, customerID uuid.UUID) ([]Feedback, error) {
 	rows, err := q.db.QueryContext(ctx, getFeedbackByCustomerId, customerID)
 	if err != nil {
 		return nil, err
@@ -117,7 +119,7 @@ ORDER BY created_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetFeedbackByOrderId(ctx context.Context, orderID sql.NullString) ([]Feedback, error) {
+func (q *Queries) GetFeedbackByOrderId(ctx context.Context, orderID uuid.UUID) ([]Feedback, error) {
 	rows, err := q.db.QueryContext(ctx, getFeedbackByOrderId, orderID)
 	if err != nil {
 		return nil, err
@@ -199,7 +201,7 @@ type UpdateFeedbackParams struct {
 	Rating    sql.NullInt32
 	Comment   sql.NullString
 	UpdatedAt sql.NullTime
-	ID        string
+	ID        uuid.UUID
 }
 
 func (q *Queries) UpdateFeedback(ctx context.Context, arg UpdateFeedbackParams) error {

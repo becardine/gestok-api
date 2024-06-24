@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: order_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const addOrderProduct = `-- name: AddOrderProduct :exec
@@ -17,8 +19,8 @@ ON DUPLICATE KEY UPDATE order_id = order_id
 `
 
 type AddOrderProductParams struct {
-	OrderID   sql.NullString
-	ProductID sql.NullString
+	OrderID   uuid.UUID
+	ProductID uuid.UUID
 	Quantity  int32
 	UnitPrice float64
 }
@@ -39,8 +41,8 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateOrderParams struct {
-	ID          string
-	CustomerID  sql.NullString
+	ID          uuid.UUID
+	CustomerID  uuid.UUID
 	OrderAt     sql.NullTime
 	OrderStatus string
 	TotalValue  float64
@@ -67,7 +69,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteOrder(ctx context.Context, id string) error {
+func (q *Queries) DeleteOrder(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteOrder, id)
 	return err
 }
@@ -76,7 +78,7 @@ const getOrder = `-- name: GetOrder :one
 SELECT id, customer_id, order_at, order_status, total_value, deleted_at, created_at, updated_at FROM orders WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetOrder(ctx context.Context, id string) (Order, error) {
+func (q *Queries) GetOrder(ctx context.Context, id uuid.UUID) (Order, error) {
 	row := q.db.QueryRowContext(ctx, getOrder, id)
 	var i Order
 	err := row.Scan(
@@ -100,7 +102,7 @@ ORDER BY order_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetOrderByCustomerId(ctx context.Context, customerID sql.NullString) ([]Order, error) {
+func (q *Queries) GetOrderByCustomerId(ctx context.Context, customerID uuid.UUID) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, getOrderByCustomerId, customerID)
 	if err != nil {
 		return nil, err
@@ -141,7 +143,7 @@ ORDER BY o.order_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetOrderByProductId(ctx context.Context, productID sql.NullString) ([]Order, error) {
+func (q *Queries) GetOrderByProductId(ctx context.Context, productID uuid.UUID) ([]Order, error) {
 	rows, err := q.db.QueryContext(ctx, getOrderByProductId, productID)
 	if err != nil {
 		return nil, err
@@ -182,7 +184,7 @@ WHERE o.id = ? AND o.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.name
 `
 
-func (q *Queries) GetOrderProducts(ctx context.Context, id string) ([]Product, error) {
+func (q *Queries) GetOrderProducts(ctx context.Context, id uuid.UUID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, getOrderProducts, id)
 	if err != nil {
 		return nil, err
@@ -263,8 +265,8 @@ WHERE order_id = ? AND product_id = ?
 `
 
 type RemoveOrderProductParams struct {
-	OrderID   sql.NullString
-	ProductID sql.NullString
+	OrderID   uuid.UUID
+	ProductID uuid.UUID
 }
 
 func (q *Queries) RemoveOrderProduct(ctx context.Context, arg RemoveOrderProductParams) (sql.Result, error) {
@@ -282,7 +284,7 @@ type UpdateOrderParams struct {
 	OrderStatus string
 	TotalValue  float64
 	UpdatedAt   sql.NullTime
-	ID          string
+	ID          uuid.UUID
 }
 
 func (q *Queries) UpdateOrder(ctx context.Context, arg UpdateOrderParams) error {
@@ -304,7 +306,7 @@ WHERE id = ? AND deleted_at IS NULL
 
 type UpdateOrderStatusParams struct {
 	OrderStatus string
-	ID          string
+	ID          uuid.UUID
 }
 
 func (q *Queries) UpdateOrderStatus(ctx context.Context, arg UpdateOrderStatusParams) error {

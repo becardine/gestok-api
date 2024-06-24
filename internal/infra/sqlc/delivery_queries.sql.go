@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: delivery_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createDelivery = `-- name: CreateDelivery :exec
@@ -16,9 +18,9 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 `
 
 type CreateDeliveryParams struct {
-	ID             string
-	OrderID        sql.NullString
-	CustomerID     sql.NullString
+	ID             uuid.UUID
+	OrderID        uuid.UUID
+	CustomerID     uuid.UUID
 	DeliveryType   string
 	DeliveryAt     sql.NullTime
 	DeliveryStatus string
@@ -46,7 +48,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteDelivery(ctx context.Context, id string) error {
+func (q *Queries) DeleteDelivery(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteDelivery, id)
 	return err
 }
@@ -59,7 +61,7 @@ ORDER BY delivery_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetDeliveriesByCustomerId(ctx context.Context, customerID sql.NullString) ([]Delivery, error) {
+func (q *Queries) GetDeliveriesByCustomerId(ctx context.Context, customerID uuid.UUID) ([]Delivery, error) {
 	rows, err := q.db.QueryContext(ctx, getDeliveriesByCustomerId, customerID)
 	if err != nil {
 		return nil, err
@@ -100,7 +102,7 @@ ORDER BY delivery_at DESC
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) GetDeliveriesByOrderId(ctx context.Context, orderID sql.NullString) ([]Delivery, error) {
+func (q *Queries) GetDeliveriesByOrderId(ctx context.Context, orderID uuid.UUID) ([]Delivery, error) {
 	rows, err := q.db.QueryContext(ctx, getDeliveriesByOrderId, orderID)
 	if err != nil {
 		return nil, err
@@ -137,7 +139,7 @@ const getDelivery = `-- name: GetDelivery :one
 SELECT id, order_id, customer_id, delivery_type, delivery_at, delivery_status, deleted_at, created_at, updated_at FROM deliveries WHERE id = ? AND deleted_at IS NULL
 `
 
-func (q *Queries) GetDelivery(ctx context.Context, id string) (Delivery, error) {
+func (q *Queries) GetDelivery(ctx context.Context, id uuid.UUID) (Delivery, error) {
 	row := q.db.QueryRowContext(ctx, getDelivery, id)
 	var i Delivery
 	err := row.Scan(
@@ -206,7 +208,7 @@ type UpdateDeliveryParams struct {
 	DeliveryAt     sql.NullTime
 	DeliveryStatus string
 	UpdatedAt      sql.NullTime
-	ID             string
+	ID             uuid.UUID
 }
 
 func (q *Queries) UpdateDelivery(ctx context.Context, arg UpdateDeliveryParams) error {

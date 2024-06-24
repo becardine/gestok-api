@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: category_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createCategory = `-- name: CreateCategory :exec
@@ -16,7 +18,7 @@ VALUES (?, ?, ?, ?, ?)
 `
 
 type CreateCategoryParams struct {
-	ID          string
+	ID          uuid.UUID
 	Name        string
 	Description sql.NullString
 	CreatedAt   sql.NullTime
@@ -40,7 +42,7 @@ SET deleted_at = NOW()
 WHERE id = ?
 `
 
-func (q *Queries) DeleteCategory(ctx context.Context, id string) error {
+func (q *Queries) DeleteCategory(ctx context.Context, id uuid.UUID) error {
 	_, err := q.db.ExecContext(ctx, deleteCategory, id)
 	return err
 }
@@ -154,7 +156,7 @@ type UpdateCategoryParams struct {
 	Name        string
 	Description sql.NullString
 	UpdatedAt   sql.NullTime
-	ID          string
+	ID          uuid.UUID
 }
 
 func (q *Queries) UpdateCategory(ctx context.Context, arg UpdateCategoryParams) error {

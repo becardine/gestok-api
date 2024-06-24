@@ -6,9 +6,17 @@ sql:
   engine: "mysql"
   gen:
     go:
-      package: "db"
+      package: "sqlc"
       out: "internal/infra/sqlc"
       overrides:
       - db_type: "decimal"
         go_type: "float64"
+      - column: "*.id"
+        go_type:
+          import: "github.com/google/uuid"
+          type: "UUID"
+      - column: "*.*_id"
+        go_type:
+          import: "github.com/google/uuid"
+          type: "UUID"
       

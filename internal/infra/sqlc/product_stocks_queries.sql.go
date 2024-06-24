@@ -3,11 +3,13 @@
 //   sqlc v1.26.0
 // source: product_stocks_queries.sql
 
-package db
+package sqlc
 
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createProductStock = `-- name: CreateProductStock :exec
@@ -18,9 +20,9 @@ VALUES (?, ?, ?, ?, ?, ?)
 `
 
 type CreateProductStockParams struct {
-	ID        string
-	ProductID sql.NullString
-	StockID   sql.NullString
+	ID        uuid.UUID
+	ProductID uuid.UUID
+	StockID   uuid.UUID
 	Quantity  int32
 	CreatedAt sql.NullTime
 	UpdatedAt sql.NullTime
@@ -45,8 +47,8 @@ WHERE product_id = ? AND stock_id = ?
 `
 
 type DeleteProductStockParams struct {
-	ProductID sql.NullString
-	StockID   sql.NullString
+	ProductID uuid.UUID
+	StockID   uuid.UUID
 }
 
 func (q *Queries) DeleteProductStock(ctx context.Context, arg DeleteProductStockParams) error {
@@ -61,8 +63,8 @@ WHERE product_id = ? AND stock_id = ? AND deleted_at IS NULL
 `
 
 type GetProductStockParams struct {
-	ProductID sql.NullString
-	StockID   sql.NullString
+	ProductID uuid.UUID
+	StockID   uuid.UUID
 }
 
 func (q *Queries) GetProductStock(ctx context.Context, arg GetProductStockParams) (ProductStock, error) {
@@ -88,7 +90,7 @@ ORDER BY created_at
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) ListProductStocks(ctx context.Context, productID sql.NullString) ([]ProductStock, error) {
+func (q *Queries) ListProductStocks(ctx context.Context, productID uuid.UUID) ([]ProductStock, error) {
 	rows, err := q.db.QueryContext(ctx, listProductStocks, productID)
 	if err != nil {
 		return nil, err
@@ -128,7 +130,7 @@ ORDER BY p.name
 LIMIT 2 OFFSET 3
 `
 
-func (q *Queries) ListProductsInStock(ctx context.Context, stockID sql.NullString) ([]Product, error) {
+func (q *Queries) ListProductsInStock(ctx context.Context, stockID uuid.UUID) ([]Product, error) {
 	rows, err := q.db.QueryContext(ctx, listProductsInStock, stockID)
 	if err != nil {
 		return nil, err
@@ -172,8 +174,8 @@ WHERE product_id = ? AND stock_id = ? AND deleted_at IS NULL
 type UpdateProductStockParams struct {
 	Quantity  int32
 	UpdatedAt sql.NullTime
-	ProductID sql.NullString
-	StockID   sql.NullString
+	ProductID uuid.UUID
+	StockID   uuid.UUID
 }
 
 func (q *Queries) UpdateProductStock(ctx context.Context, arg UpdateProductStockParams) error {
