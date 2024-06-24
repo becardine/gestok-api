@@ -80,11 +80,17 @@ FROM customers c
 JOIN deliveries d ON c.id = d.customer_id
 WHERE c.id = ? AND c.deleted_at IS NULL AND d.deleted_at IS NULL
 ORDER BY d.delivery_at DESC
-LIMIT 2 OFFSET 3
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetCustomerDeliveries(ctx context.Context, id uuid.UUID) ([]Delivery, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerDeliveries, id)
+type GetCustomerDeliveriesParams struct {
+	ID     uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerDeliveries(ctx context.Context, arg GetCustomerDeliveriesParams) ([]Delivery, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerDeliveries, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -122,11 +128,17 @@ FROM customers c
 JOIN feedbacks f ON c.id = f.customer_id
 WHERE c.id = ? AND c.deleted_at IS NULL AND f.deleted_at IS NULL
 ORDER BY f.created_at DESC
-LIMIT 2 OFFSET 3
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetCustomerFeedbacks(ctx context.Context, id uuid.UUID) ([]Feedback, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerFeedbacks, id)
+type GetCustomerFeedbacksParams struct {
+	ID     uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerFeedbacks(ctx context.Context, arg GetCustomerFeedbacksParams) ([]Feedback, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerFeedbacks, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -163,11 +175,17 @@ FROM customers c
 JOIN orders o ON c.id = o.customer_id
 WHERE c.id = ? AND c.deleted_at IS NULL AND o.deleted_at IS NULL
 ORDER BY o.order_at DESC
-LIMIT 2 OFFSET 3
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetCustomerOrders(ctx context.Context, id uuid.UUID) ([]Order, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerOrders, id)
+type GetCustomerOrdersParams struct {
+	ID     uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerOrders(ctx context.Context, arg GetCustomerOrdersParams) ([]Order, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerOrders, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -204,11 +222,17 @@ FROM customers c
 JOIN payments p ON c.id = p.customer_id
 WHERE c.id = ? AND c.deleted_at IS NULL AND p.deleted_at IS NULL
 ORDER BY p.payment_at DESC
-LIMIT 2 OFFSET 3
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetCustomerPayments(ctx context.Context, id uuid.UUID) ([]Payment, error) {
-	rows, err := q.db.QueryContext(ctx, getCustomerPayments, id)
+type GetCustomerPaymentsParams struct {
+	ID     uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetCustomerPayments(ctx context.Context, arg GetCustomerPaymentsParams) ([]Payment, error) {
+	rows, err := q.db.QueryContext(ctx, getCustomerPayments, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -246,11 +270,16 @@ SELECT id, name, email, password, address, phone, deleted_at, created_at, update
 FROM customers
 WHERE deleted_at IS NULL
 ORDER BY name
-LIMIT 1 OFFSET 2
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListCustomers(ctx context.Context) ([]Customer, error) {
-	rows, err := q.db.QueryContext(ctx, listCustomers)
+type ListCustomersParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListCustomers(ctx context.Context, arg ListCustomersParams) ([]Customer, error) {
+	rows, err := q.db.QueryContext(ctx, listCustomers, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
