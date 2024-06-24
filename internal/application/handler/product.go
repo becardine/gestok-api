@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
@@ -150,6 +151,8 @@ func (h *ProductHandler) deleteProduct(w http.ResponseWriter, r *http.Request) {
 // @Summary List all products
 // @Description List all products
 // @Tags products
+// @Param page query int false "Page number"
+// @Param limit query int false "Items per page"
 // @Accept json
 // @Produce json
 // @Success 200 {array} entity.Product
@@ -157,7 +160,20 @@ func (h *ProductHandler) deleteProduct(w http.ResponseWriter, r *http.Request) {
 // @Router /products [get]
 // @Security ApiKeyAuth
 func (h *ProductHandler) listProducts(w http.ResponseWriter, r *http.Request) {
-	products, err := h.productService.ListProducts(r.Context())
+	page := r.URL.Query().Get("page")
+	limit := r.URL.Query().Get("limit")
+
+	pageInt, err := strconv.Atoi(page)
+	if err != nil {
+		pageInt = 0 // default to 0 if not provided or invalid
+	}
+
+	limitInt, err := strconv.Atoi(limit)
+	if err != nil {
+		limitInt = 10 // default to 10 if not provided or invalid
+	}
+
+	products, err := h.productService.ListProducts(r.Context(), pageInt, limitInt)
 	if err != nil {
 		errors.NewHTTPError(w, http.StatusInternalServerError, "Failed to list products", err)
 		return
