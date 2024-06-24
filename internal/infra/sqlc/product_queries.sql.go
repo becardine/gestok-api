@@ -103,10 +103,17 @@ JOIN product_stocks ps ON p.id = ps.product_id
 JOIN stocks s ON ps.stock_id = s.id
 WHERE p.id = ? AND p.deleted_at IS NULL AND s.deleted_at IS NULL
 ORDER BY s.name
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) GetProductStocks(ctx context.Context, id uuid.UUID) ([]Stock, error) {
-	rows, err := q.db.QueryContext(ctx, getProductStocks, id)
+type GetProductStocksParams struct {
+	ID     uuid.UUID
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) GetProductStocks(ctx context.Context, arg GetProductStocksParams) ([]Stock, error) {
+	rows, err := q.db.QueryContext(ctx, getProductStocks, arg.ID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -141,11 +148,16 @@ SELECT id, name, description, price, quantity_in_stock, image_url, category_id, 
 FROM products
 WHERE deleted_at IS NULL
 ORDER BY name
-LIMIT 1 OFFSET 2
+LIMIT ? OFFSET ?
 `
 
-func (q *Queries) ListProducts(ctx context.Context) ([]Product, error) {
-	rows, err := q.db.QueryContext(ctx, listProducts)
+type ListProductsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+func (q *Queries) ListProducts(ctx context.Context, arg ListProductsParams) ([]Product, error) {
+	rows, err := q.db.QueryContext(ctx, listProducts, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

@@ -20,7 +20,7 @@ SELECT *
 FROM products
 WHERE deleted_at IS NULL
 ORDER BY name
-LIMIT 1 OFFSET 2;
+LIMIT ? OFFSET ?;  
 
 -- name: GetProductStocks :many
 SELECT s.*
@@ -28,7 +28,8 @@ FROM products p
 JOIN product_stocks ps ON p.id = ps.product_id
 JOIN stocks s ON ps.stock_id = s.id
 WHERE p.id = ? AND p.deleted_at IS NULL AND s.deleted_at IS NULL
-ORDER BY s.name;
+ORDER BY s.name
+LIMIT ? OFFSET ?;
 
 -- name: AddProductStock :exec
 INSERT INTO product_stocks (stock_id, product_id)

@@ -55,8 +55,11 @@ func (pr *ProductRepository) GetProduct(ctx context.Context, id uuid.UUID) (*ent
 
 // ListProducts implements repository.ProductRepository.
 func (pr *ProductRepository) ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error) {
-	// TODO: Implement pagination
-	products, err := pr.queries.ListProducts(ctx)
+
+	products, err := pr.queries.ListProducts(ctx, database.ListProductsParams{
+		Limit:  int32(pageSize),
+		Offset: int32((page - 1) * pageSize),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to list products: %v", err)
 	}
