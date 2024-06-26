@@ -13,7 +13,7 @@ type DeliveryRepositoryInterface interface {
 	Update(ctx context.Context, delivery *entity.Delivery) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, page, pageSize int) ([]*entity.Delivery, error)
-	GetDeliveryOrders(ctx context.Context, deliveryID uuid.UUID) ([]*entity.Order, error)
-	AddDeliveryOrder(ctx context.Context, orderID, deliveryID uuid.UUID) error
-	RemoveDeliveryOrder(ctx context.Context, orderID, deliveryID uuid.UUID) error
+	// GetDeliveryOrders(ctx context.Context, deliveryID uuid.UUID) ([]*entity.Order, error)
+	// AddDeliveryOrder(ctx context.Context, orderID, deliveryID uuid.UUID) error
+	// RemoveDeliveryOrder(ctx context.Context, orderID, deliveryID uuid.UUID) error
 }
