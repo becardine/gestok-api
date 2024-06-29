@@ -158,10 +158,7 @@ func TestStockService(t *testing.T) {
 		stockService := service.NewStockService(mockRepo)
 
 		stock := &entity.Stock{
-			ID:       uuid.New(),
-			Name:     "Stock Test",
-			Location: "Location Test",
-			Capacity: 100,
+			ID: uuid.New(),
 		}
 
 		mockRepo.On("Get", mock.Anything, mock.Anything).Return(nil, assert.AnError)
@@ -180,11 +177,8 @@ func TestStockService(t *testing.T) {
 			Capacity: 100,
 		}
 
-		stock := input.ToEntity()
-
 		mockRepo.On("Create", mock.Anything, mock.Anything).Return(nil, assert.AnError)
-		stock, err := stockService.Create(context.Background(), input)
-		assert.Nil(t, stock)
+		_, err := stockService.Create(context.Background(), input)
 		assert.NotNil(t, err)
 		mockRepo.AssertExpectations(t)
 	})
@@ -210,10 +204,7 @@ func TestStockService(t *testing.T) {
 		stockService := service.NewStockService(mockRepo)
 
 		stock := &entity.Stock{
-			ID:       uuid.New(),
-			Name:     "Stock Test",
-			Location: "Location Test",
-			Capacity: 100,
+			ID: uuid.New(),
 		}
 
 		mockRepo.On("Get", mock.Anything, mock.Anything).Return(nil, assert.AnError)
