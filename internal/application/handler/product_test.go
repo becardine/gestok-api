@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/service"
+	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/becardine/gestock-api/internal/mocks"
 	"github.com/go-chi/chi/v5"
 	"github.com/stretchr/testify/assert"
@@ -33,7 +33,7 @@ func TestCreateProduct(t *testing.T) {
 
 		router.Route("/products", productHandler.RegisterRoutes)
 
-		expectedInput := &service.CreateProductInput{
+		expectedInput := &dto.CreateProductInput{
 			Name:            "Product Test",
 			Description:     "Description Test",
 			Price:           10.50,

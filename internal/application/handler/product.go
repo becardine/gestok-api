@@ -48,7 +48,7 @@ func (h *ProductHandler) RegisterRoutes(router chi.Router) {
 // @Security ApiKeyAuth
 func (h *ProductHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 	config.GetLogger("handler").Info("Entrou no handler createProduct")
-	var input service.CreateProductInput
+	var input dto.CreateProductInput
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -90,7 +90,7 @@ func (h *ProductHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 // @Router /products/{id} [put]
 // @Security ApiKeyAuth
 func (h *ProductHandler) updateProduct(w http.ResponseWriter, r *http.Request) {
-	var input service.UpdateProductInput
+	var input dto.UpdateProductInput
 
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&input); err != nil {
