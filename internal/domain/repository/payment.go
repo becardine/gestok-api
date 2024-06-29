@@ -13,7 +13,7 @@ type PaymentRepositoryInterface interface {
 	Update(ctx context.Context, payment *entity.Payment) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, page, pageSize int) ([]*entity.Payment, error)
-	GetPaymentOrders(ctx context.Context, paymentID uuid.UUID) ([]*entity.Order, error)
-	AddPaymentOrder(ctx context.Context, orderID, paymentID uuid.UUID) error
-	RemovePaymentOrder(ctx context.Context, orderID, paymentID uuid.UUID) error
+	// GetPaymentOrders(ctx context.Context, paymentID uuid.UUID) ([]*entity.Order, error)
+	// AddPaymentOrder(ctx context.Context, orderID, paymentID uuid.UUID) error
+	// RemovePaymentOrder(ctx context.Context, orderID, paymentID uuid.UUID) error
 }
