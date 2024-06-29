@@ -97,9 +97,7 @@ func TestBrandService_Create(t *testing.T) {
 		}
 
 		expectedBrand := &entity.Brand{
-			ID:          uuid.New(),
-			Name:        input.Name,
-			Description: input.Description,
+			Name: input.Name,
 		}
 		mockRepo.On("Create", mock.Anything, mock.AnythingOfType("*entity.Brand")).Return(nil)
 
