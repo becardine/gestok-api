@@ -13,7 +13,7 @@ type StockRepositoryInterface interface {
 	Update(ctx context.Context, stock *entity.Stock) error
 	Delete(ctx context.Context, id uuid.UUID) error
 	List(ctx context.Context, page, pageSize int) ([]*entity.Stock, error)
-	GetStockProducts(ctx context.Context, stockID uuid.UUID) ([]*entity.Product, error)
-	AddStockProduct(ctx context.Context, productID, stockID uuid.UUID) error
-	RemoveStockProduct(ctx context.Context, productID, stockID uuid.UUID) error
+	// GetStockProducts(ctx context.Context, stockID uuid.UUID) ([]*entity.Product, error)
+	// AddStockProduct(ctx context.Context, productID, stockID uuid.UUID) error
+	// RemoveStockProduct(ctx context.Context, productID, stockID uuid.UUID) error
 }
