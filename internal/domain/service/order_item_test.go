@@ -244,11 +244,7 @@ func TestOrderItemService(t *testing.T) {
 		orderItemService := service.NewOrderItemService(mockRepo)
 
 		orderItem := &entity.OrderItem{
-			ID:        uuid.New(),
-			OrderID:   uuid.New(),
-			ProductID: uuid.New(),
-			Quantity:  1,
-			UnitPrice: 100,
+			ID: uuid.New(),
 		}
 
 		product := &entity.Product{
