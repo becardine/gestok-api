@@ -7,6 +7,34 @@ definitions:
       name:
         type: string
     type: object
+  dto.CreateCouponInput:
+    properties:
+      code:
+        type: string
+      discount:
+        type: number
+      expiration_at:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.CreateProductInput:
+    properties:
+      brand_id:
+        type: string
+      category_id:
+        type: string
+      description:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity_in_stock:
+        type: integer
+    type: object
   dto.UpdateBrandInput:
     properties:
       description:
@@ -15,6 +43,38 @@ definitions:
         type: string
       name:
         type: string
+    type: object
+  dto.UpdateCouponInput:
+    properties:
+      code:
+        type: string
+      discount:
+        type: number
+      expiration_at:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+    type: object
+  dto.UpdateProductInput:
+    properties:
+      brand_id:
+        type: string
+      category_id:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      image_url:
+        type: string
+      name:
+        type: string
+      price:
+        type: number
+      quantity_in_stock:
+        type: integer
     type: object
   entity.Brand:
     properties:
@@ -32,6 +92,19 @@ definitions:
       id:
         type: string
       name:
+        type: string
+    type: object
+  entity.Coupon:
+    properties:
+      code:
+        type: string
+      discount:
+        type: number
+      expiration_date:
+        type: string
+      id:
+        type: string
+      status:
         type: string
     type: object
   entity.Product:
@@ -59,42 +132,6 @@ definitions:
       message:
         type: string
       status_code:
-        type: integer
-    type: object
-  service.CreateProductInput:
-    properties:
-      brand_id:
-        type: string
-      category_id:
-        type: string
-      description:
-        type: string
-      image_url:
-        type: string
-      name:
-        type: string
-      price:
-        type: number
-      quantity_in_stock:
-        type: integer
-    type: object
-  service.UpdateProductInput:
-    properties:
-      brand_id:
-        type: string
-      category_id:
-        type: string
-      description:
-        type: string
-      id:
-        type: string
-      image_url:
-        type: string
-      name:
-        type: string
-      price:
-        type: number
-      quantity_in_stock:
         type: integer
     type: object
 host: localhost:8080
@@ -448,11 +485,178 @@ paths:
       summary: Get category products
       tags:
       - categories
+  /coupons:
+    get:
+      consumes:
+      - application/json
+      description: List coupons
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Coupon'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      summary: List coupons
+      tags:
+      - coupons
+    post:
+      consumes:
+      - application/json
+      description: Create a new coupon
+      parameters:
+      - description: Coupon data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateCouponInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.Coupon'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Create a new coupon
+      tags:
+      - coupons
+  /coupons/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a coupon by ID
+      parameters:
+      - description: Coupon ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a coupon by ID
+      tags:
+      - coupons
+    get:
+      consumes:
+      - application/json
+      description: Get a coupon by ID
+      parameters:
+      - description: Coupon ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Coupon'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      summary: Get a coupon by ID
+      tags:
+      - coupons
+    put:
+      consumes:
+      - application/json
+      description: Update a coupon by ID
+      parameters:
+      - description: Coupon ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Coupon data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateCouponInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Coupon'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/errors.HTTPError'
+      security:
+      - ApiKeyAuth: []
+      summary: Update a coupon by ID
+      tags:
+      - coupons
   /products:
     get:
       consumes:
       - application/json
       description: List all products
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Items per page
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -481,7 +685,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/service.CreateProductInput'
+          $ref: '#/definitions/dto.CreateProductInput'
       produces:
       - application/json
       responses:
@@ -576,7 +780,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/service.UpdateProductInput'
+          $ref: '#/definitions/dto.UpdateProductInput'
       produces:
       - application/json
       responses:

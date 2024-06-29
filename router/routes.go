@@ -2,6 +2,7 @@ package router
 
 import (
 	"fmt"
+
 	"github.com/becardine/gestock-api/wire"
 
 	"github.com/go-chi/chi/v5"
@@ -46,6 +47,13 @@ func initializeRoutes(router *chi.Mux) {
 			config.GetLogger("router").Errorf("error while initializing category handler: %v", err)
 		}
 		r.Route("/categories", categoryHandler.RegisterRoutes) // /api/v1/categories
+
+		// coupon routes
+		couponHandler, err := wire.InitializeCouponHandler()
+		if err != nil {
+			config.GetLogger("router").Errorf("error while initializing coupon handler: %v", err)
+		}
+		r.Route("/coupons", couponHandler.RegisterRoutes) // /api/v1/coupons
 
 		// test routes
 		testHandler := handler.NewTestHandler()

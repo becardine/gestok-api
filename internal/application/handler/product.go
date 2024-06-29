@@ -40,7 +40,7 @@ func (h *ProductHandler) RegisterRoutes(router chi.Router) {
 // @Tags products
 // @Accept json
 // @Produce json
-// @Param input body service.CreateProductInput true "Product data"
+// @Param input body dto.CreateProductInput true "Product data"
 // @Success 201 {object} entity.Product
 // @Failure 400 {object} errors.HTTPError
 // @Failure 500 {object} errors.HTTPError
@@ -83,7 +83,7 @@ func (h *ProductHandler) createProduct(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path string true "Product ID"
-// @Param input body service.UpdateProductInput true "Product data"
+// @Param input body dto.UpdateProductInput true "Product data"
 // @Success 200 {object} entity.Product
 // @Failure 400 {object} errors.HTTPError
 // @Failure 500 {object} errors.HTTPError

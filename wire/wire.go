@@ -43,6 +43,17 @@ func InitializeCategoryHandler() (*handler.CategoryHandler, error) {
 	return categoryHandler, nil
 }
 
+func InitializeCouponHandler() (*handler.CouponHandler, error) {
+	db := DBProvider()
+
+	var couponRepository repository.CouponRepositoryInterface
+	couponRepository = infra.NewCouponRepository(db)
+	couponService := service.NewCouponService(couponRepository)
+	couponHandler := handler.NewCouponHandler(couponService)
+
+	return couponHandler, nil
+}
+
 func InitializeConfig() error {
 	return config.Init()
 }
