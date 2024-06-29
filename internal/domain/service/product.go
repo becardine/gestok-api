@@ -7,8 +7,17 @@ import (
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	domain "github.com/becardine/gestock-api/internal/domain/repository"
+	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/google/uuid"
 )
+
+type ProductService interface {
+	GetProduct(ctx context.Context, id uuid.UUID) (*entity.Product, error)
+	CreateProduct(ctx context.Context, input *dto.CreateProductInput) (*entity.Product, error)
+	UpdateProduct(ctx context.Context, id uuid.UUID, input *dto.UpdateProductInput) error
+	DeleteProduct(ctx context.Context, id uuid.UUID) error
+	ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error)
+}
 
 type productService struct {
 	productRepository domain.ProductRepository
@@ -20,7 +29,7 @@ func NewProductService(productRepository domain.ProductRepository) ProductServic
 	}
 }
 
-func (ps *productService) CreateProduct(ctx context.Context, input *CreateProductInput) (*entity.Product, error) {
+func (ps *productService) CreateProduct(ctx context.Context, input *dto.CreateProductInput) (*entity.Product, error) {
 
 	product := input.ToEntity()
 
@@ -45,7 +54,7 @@ func (ps *productService) GetProduct(ctx context.Context, id uuid.UUID) (*entity
 	return product, nil
 }
 
-func (ps *productService) UpdateProduct(ctx context.Context, id uuid.UUID, input *UpdateProductInput) error {
+func (ps *productService) UpdateProduct(ctx context.Context, id uuid.UUID, input *dto.UpdateProductInput) error {
 	product, err := ps.productRepository.GetProduct(ctx, id)
 	if err != nil {
 		return ps.handleProductNotFoundError(err, id)

@@ -1,20 +1,11 @@
-package service
+package dto
 
 import (
-	"context"
 	"encoding/json"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/google/uuid"
 )
-
-type ProductService interface {
-	GetProduct(ctx context.Context, id uuid.UUID) (*entity.Product, error)
-	CreateProduct(ctx context.Context, input *CreateProductInput) (*entity.Product, error)
-	UpdateProduct(ctx context.Context, id uuid.UUID, input *UpdateProductInput) error
-	DeleteProduct(ctx context.Context, id uuid.UUID) error
-	ListProducts(ctx context.Context, page, pageSize int) ([]*entity.Product, error)
-}
 
 type CreateProductInput struct {
 	Name            string    `json:"name"`
@@ -48,6 +39,27 @@ func (input *CreateProductInput) FromJSON(data []byte) error {
 func (input *CreateProductInput) ToEntity() *entity.Product {
 	return &entity.Product{
 		ID:              uuid.New(),
+		Name:            input.Name,
+		Description:     input.Description,
+		Price:           input.Price,
+		QuantityInStock: input.QuantityInStock,
+		ImageURL:        input.ImageURL,
+		CategoryID:      input.CategoryID,
+		BrandID:         input.BrandID,
+	}
+}
+
+func (input *UpdateProductInput) FromJSON(data []byte) error {
+	if err := json.Unmarshal(data, input); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (input *UpdateProductInput) ToEntity() *entity.Product {
+	return &entity.Product{
+		ID:              input.ID,
 		Name:            input.Name,
 		Description:     input.Description,
 		Price:           input.Price,

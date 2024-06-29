@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
-	"github.com/becardine/gestock-api/internal/domain/service"
+	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 )
@@ -25,7 +25,7 @@ func NewProductServiceMockWithDB(db *sql.DB) *ProductServiceMock {
 	}
 }
 
-func (m *ProductServiceMock) CreateProduct(ctx context.Context, input *service.CreateProductInput) (*entity.Product, error) {
+func (m *ProductServiceMock) CreateProduct(ctx context.Context, input *dto.CreateProductInput) (*entity.Product, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*entity.Product), args.Error(1)
 }
@@ -35,7 +35,7 @@ func (m *ProductServiceMock) GetProduct(ctx context.Context, id uuid.UUID) (*ent
 	return args.Get(0).(*entity.Product), args.Error(1)
 }
 
-func (m *ProductServiceMock) UpdateProduct(ctx context.Context, id uuid.UUID, input *service.UpdateProductInput) error {
+func (m *ProductServiceMock) UpdateProduct(ctx context.Context, id uuid.UUID, input *dto.UpdateProductInput) error {
 	args := m.Called(ctx, id, input)
 	return args.Error(0)
 }

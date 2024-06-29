@@ -6,6 +6,7 @@ import (
 
 	"github.com/becardine/gestock-api/internal/domain/entity"
 	"github.com/becardine/gestock-api/internal/domain/service"
+	"github.com/becardine/gestock-api/internal/dto"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -44,7 +45,7 @@ func TestCreateProduct(t *testing.T) {
 	repoMock := new(ProductRepositoryMock)
 	productService := service.NewProductService(repoMock)
 
-	input := &service.CreateProductInput{
+	input := &dto.CreateProductInput{
 		Name:            "Product Test",
 		Description:     "Description Test",
 		Price:           10.50,
